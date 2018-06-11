@@ -7,10 +7,10 @@ from Views import view
 class AboutMeView(view.View):
 	post_url = 'about-me'
 
-	def load(self):
+	def load(self, formInfo=None):
 		try:
 			# Crap on left
-			self.aboutMeForm = aboutMeForm.AboutMeForm(self.driver)
+			self.aboutMeForm = aboutMeForm.AboutMeForm(self.driver, formInfo)
 			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
@@ -42,9 +42,9 @@ class AboutMeView(view.View):
 			'errorMsg': errorMsg,
 		}
 
-	def login(self, credentials, expectedError=None, expectedWarning=None):
+	def submit(self, formInfo, expectedError=None, expectedWarning=None):
 		try:
-			if self.signInForm.enter_credentials(credentials):
+			if self.aboutMeForm.enter_info(formInfo):
 				# Should be on home page
 				url = self.driver.current_url
 				if '/about-me' not in url:

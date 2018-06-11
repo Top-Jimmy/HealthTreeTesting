@@ -1,4 +1,5 @@
 import time
+import functions
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
@@ -9,7 +10,7 @@ class AboutMeForm():
 		self.driver = driver
 		self.load()
 
-	def load(self):
+	def load(self, expectedValues=None):
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		inputs = self.form.find_elements_by_tag_name('input')
 		anchors = self.form.find_elements_by_tag_name('a')
@@ -19,8 +20,8 @@ class AboutMeForm():
 		self.lastname_input = self.form.find_element_by_id('Last')
 
 		self.gender_cont = self.form.find_element_by_id('status')
-		self.female_input = self.gender_cont.find_elements_by_tag_name('input')[0]
-		self.male_input = self.gender_cont.find_elements_by_tag_name('input')[1]
+		self.female_radio = self.gender_cont.find_elements_by_tag_name('input')[0]
+		self.male_radio = self.gender_cont.find_elements_by_tag_name('input')[1]
 
 
 		self.birth_input = inputs[4]
@@ -29,16 +30,16 @@ class AboutMeForm():
 
 		self.treatment_textarea = self.form.find_elements_by_tag_name('textarea')
 
-		self.cancerCareyes_input = inputs[6]
-		self.cancerCareno_input = inputs[7]
+		self.cancerCareYes_radio = inputs[6]
+		self.cancerCareNo_radio = inputs[7]
 
 		self.termsprivacy_checkbox = self.form.find_element_by_id('agreed')
 		self.SparkCuresterms_checkbox = self.form.find_element_by_id('accepted_understand_clause')
 
-		# self.validate()
+		self.validate(expectedValues)
 		return True
 
-	def validate(self):
+	def validate(self, expectedValues):
 		failures = []
 		if self.firstname_input.text != 'Sign Up':
 			failures.append('1. Sign Up button. Expecting text "Sign Up", got "' + self.firstname_input.text + '"')
@@ -81,15 +82,23 @@ class AboutMeForm():
 		if form_info:
 			self.firstname_input.send_keys(form_info['first_name'])
 			self.password_input.send_keys(form_info['last_name'])
+			if form_info['gender'] == 'male':
+				functions.move_to_el(self.male_radio)
+			else:
+				functions.move_to_el(self.female_radio)
 			self.birth_input.send_keys(form_info)['dob']
-			self.zipcode_input.send_keys(form_info)['zipcode']
-			self.treatment_textarea.send_keys(form_info)['treatment']
-			self.cancerCareyes_input.send_keys(form_info)['canceryes']
-			self.cancerCareno_input.send_keys(form_info)['canceryno']
-			self.termsprivacy_checkbox.send_keys(form_info)['termsprivacy']
-			self.SparkCuresterms_checkbox.send_keys(form_info)['terms']
+			self.zipcode_input.send_keys(form_info)['zip_code']
+			self.treatment_textarea.send_keys(form_info)['treatment_goals']
+			if form_info['assisted'] == True:
+				functions.move_to_el(self.cancerCareYes_radio)
+			else:
+				functions.move_to_el(self.cancerCareNo_radio)
 
+			if form_info['terms'] == True:
+				functions.move_to_el(self.termsprivacy_checkbox)
 
+			if form_info['sparkCures'] == True:
+				functions.move_to_el(self.SparkCuresterms_checkbox)
 
 			return True
 		return False
