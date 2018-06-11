@@ -22,7 +22,6 @@ class TestAboutMe(unittest.TestCase):
 
 		self.assertTrue(aboutMeView.on())
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
-		raw_input('on diagnosis?')
 
 	def test_validate(self):
 		'''AboutMe : AboutMe . test_validate'''
