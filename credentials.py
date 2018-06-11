@@ -13,6 +13,22 @@ andrew = {
 		'terms': True,
 		'sparkCures': True,
 	}
+	'myel_diag_data': {
+		'newly_diagnosed': 'no',
+		'date': '05/2018',
+		'what_diagnosis': 'plasmacytoma',
+		'high_risk': 'no',
+		'stem_cell': 'no',
+		'lesions': 'no lesions'
+		'facility': 'Primary Childrens',
+		'city': 'Sandy',
+		'state': 'Utah',
+		'additional': 'no',
+		'phys name': 'Bobby Buttkiss',
+		'phys facility': 'Primary Childrens',
+		'phys city': 'Sandy',
+		'phys state': 'Utah',
+	}
 }
 
 def get_credentials(name):

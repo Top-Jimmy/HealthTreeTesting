@@ -16,8 +16,8 @@ class CreateAcctForm():
 		small = self.form.find_elements_by_tag_name('small')
 		# small[2] hidden element
 
-		self.newlyDiagnosed_input = self.form.find_element_by_id('newly_diagnosedNo')
-		self.newlyDiagnosed_input = self.form.find_element_by_id('newly_diagnosedYes')
+		self.newlyDiagnosedno_radio = self.form.find_element_by_id('newly_diagnosedNo')
+		self.newlyDiagnosedyes_radio = self.form.find_element_by_id('newly_diagnosedYes')
 
 		self.dateDiagnosis_form-control = self.form.find_element_by_tag_name('form-control')
 
@@ -40,8 +40,8 @@ class CreateAcctForm():
 		self.city_input = self.form.find_element_by_id('Last')
 		self.state_input = inputs[15]
 
-		self.additional_diagnosis_input = self.form.find_element_by_id('yesno0')
-		self.additional_diagnosis_input = self.form.find_element_by_id('yesno1')
+		self.add_diagno_input = self.form.find_element_by_id('yesno0')
+		self.add_diagyes_input = self.form.find_element_by_id('yesno1')
 
 		self.phys_name_input = self.form.find_element_by_id('physician_name_0')
 		self.phys_facility_input = self.form.find_element_by_id('facility_name')
@@ -53,8 +53,19 @@ class CreateAcctForm():
 
 	def validate(self):
 		failures = []
-		if self.submit_button.text != 'Sign Up':
-			failures.append('1. Sign Up button. Expecting text "Sign Up", got "' + self.submit_button.text + '"')
+		if expectedValues['newly_diagnosed'] == 'no' and not self.newly_diagnosedNo.get_attribute('checked')
+			failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
+		elif expectedValues['newly_diagnosed'] == 'yes' and not self.newly_diagnosedYes.get_attribute('checked')
+			failure.append('MyelDiagForm: Expecting "yes" to being newly diagnosed')
+
+		if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['date']:
+				failures.append('MyelDiagForm: Expecting date of diagnosis "' + expectedValues['date'] + '", got "' + self.dateDiagnosis_form-control.get_attribute('value') + '"')
+
+		if expectedValues['high_risk'] == 'no' and not self.highRisk1
+
+
+
+
 		if len(failures) > 0:
 			print(failures)
 			raise NoSuchElementException('Failed to load CreateAcctForm')

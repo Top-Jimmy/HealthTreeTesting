@@ -2,6 +2,8 @@ from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError
 from Components import signInForm
+from Components import Menu
+from Components import header
 from Views import view
 
 class FitLvlView(view.View):
@@ -11,8 +13,9 @@ class FitLvlView(view.View):
 		try:
 			# Crap on left
 			self.signInForm = signInForm.SignInForm(self.driver)
-			self.createAccount_link = self.driver.find_elements_by_tag_name('a')[-1]
-			self.validate()
+			self.menu = menu.Menu(self.driver)
+			self.header = header.AuthHeader(self.driver)
+			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:

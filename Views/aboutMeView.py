@@ -3,6 +3,7 @@ from selenium.common.exceptions import (NoSuchElementException,
 from viewExceptions import MsgError, WarningError
 from Components import aboutMeForm
 from Components import menu
+from Components import header
 from Views import view
 
 class AboutMeView(view.View):
@@ -13,6 +14,7 @@ class AboutMeView(view.View):
 			# Crap on left
 			self.aboutMeForm = aboutMeForm.AboutMeForm(self.driver, formInfo)
 			self.menu = menu.Menu(self.driver)
+			self.header = header.AuthHeader(self.driver)
 			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,

@@ -23,7 +23,6 @@ class AboutMeForm():
 		self.female_radio = self.gender_cont.find_elements_by_tag_name('input')[0]
 		self.male_radio = self.gender_cont.find_elements_by_tag_name('input')[1]
 
-
 		self.birth_input = inputs[4]
 
 		self.zipcode_input = self.form.find_element_by_id('zip-code')
@@ -41,11 +40,35 @@ class AboutMeForm():
 
 	def validate(self, expectedValues):
 		failures = []
-		if self.firstname_input.text != 'Sign Up':
-			failures.append('1. Sign Up button. Expecting text "Sign Up", got "' + self.firstname_input.text + '"')
+		if expectedValues:
+			if self.firstname_input.get_attribute('value') != expectedValues['first_name']:
+				failures.append('AboutMeForm: Expecting first name "' + expectedValues['first_name'] + '", got "' + self.firstname_input.get_attribute('value') + '"')
+			if self.lastname_input.get_attribute('value') != expectedValues['last_name']:
+				failures.append('AboutMeForm: Expecting last name "' + expectedValues['last_name'] + '", got "' + self.lastname_input.get_attribute('value') + '"')
+			if self.birth_input.get_attribute('value') != expectedValues['dob']:
+				failures.append('AboutMeForm: Expecting date of birth "' + expectedValues['dob'] + '", got "' + self.birth_input.get_attribute('value') + '"')
+			if self.zipcode_input.get_attribute('value') != expectedValues['zip_code']:
+				failures.append('AboutMeForm: Expecting zip code "' + expectedValues['zip_code'] + '", got"' + self.zipcode_input.get_attribute('value') + '"')
+			
+			if expectedValues['gender'] == 'male' and not self.male_radio.get_attribute('checked'):
+				failure.append('AboutMeForm: Expecting gender "male"')		
+			elif expectedValues['gender'] == 'female' and not self.female_radio.get_attribute('checked'):
+				failure.append('AboutMeForm: Expecting gender "female"')
+
+			if expectedValues['assisted'] == 'no' and not self.cancerCareNo_radio('checked'):
+				failure.append('AboutMeForm: Expecting "no" to family assistance')		
+			elif expectedValues['assisted'] == 'yes' and not self.cancerCareYes_radio.get_attribute('checked'):
+				failure.append('AboutMeForm: Expecting "yes" to family assistance')
+
+			if expectedValues['terms'] != self.termsprivacy_checkbox.get_attribute('checked'):
+				failure.append('AboutMeForm: Expecting "' + str(expectedValues['terms']) + '" Terms and Conditions')
+
+			if expectedValues['terms'] != self.SparkCuresterms_checkbox.get_attribute('checked'):
+				failure.append('AboutMeForm: Expecting "' + str(expectedVaues['sparkCures']) + '" Terms and Conditions')
+
 		if len(failures) > 0:
 			print(failures)
-			raise NoSuchElementException('Failed to load CreateAcctForm')
+			raise NoSuchElementException('Failed to load AboutMeForm')
 
 	def read_warning(self):
 		inputs = ['username', 'email', 'password', 'confirm password']
