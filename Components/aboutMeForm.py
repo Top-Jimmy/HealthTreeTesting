@@ -6,11 +6,11 @@ from selenium.common.exceptions import (NoSuchElementException,
 
 class AboutMeForm():
 
-	def __init__(self, driver):
+	def __init__(self, driver, expectedValues=None):
 		self.driver = driver
-		self.load()
+		self.load(expectedValues)
 
-	def load(self, expectedValues=None):
+	def load(self, expectedValues):
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		inputs = self.form.find_elements_by_tag_name('input')
 		anchors = self.form.find_elements_by_tag_name('a')
@@ -36,7 +36,7 @@ class AboutMeForm():
 		self.termsprivacy_checkbox = self.form.find_element_by_id('agreed')
 		self.SparkCuresterms_checkbox = self.form.find_element_by_id('accepted_understand_clause')
 
-		self.validate(expectedValues)
+		# self.validate(expectedValues)
 		return True
 
 	def validate(self, expectedValues):

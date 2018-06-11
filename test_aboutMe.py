@@ -13,6 +13,17 @@ class TestAboutMe(unittest.TestCase):
 	def tearDown(self):
 		self.driver.quit()
 
+	def test_navigate(self):
+		'''AboutMe : AboutMe . test_navigate'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Myeloma Diagnosis')
+		raw_input('on diagnosis?')
+
 	def test_validate(self):
 		'''AboutMe : AboutMe . test_validate'''
 		homeView = self.andrew.homeView

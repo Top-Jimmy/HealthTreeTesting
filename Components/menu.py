@@ -16,7 +16,7 @@ class Menu():
 		self.menu_options = {}
 
 		# Loading full menu or basic menu for new user?
-		self.menu_type = self.calculate_menu_type(self)
+		self.menu_type = self.calculate_menu_type()
 		if self.menu_type == 'normal':
 			for i, option in enumerate(self.list_items):
 				self.menu_options[option.text] = self.list_items[i]
@@ -38,10 +38,11 @@ class Menu():
 		# self.validate()
 		return True
 
-	def self.calculate_menu_type(self):
+	def calculate_menu_type(self):
 		menuType = 'new'
-		if len(self.li) > 10:
-			self.menu_type = 'normal'
+		print(len(self.list_items))
+		if len(self.list_items) > 10:
+			menuType = 'normal'
 		return menuType
 
 	# Not sure if we need to validate anything. Text should match by nature of how we're loading LIs
@@ -59,7 +60,8 @@ class Menu():
 		"""Go to given page in menu. Destination should match text in menu."""
 		option = self.menu_options[destination]
 		if option:
-			self.move_to_el(option)
+			self.driver.execute_script('arguments[0].scrollIntoView();', option)
+			option.click()
 		else:
 			print('Menu: Unexpected destination: ' + destination)
 			return False
