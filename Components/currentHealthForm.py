@@ -15,57 +15,133 @@ class CreateAcctForm():
 		anchors = self.form.find_elements_by_tag_name('a')
 		# small[2] hidden element
 
-		self.status_stable0_input = inputs[0]
-		self.status_stable1_input = inputs[1]
-		self.status_stable2_input = inputs[2]
+		self.status_stableyes_radio = inputs[0]
+		self.status_stableno_radio = inputs[1]
+		self.status_stableidk_radio = inputs[2]
 
-		self.status_relapse0_input = inputs[3]
-		self.status_relapse1_input = inputs[4]
-		self.status_relapse2_input = inputs[5]
+		self.status_relapseyes_radio = inputs[3]
+		self.status_relapseno_radio = inputs[4]
+		self.status_relapseidk_radio = inputs[5]
 
-		self.status_issues0_input = inputs[6]
-		self.status_issues1_input = inputs[7]
-		self.status_issues2_input = inputs[8]
+		self.status_issuesyes_radio = inputs[6]
+		self.status_issuesno_radio = inputs[7]
+		self.status_issuesidk_radio = inputs[8]
 
-		self.condition_heart0_input = inputs[9]
-		self.condition_heart1_input = inputs[10]
-		self.condition_heart2_input = inputs[11]
+		self.condition_heartyes_radio = inputs[9]
+		self.condition_heartno_radio = inputs[10]
+		self.condition_heartidk_radio = inputs[11]
 
-		self.condition_lung0_input = inputs[12]
-		self.condition_lung1_input = inputs[13]
-		self.condition_lung2_input = inputs[14]
+		self.condition_lungyes_radio = inputs[12]
+		self.condition_lungno_radio = inputs[13]
+		self.condition_lungidk_radio = inputs[14]
 
-		self.condition_kidney0_input = inputs[15]
-		self.condition_kidney1_input = inputs[16]
-		self.condition_kidney2_input = inputs[17]
+		self.condition_kidneyyes_radio = inputs[15]
+		self.condition_kidneyno_radio = inputs[16]
+		self.condition_kidneyidk_radio = inputs[17]
 
-		self.condition_diabetes0_input = inputs[18]
-		self.condition_diabetes1_input = inputs[19]
-		self.condition_diabetes2_input = inputs[20]
+		self.condition_diabetesyes_radio = inputs[18]
+		self.condition_diabetesno_radio = inputs[19]
+		self.condition_diabetesidk_radio = inputs[20]
 
-		self.condition_blood_pressure0_input = inputs[21]
-		self.condition_blood_pressure1_input = inputs[22]
-		self.condition_blood_pressure2_input = inputs[23]
+		self.condition_blood_pressureyes_radio = inputs[21]
+		self.condition_blood_pressureno_radio = inputs[22]
+		self.condition_blood_pressureidk_radio = inputs[23]
 
-		self.condition_blood_clot0_input = inputs[24]
-		self.condition_blood_clot1_input = inputs[25]
-		self.condition_blood_clot2_input = inputs[26]
+		self.condition_blood_clotyes_radio = inputs[24]
+		self.condition_blood_clotno_radio = inputs[25]
+		self.condition_blood_clotidk_radio = inputs[26]
 
-		self.condition_neuropathy0_input = inputs[27]
-		self.condition_neuropathy1_input = inputs[28]
-		self.condition_neuropathy2_input = inputs[29]
+		self.condition_neuropathyyes_radio = inputs[27]
+		self.condition_neuropathyno_radio = inputs[28]
+		self.condition_neuropathyidk_radio = inputs[29]
 
-		self.condition_other0_input = inputs[30]
-		self.condition_other1_input = inputs[31]
-		self.condition_other2_input = inputs[32]
+		self.condition_otheryes_radio = inputs[30]
+		self.condition_otherno_radio = inputs[31]
+		self.condition_otheridk_radio = inputs[32]
 
 		# self.validate()
 		return True
 
 	def validate(self):
 		failures = []
-		if self.submit_button.text != 'Sign Up':
-			failures.append('1. Sign Up button. Expecting text "Sign Up", got "' + self.submit_button.text + '"')
+		
+		if expectedValues['status_stable'] == 'dont know' and not self.status_stableidk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+		elif expectedValues['status_stable'] == 'yes' and not self.status_stableyes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+		elif expectedValues['status_stable'] == 'no' and not self.status_stableno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+
+		if expectedValues['status_relapse'] == 'dont know' and not self.status_relapseidk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having a relapse')
+		elif expectedValues['status_relapse'] == 'yes' and not self.status_relapseyes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having a relapse')
+		elif expectedValues['status_relapse'] == 'no' and not self.status_relapseno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having a relapse')
+
+		if expectedValues['status_issues'] == 'dont know' and not self.status_issuesidk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having health issues')
+		elif expectedValues['status_issues'] == 'yes' and not self.status_issuesyes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having health issues')
+		elif expectedValues['status_issues'] == 'no' and not self.status_issuesno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having health issues')
+
+		if expectedValues['condition_heart'] == 'dont know' and not self.condition_heartidk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+		elif expectedValues['condition_heart'] == 'yes' and not self.condition_heartyes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+		elif expectedValues['condition_heart'] == 'no' and not self.condition_heartno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+
+		if expectedValues['condition_lung'] == 'dont know' and not self.condition_lungidk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+		elif expectedValues['condition_lung'] == 'yes' and not self.condition_lungyes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+		elif expectedValues['condition_lung'] == 'no' and not self.condition_lungno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+
+		if expectedValues['condition_kidney'] == 'dont know' and not self.condition_kidneyidk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+		elif expectedValues['condition_kidney'] == 'yes' and not self.condition_kidneyyes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+		elif expectedValues['condition_kidney'] == 'no' and not self.condition_kidneyno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+
+		if expectedValues['condition_diabetes'] == 'dont know' and not self.condition_diabetesidk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+		elif expectedValues['condition_diabetes'] == 'yes' and not self.condition_diabetesyes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+		elif expectedValues['condition_diabetes'] == 'no' and not self.condition_diabetesno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+
+		if expectedValues['condition_blood_pressure'] == 'dont know' and not self.condition_blood_pressureidk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+		elif expectedValues['condition_blood_pressure'] == 'yes' and not self.condition_blood_pressureyes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+		elif expectedValues['condition_blood_pressure'] == 'no' and not self.condition_blood_pressureno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+
+		if expectedValues['condition_blood_clot'] == 'dont know' and not self.condition_blood_clotidk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+		elif expectedValues['condition_blood_clot'] == 'yes' and not self.condition_blood_clotyes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+		elif expectedValues['condition_blood_clot'] == 'no' and not self.condition_blood_clotno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+
+		if expectedValues['condition_neuropathy'] == 'dont know' and not self.condition_neuropathyidk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+		elif expectedValues['condition_neuropathy'] == 'yes' and not self.condition_neuropathyyes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+		elif expectedValues['condition_neuropathy'] == 'no' and not self.condition_neuropathyno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+
+		if expectedValues['condition_other'] == 'dont know' and not self.condition_otheridk_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+		elif expectedValues['condition_other'] == 'yes' and not self.condition_otheryes_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+		elif expectedValues['condition_other'] == 'no' and not self.condition_otherno_radio.get_attribute('checked'):
+			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+
 		if len(failures) > 0:
 			print(failures)
 			raise NoSuchElementException('Failed to load CreateAcctForm')
