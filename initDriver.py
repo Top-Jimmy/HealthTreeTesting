@@ -13,7 +13,7 @@ def get_desired_caps(browser):
   return desired_caps
 
 def start(browser=None):
-  driver_url = 'http://127.0.0.1:5051/wd/hub'
+  driver_url = 'http://127.0.0.1:5050/wd/hub'
   if browser is None:
     browser = 'chrome'
 
