@@ -86,7 +86,7 @@ class TestLogin(unittest.TestCase):
 			'password': 'invalid',
 		}
 
-		homeView.go()
+		self.assertTrue(homeView.go())
 		# Are login credentials associated with validated email? (only fails on production)
 		if main.env == 'prod':
 			self.assertTrue(homeView.login(self.andrew.credentials, expectedError='confirmation'))
@@ -96,6 +96,9 @@ class TestLogin(unittest.TestCase):
 	def test_success(self):
 		'''Authentication : Login . test_success'''
 		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
 		self.assertTrue(homeView.go())
 		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
 
