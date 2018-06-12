@@ -3,7 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 
-class CreateAcctForm():
+class CurrentHealthForm():
 
 	def __init__(self, driver):
 		self.driver = driver
@@ -64,83 +64,83 @@ class CreateAcctForm():
 
 	def validate(self):
 		failures = []
-		
-		if expectedValues['status_stable'] == 'dont know' and not self.status_stableidk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
-		elif expectedValues['status_stable'] == 'yes' and not self.status_stableyes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
-		elif expectedValues['status_stable'] == 'no' and not self.status_stableno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+		if expectedValues:
+			if expectedValues['status_stable'] == 'dont know' and not self.status_stableidk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+			elif expectedValues['status_stable'] == 'yes' and not self.status_stableyes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+			elif expectedValues['status_stable'] == 'no' and not self.status_stableno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
 
-		if expectedValues['status_relapse'] == 'dont know' and not self.status_relapseidk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having a relapse')
-		elif expectedValues['status_relapse'] == 'yes' and not self.status_relapseyes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having a relapse')
-		elif expectedValues['status_relapse'] == 'no' and not self.status_relapseno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having a relapse')
+			if expectedValues['status_relapse'] == 'dont know' and not self.status_relapseidk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having a relapse')
+			elif expectedValues['status_relapse'] == 'yes' and not self.status_relapseyes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having a relapse')
+			elif expectedValues['status_relapse'] == 'no' and not self.status_relapseno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having a relapse')
 
-		if expectedValues['status_issues'] == 'dont know' and not self.status_issuesidk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having health issues')
-		elif expectedValues['status_issues'] == 'yes' and not self.status_issuesyes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having health issues')
-		elif expectedValues['status_issues'] == 'no' and not self.status_issuesno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having health issues')
+			if expectedValues['status_issues'] == 'dont know' and not self.status_issuesidk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having health issues')
+			elif expectedValues['status_issues'] == 'yes' and not self.status_issuesyes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having health issues')
+			elif expectedValues['status_issues'] == 'no' and not self.status_issuesno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having health issues')
 
-		if expectedValues['condition_heart'] == 'dont know' and not self.condition_heartidk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
-		elif expectedValues['condition_heart'] == 'yes' and not self.condition_heartyes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
-		elif expectedValues['condition_heart'] == 'no' and not self.condition_heartno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+			if expectedValues['condition_heart'] == 'dont know' and not self.condition_heartidk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+			elif expectedValues['condition_heart'] == 'yes' and not self.condition_heartyes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+			elif expectedValues['condition_heart'] == 'no' and not self.condition_heartno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
 
-		if expectedValues['condition_lung'] == 'dont know' and not self.condition_lungidk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
-		elif expectedValues['condition_lung'] == 'yes' and not self.condition_lungyes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
-		elif expectedValues['condition_lung'] == 'no' and not self.condition_lungno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+			if expectedValues['condition_lung'] == 'dont know' and not self.condition_lungidk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+			elif expectedValues['condition_lung'] == 'yes' and not self.condition_lungyes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+			elif expectedValues['condition_lung'] == 'no' and not self.condition_lungno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
 
-		if expectedValues['condition_kidney'] == 'dont know' and not self.condition_kidneyidk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
-		elif expectedValues['condition_kidney'] == 'yes' and not self.condition_kidneyyes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
-		elif expectedValues['condition_kidney'] == 'no' and not self.condition_kidneyno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+			if expectedValues['condition_kidney'] == 'dont know' and not self.condition_kidneyidk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+			elif expectedValues['condition_kidney'] == 'yes' and not self.condition_kidneyyes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+			elif expectedValues['condition_kidney'] == 'no' and not self.condition_kidneyno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
 
-		if expectedValues['condition_diabetes'] == 'dont know' and not self.condition_diabetesidk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
-		elif expectedValues['condition_diabetes'] == 'yes' and not self.condition_diabetesyes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
-		elif expectedValues['condition_diabetes'] == 'no' and not self.condition_diabetesno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+			if expectedValues['condition_diabetes'] == 'dont know' and not self.condition_diabetesidk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+			elif expectedValues['condition_diabetes'] == 'yes' and not self.condition_diabetesyes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+			elif expectedValues['condition_diabetes'] == 'no' and not self.condition_diabetesno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
 
-		if expectedValues['condition_blood_pressure'] == 'dont know' and not self.condition_blood_pressureidk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
-		elif expectedValues['condition_blood_pressure'] == 'yes' and not self.condition_blood_pressureyes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
-		elif expectedValues['condition_blood_pressure'] == 'no' and not self.condition_blood_pressureno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+			if expectedValues['condition_blood_pressure'] == 'dont know' and not self.condition_blood_pressureidk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+			elif expectedValues['condition_blood_pressure'] == 'yes' and not self.condition_blood_pressureyes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+			elif expectedValues['condition_blood_pressure'] == 'no' and not self.condition_blood_pressureno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
 
-		if expectedValues['condition_blood_clot'] == 'dont know' and not self.condition_blood_clotidk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
-		elif expectedValues['condition_blood_clot'] == 'yes' and not self.condition_blood_clotyes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
-		elif expectedValues['condition_blood_clot'] == 'no' and not self.condition_blood_clotno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+			if expectedValues['condition_blood_clot'] == 'dont know' and not self.condition_blood_clotidk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+			elif expectedValues['condition_blood_clot'] == 'yes' and not self.condition_blood_clotyes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+			elif expectedValues['condition_blood_clot'] == 'no' and not self.condition_blood_clotno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
 
-		if expectedValues['condition_neuropathy'] == 'dont know' and not self.condition_neuropathyidk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
-		elif expectedValues['condition_neuropathy'] == 'yes' and not self.condition_neuropathyyes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
-		elif expectedValues['condition_neuropathy'] == 'no' and not self.condition_neuropathyno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+			if expectedValues['condition_neuropathy'] == 'dont know' and not self.condition_neuropathyidk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+			elif expectedValues['condition_neuropathy'] == 'yes' and not self.condition_neuropathyyes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+			elif expectedValues['condition_neuropathy'] == 'no' and not self.condition_neuropathyno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
 
-		if expectedValues['condition_other'] == 'dont know' and not self.condition_otheridk_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
-		elif expectedValues['condition_other'] == 'yes' and not self.condition_otheryes_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
-		elif expectedValues['condition_other'] == 'no' and not self.condition_otherno_radio.get_attribute('checked'):
-			failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
+			if expectedValues['condition_other'] == 'dont know' and not self.condition_otheridk_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "dont know" to having a stable condition')
+			elif expectedValues['condition_other'] == 'yes' and not self.condition_otheryes_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "yes" to having a stable condition')
+			elif expectedValues['condition_other'] == 'no' and not self.condition_otherno_radio.get_attribute('checked'):
+				failure.append('CurrentHealthForm: Expecting "no" to having a stable condition')
 
 		if len(failures) > 0:
 			print(failures)

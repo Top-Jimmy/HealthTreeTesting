@@ -63,7 +63,7 @@ class AboutMeForm():
 			if expectedValues['terms'] != self.termsprivacy_checkbox.get_attribute('checked'):
 				failure.append('AboutMeForm: Expecting "' + str(expectedValues['terms']) + '" Terms and Conditions')
 
-			if expectedValues['terms'] != self.SparkCuresterms_checkbox.get_attribute('checked'):
+			if expectedValues['sparkCures'] != self.SparkCuresterms_checkbox.get_attribute('checked'):
 				failure.append('AboutMeForm: Expecting "' + str(expectedVaues['sparkCures']) + '" Terms and Conditions')
 
 		if len(failures) > 0:

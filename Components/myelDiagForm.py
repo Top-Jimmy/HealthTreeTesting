@@ -3,7 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 
-class CreateAcctForm():
+class MyelDiagForm():
 
 	def __init__(self, driver):
 		self.driver = driver
@@ -53,57 +53,58 @@ class CreateAcctForm():
 
 	def validate(self):
 		failures = []
-		if expectedValues['newly_diagnosed'] == 'no' and not self.newly_diagnosedNo_radio.get_attribute('checked')
-			failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
-		elif expectedValues['newly_diagnosed'] == 'yes' and not self.newly_diagnosedYes_radio.get_attribute('checked')
-			failure.append('MyelDiagForm: Expecting "yes" to being newly diagnosed')
+		if expectedValues:
+			if expectedValues['newly_diagnosed'] == 'no' and not self.newly_diagnosedNo_radio.get_attribute('checked')
+				failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
+			elif expectedValues['newly_diagnosed'] == 'yes' and not self.newly_diagnosedYes_radio.get_attribute('checked')
+				failure.append('MyelDiagForm: Expecting "yes" to being newly diagnosed')
 
-		if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['date']:
-			failures.append('MyelDiagForm: Expecting date of diagnosis "' + expectedValues['date'] + '", got "' + self.dateDiagnosis_form-control.get_attribute('value') + '"')
+			if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['date']:
+				failures.append('MyelDiagForm: Expecting date of diagnosis "' + expectedValues['date'] + '", got "' + self.dateDiagnosis_form-control.get_attribute('value') + '"')
 
-		if expectedValues['high_risk'] == 'no' and not self.highRisk1_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "no" to being high risk')
-		elif expectedValues['high_risk'] == 'yes' and not self.highRisk2_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "yes" to being high risk')
-		elif expectedValues['high_risk'] == 'I dont know' and not self.highRisk3_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "I dont know to being high risk')
+			if expectedValues['high_risk'] == 'no' and not self.highRisk1_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "no" to being high risk')
+			elif expectedValues['high_risk'] == 'yes' and not self.highRisk2_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "yes" to being high risk')
+			elif expectedValues['high_risk'] == 'I dont know' and not self.highRisk3_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "I dont know to being high risk')
 
-		if expectedValues['stem_cell'] == 'no' and not self.stemCell1_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "no" to being eligible for stem cell')
-		elif expectedValues['stem_cell'] == 'yes' and not self.stemCell2_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "yes" to being eligible for stem cell')
-		elif expectedValues['stem_cell'] == 'I dont know' and not self.stemCell3_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "I dont know" to being eligible for stem cell')
+			if expectedValues['stem_cell'] == 'no' and not self.stemCell1_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "no" to being eligible for stem cell')
+			elif expectedValues['stem_cell'] == 'yes' and not self.stemCell2_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "yes" to being eligible for stem cell')
+			elif expectedValues['stem_cell'] == 'I dont know' and not self.stemCell3_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "I dont know" to being eligible for stem cell')
 
-		if expectedValues['lesions'] == 'no lesions' and not self.boneLesion0_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "no lesions" to # of bone lesions')
-		elif expectedValues['lesions'] == '5 or less' and not self.boneLesion1_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "5 or less" to # of bone lesions')
-		elif expectedValues['lesions'] == '6 or more' and not self.boneLesion2_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "6 or more" to # of bone lesions')
-		elif expectedValues['lesions'] == 'I dont know' and not self.boneLesion3_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "I dont know" to # of bone lesions')
+			if expectedValues['lesions'] == 'no lesions' and not self.boneLesion0_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "no lesions" to # of bone lesions')
+			elif expectedValues['lesions'] == '5 or less' and not self.boneLesion1_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "5 or less" to # of bone lesions')
+			elif expectedValues['lesions'] == '6 or more' and not self.boneLesion2_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "6 or more" to # of bone lesions')
+			elif expectedValues['lesions'] == 'I dont know' and not self.boneLesion3_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "I dont know" to # of bone lesions')
 
-		if self.facility_input.get_attribute('value') != expectedValues['facility']:
-			failure.append('MyelDiagForm: Expecting facility "' + expectedValues['facility'] + '", got "' + self.facility_input.get_attribute('value') + '"')
-		if self.city_input.get_attribute('value') != expectedValues['city']:
-			failure.append('MyelDiagForm: Expecting city "' + expectedValues['city'] + '", got "' + self.city_input.get_attribute('value') + '"')
-		if self.state_input.get_attribute('value') != expectedValues['state']:
-			failure.append('MyelDiagForm: Expecfting state "' + expectedValues['state'] + '", got "' + self.state_input.get_attribute('value') + '"')
+			if self.facility_input.get_attribute('value') != expectedValues['facility']:
+				failure.append('MyelDiagForm: Expecting facility "' + expectedValues['facility'] + '", got "' + self.facility_input.get_attribute('value') + '"')
+			if self.city_input.get_attribute('value') != expectedValues['city']:
+				failure.append('MyelDiagForm: Expecting city "' + expectedValues['city'] + '", got "' + self.city_input.get_attribute('value') + '"')
+			if self.state_input.get_attribute('value') != expectedValues['state']:
+				failure.append('MyelDiagForm: Expecfting state "' + expectedValues['state'] + '", got "' + self.state_input.get_attribute('value') + '"')
 
-		if expectedValues['additional'] == 'no' and not self.add_diagno_radio.get_attribute('checked'):
-			failure.append('MyelDiagForm: Expecting "no" to an additional diagnosis')
-		elif expectedValues['additional'] == 'yes' and not self.add_diagyes_radio.get_attribute('checked')
-			failure.append('MyelDiagForm: Expecting "yes" to an additional diagnosis')
+			if expectedValues['additional'] == 'no' and not self.add_diagno_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "no" to an additional diagnosis')
+			elif expectedValues['additional'] == 'yes' and not self.add_diagyes_radio.get_attribute('checked')
+				failure.append('MyelDiagForm: Expecting "yes" to an additional diagnosis')
 
-		if self.phys_name_input.get_attribute('value') != expectedValues['phys_name']:
-			failure.append('MyelDiagForm: Expecting physician name "' + expectedValues['phys_name'] + '", got "' + self.phys_name_input.get_attribute('value') + '"')
-		if self.phys_facility_input.get_attribute('value') != expectedValues['phys_facility']:
-			failure.append('MyelDiagForm: Expecting physician facility "' + expectedValues['phys_facility'] + '", got "' + self.phys_facility_input.get_attribute('value') + '"')
-		if self.phys_city_input.get_attribute('value') != expectedValues['phys_city']:
-			failure.append('MyelDiagForm: Expecting physician city "' + expectedValues['phys_city'] + '", got "' self.phys_city_input.get_attribute('value') + '"')
-		if self.phys_state_input.get_attribute('value') != expectedValues['phys_state']:
-			failure.append('MyelDiagForm: Expecting physician state "' + expectedValues['phys_state'] + '", got "' self.phys_state_input.get_attribute('value') + '"')
+			if self.phys_name_input.get_attribute('value') != expectedValues['phys_name']:
+				failure.append('MyelDiagForm: Expecting physician name "' + expectedValues['phys_name'] + '", got "' + self.phys_name_input.get_attribute('value') + '"')
+			if self.phys_facility_input.get_attribute('value') != expectedValues['phys_facility']:
+				failure.append('MyelDiagForm: Expecting physician facility "' + expectedValues['phys_facility'] + '", got "' + self.phys_facility_input.get_attribute('value') + '"')
+			if self.phys_city_input.get_attribute('value') != expectedValues['phys_city']:
+				failure.append('MyelDiagForm: Expecting physician city "' + expectedValues['phys_city'] + '", got "' self.phys_city_input.get_attribute('value') + '"')
+			if self.phys_state_input.get_attribute('value') != expectedValues['phys_state']:
+				failure.append('MyelDiagForm: Expecting physician state "' + expectedValues['phys_state'] + '", got "' self.phys_state_input.get_attribute('value') + '"')
 
 
 
