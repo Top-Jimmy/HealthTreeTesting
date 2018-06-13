@@ -71,15 +71,17 @@ class AboutMeView(view.View):
 			# Is form submission expected to have warning?
 			unexpectedWarnings = []
 			if expectedWarnings:
+				# Go through self.warnings and check each warningType matches an expectedWarning
+				# Append warnings that aren't expected to unexpectedWarnings
 				for i, warning in enumerate(self.warnings):
 					expected = False
-					# warningType = warning['type']
-					warningType = self.warnings[i]['type']
+					warningType = warning['type']
 					for expectedWarning in expectedWarnings:
+						raw_input('expectedWarning: ' + expectedWarning + '. warningType: ' + warningType)
 						if expectedWarning == warningType:
 							expected = True
 					if not expected:
-						unexpectedWarnings.append(self.warning[i])	
+						unexpectedWarnings.append(self.warnings[i])
 
 				if unexpectedWarnings:
 					for unexpected in unexpectedWarnings:

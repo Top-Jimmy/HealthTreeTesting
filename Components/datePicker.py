@@ -9,12 +9,14 @@ class DatePicker():
 		self.driver = driver
 
 	def load(self, expectedState=None):
+		raw_input('starting load. checking state')
 		try:
 			self.picker_state = self.get_picker_state()
 			if expectedState and expectedState != self.picker_state:
 				print('DatePicker: Expected state: "' + expectedState + '". Got state: "' + self.picker_state + '"')
 				return False
 			else:
+				raw_input('state matches. loading picker')
 				time.sleep(.4)
 				if self.picker_state == 'month':
 					# Header should display current year. # Picker table should have months

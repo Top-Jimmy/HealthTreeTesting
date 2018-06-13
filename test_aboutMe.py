@@ -41,7 +41,6 @@ class TestAboutMe(unittest.TestCase):
 		about_me_data['first_name'] = ''
 		expectedWarnings = ['Missing first name']
 
-
 		self.assertTrue(homeView.go())
 		self.assertTrue(homeView.login(self.andrew.credentials))
 

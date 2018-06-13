@@ -112,11 +112,11 @@ class AboutMeForm():
 
 			# create warning object
 			warningObjects.append({
-				'msg', 'aboutMeForm: Submit form warning',
-				'text', warningText,
-				'type', warningType,
+				'msg': 'aboutMeForm: Submit form warning',
+				'text': warningText,
+				'type': warningType,
 			});
-		# return all warning objects	
+		# return all warning objects
 		return warningObjects
 
 	def load_cancer_care(self):
@@ -169,11 +169,10 @@ class AboutMeForm():
 
 			# else:
 			# 	self.cancerCareNo_radio.click()
-
-			if form_info['terms'] == True:
+			if form_info['terms'] != self.termsprivacy_checkbox.is_selected():
 				self.termsprivacy_checkbox.click()
 
-			if form_info['sparkCures'] == True:
+			if form_info['sparkCures'] != self.SparkCuresterms_checkbox.is_selected():
 				self.SparkCuresterms_checkbox.click()
 
 			return True

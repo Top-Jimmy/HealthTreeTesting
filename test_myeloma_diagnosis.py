@@ -32,7 +32,6 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(homeView.go())
 		self.assertTrue(homeView.login(self.andrew.credentials))
 
-
 	def test_submit(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_submit'''
 
