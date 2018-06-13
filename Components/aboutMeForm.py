@@ -91,18 +91,17 @@ class AboutMeForm():
 		# create warning object
 
 		# return all warning objects
+		for warning in warnings:
+			warningType = 'undefined'
+			warningMsg = ''
+			if warningText == 'Please enter first name.':
+				warningType = 'Missing first name'
 
-		warningType = 'undefined'
-		warningMsg = ''
-		if warningText == 'Please enter a valid email address.':
-			warningType = 'Invalid credentials'
-			warningMsg = 'forgotPwForm: Submit form warning'
-
-		warningObjects.append({
-			'msg', warningMsg,
-			'text', warningText,
-			'type', warningType,
-		});
+			warningObjects.append({
+				'msg', 'aboutMeForm: Submit form warning',
+				'text', warning,
+				'type', warningType,
+			});
 		return warningObjects
 
 	def load_cancer_care(self):

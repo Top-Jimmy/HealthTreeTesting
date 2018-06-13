@@ -56,6 +56,8 @@ class AboutMeView(view.View):
 					self.warnings = self.aboutMeForm.read_warnings()
 					if self.error:
 						raise MsgError('Login Error')
+					elif self.warnings:
+						raise WarningError('Submission warning')
 			return True
 		except MsgError:
 			# Is login expected to fail?
