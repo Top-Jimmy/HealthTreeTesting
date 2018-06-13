@@ -9,7 +9,12 @@ andrew = {
 		'dob': '05/01/2018',
 		'zip_code': '84003',
 		'treatment_goals': 'Asdf',
-		'assisted': False,
+		'assisted': {
+			'value': True,
+			'name': 'Leonard Buttkiss',
+			'phone': '999-999-9999',
+			'email': 'buttkiss1@gmail.com',
+		},
 		'terms': True,
 		'sparkCures': True,
 	},
@@ -184,6 +189,25 @@ andrew = {
 		'diabetes': 'no',
 		'hyperension': 'no',
 		'cardivascular': 'no',
+	},
+}
+
+elliot = {
+	'about_me_data': {
+		'first_name': 'Elliot',
+		'last_name': 'Tidd',
+		'gender': 'male',
+		'dob': '06/01/2018',
+		'zip_code': '10000',
+		'treatment_goals': 'asdf',
+		'assisted': {
+			'value': False,
+			'name': '',
+			'phone': '',
+			'email': '',
+		},
+		'terms': True,
+		'sparkCures': True,
 	},
 }
 

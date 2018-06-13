@@ -1,5 +1,4 @@
 import time
-import functions
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
@@ -28,8 +27,7 @@ class AboutMeForm():
 
 		self.treatment_textarea = self.form.find_elements_by_tag_name('textarea')
 
-		self.cancerCareYes_radio = inputs[6]
-		self.cancerCareNo_radio = inputs[7]
+		self.load_cancer_care()
 
 		self.termsprivacy_checkbox = self.form.find_element_by_id('agreed')
 		self.SparkCuresterms_checkbox = self.form.find_element_by_id('accepted_understand_clause')
@@ -107,27 +105,54 @@ class AboutMeForm():
 		});
 		return warningObjects
 
+	def load_cancer_care(self):
+		inputs = self.form.find_elements_by_tag_name('input')
+
+		try:
+			self.caregiver_name_input = self.form.find_element_by_id('c_name')
+			self.caregiver_phone_input = self.form.find_element_by_id('c_phone')
+			self.caregiver_email_input = self.form.find_element_by_id('c_email')
+		except NoSuchElementException:
+			self.caregiver_name_input = None
+			self.caregiver_phone_input = None
+			self.caregiver_email_input = None
+
+		self.cancerCareYes_radio = inputs[6]
+		self.cancerCareNo_radio = inputs[7]
+
 	def enter_info(self, form_info):
 		if form_info:
 			self.firstname_input.send_keys(form_info['first_name'])
 			self.password_input.send_keys(form_info['last_name'])
 			if form_info['gender'] == 'male':
-				functions.move_to_el(self.male_radio)
+				self.male_radio.click()
 			else:
-				functions.move_to_el(self.female_radio)
+				self.female_radio.click()
 			self.birth_input.send_keys(form_info)['dob']
 			self.zipcode_input.send_keys(form_info)['zip_code']
 			self.treatment_textarea.send_keys(form_info)['treatment_goals']
-			if form_info['assisted'] == True:
-				functions.move_to_el(self.cancerCareYes_radio)
+
+			if form_info['assisted']['value'] == True:
+				self.cancerCareYes_radio.click()
+				self.load_cancer_care()
+				# Does credentials have caregiver info?
+				if form_info['assisted']['name']:
+					self.caregiver_name_input.send_keys(form_info['assisted']['name'])
+				if form_info['assitsted']['phone']:
+					self.caregiver_phone_input.send_keys(form_info['assisted']['phone'])
+				if form_info['assisted']['email']:
+					self.caregiver_email_input.send_keys(form_info['assisted']['email'])
+
+				# if yes, enter it into inputs loaded in load_cancer_care()
+
 			else:
-				functions.move_to_el(self.cancerCareNo_radio)
+				self.cancerCareNo_radio.click()
 
 			if form_info['terms'] == True:
-				functions.move_to_el(self.termsprivacy_checkbox)
+				self.termsprivacy_checkbox.click()
 
 			if form_info['sparkCures'] == True:
-				functions.move_to_el(self.SparkCuresterms_checkbox)
+				self.SparkCuresterms_checkbox.click()
 
 			return True
 		return False
