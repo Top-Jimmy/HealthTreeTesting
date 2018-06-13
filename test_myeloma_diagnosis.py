@@ -3,10 +3,7 @@ import main
 import initDriver
 import profiles
 
-# FreshForm
-# SavedForm
-
-class TestFreshForm(unittest.TestCase):
+class TestMyelomaDiagnosis(unittest.TestCase):
 
 	def setUp(self):
 		self.driver = initDriver.start(main.browser)
@@ -15,8 +12,31 @@ class TestFreshForm(unittest.TestCase):
 	def tearDown(self):
 		self.driver.quit()
 
-	def test_navigate(self):
-		'''MyelomaDiagnosis : AboutMe . test_navigate'''
+	def test_typeahead(self):
+		'''MyelomaDiagnosis : MyelomaDiagosis . test_typeahead'''
+		# Physician name field will suggest options as user types. Tab will autofill physician fields
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelDiagView = self.andrew.myelomaDiagnosisView
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+	def test_saved_form(self):
+		'''MyelomaDiagnosis : MyelomaDiagnosis . test_saved_form'''
+		# User already has fresh form submitted. Saved form loads and has expectedValues
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelDiagView = self.andrew.myelomaDiagnosisView
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+
+	def test_submit(self):
+		'''MyelomaDiagnosis : MyelomaDiagnosis . test_submit'''
+
+		# User submits fresh form, then verifies saved form loads and has expectedValues
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView
