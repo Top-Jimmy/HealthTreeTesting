@@ -46,12 +46,12 @@ class AboutMeView(view.View):
 			'errorMsg': errorMsg,
 		}
 
-	def submit(self, formInfo, expectedError=None, expectedWarning=None):
+	def submit(self, formInfo, expectedError=None, expectedWarnings=None):
 		try:
 			if self.aboutMeForm.enter_info(formInfo):
-				# Should be on home page
+				# Should be on myeloma diagnosis page
 				url = self.driver.current_url
-				if '/about-me' not in url:
+				if '/myeloma-diagnosis' not in url:
 					self.error = self.readErrors()
 					self.warnings = self.aboutMeForm.read_warnings()
 					if self.error:
@@ -68,14 +68,26 @@ class AboutMeView(view.View):
 			if errorType == 'undefined':
 				print('Undefined error: ' + self.error['errorText'])
 		except WarningError:
-			# Is login expected to have warning?
-			warningType = self.warning['type']
-			if expectedWarning and warningType.lower() != expectedWarning.lower():
-				print(self.warning['msg'])
-				if warningType == 'undefined':
-					print('Undefined warning: ' + self.warning['text'])
-			else:
-				return True
+			# Is form submission expected to have warning?
+			unexpectedWarnings = []
+			if expectedWarnings:
+				for i, warning in enumerate(self.warnings):
+					expected = False
+					# warningType = warning['type']
+					warningType = self.warnings[i]['type']
+					for expectedWarning in expectedWarnings:
+						if expectedWarning == warningType:
+							expected = True
+					if not expected:
+						unexpectedWarnings.append(self.warning[i])	
+
+				if unexpectedWarnings:
+					for unexpected in unexpectedWarnings:
+							print(unexpected['msg'])
+							if warningType == 'undefined':
+								print('Undefined warning: ' + unexpected['text'])
+				else:
+					return True
 		return False
 
 	def click_link(self, link):

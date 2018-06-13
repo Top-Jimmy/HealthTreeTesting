@@ -33,6 +33,20 @@ class TestAboutMe(unittest.TestCase):
 
 		self.assertTrue(aboutMeView.on(self.andrew.credentials['about_me_data']))
 
+	def test_warnings(self):
+		'''AboutMe : AboutMe . test_warnings'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		about_me_data = self.andrew.credentials['about_me_data']
+		about_me_data['first_name'] = ''
+		expectedWarnings = ['Missing first name']
 
 
-		raw_input('check')
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
+
+		self.assertTrue(aboutMeView.submit(about_me_data, expectedWarnings=expectedWarnings))
+
+
