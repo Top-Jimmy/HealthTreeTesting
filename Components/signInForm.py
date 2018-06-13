@@ -15,6 +15,16 @@ class SignInForm():
 		anchors = self.form.find_elements_by_tag_name('a')
 		small = self.form.find_elements_by_tag_name('small')
 
+		# list1 = ["1", 2, 3, 4, 5, 6]
+
+		# dictionary1 = {
+		# 	"name": "Elliot",
+		# 	"email": "asdf@gmail.com",
+		# }
+
+		# email = dictionary1["email"]
+
+
 		self.login_input = inputs[0]
 		self.login_warning = small[0]
 
