@@ -133,7 +133,6 @@ class DatePicker():
 
 	def set_year(self, year):
 		if self.picker_state == 'month':
-			raw_input('about to click current button')
 			self.current_button.click()
 			WDW(self.driver, 3).until(lambda x: self.load('year'))
 

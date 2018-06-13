@@ -16,7 +16,7 @@ class MyelomaDiagnosisFreshForm():
 	def load(self, expectedValues=None):
 		self.form = self.driver.find_element_by_id('diagnosis_form')
 		inputs = self.form.find_elements_by_tag_name('input')
-		dropdowns = self.form.find_elements_by_class_name('Select-placeholder')
+		self.placeholders = self.form.find_elements_by_class_name('Select-placeholder')
 
 		self.newlyDiagnosedNo_radio = self.form.find_element_by_id('newly_diagnosedNo')
 		self.newlyDiagnosedYes_radio = self.form.find_element_by_id('newly_diagnosedYes')
@@ -24,8 +24,7 @@ class MyelomaDiagnosisFreshForm():
 		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
 		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
 
-		self.firstDiagnosis_input = inputs[3]
-		self.firstDiagnosis_clicker = dropdowns[0]
+		self.load_first_diagnosis_dropdown()
 
 		self.highRisk1_radio = self.form.find_element_by_id('highRisk1')
 		self.highRisk2_radio = self.form.find_element_by_id('highRisk2')
@@ -40,10 +39,10 @@ class MyelomaDiagnosisFreshForm():
 		self.boneLesion2_radio = self.form.find_element_by_id('2')
 		self.boneLesion3_radio = self.form.find_element_by_id('3')
 
+		# todo: handle loading state dropdown based on whether first diagnosis is preSet
 		self.facility_input = self.form.find_element_by_id('facility_name')
 		self.facility_city_input = self.form.find_element_by_id('Last')
-		self.facility_state_input = inputs[15]
-		self.facility_state_clicker = dropdowns[1]
+		self.load_facility_state()
 
 		self.add_diagNo_radio = self.form.find_element_by_id('yesno0')
 		self.add_diagYes_radio = self.form.find_element_by_id('yesno1')
@@ -69,7 +68,7 @@ class MyelomaDiagnosisFreshForm():
 		# Physician State
 		cont = self.form.find_element_by_id('state0')
 		self.phys_state_input = cont.find_element_by_tag_name('input')
-		self.phys_state_clicker = dropdowns[2]
+		self.phys_state_clicker = self.placeholders[2]
 		# todo: load additional physician button
 
 		button_cont = self.form.find_element_by_class_name('submit_button')
@@ -81,9 +80,9 @@ class MyelomaDiagnosisFreshForm():
 	def validate(self, expectedValues):
 		failures = []
 		if expectedValues:
-			if expectedValues['newly_diagnosed'] == 'no' and not self.newly_diagnosedNo_radio.get_attribute('checked')
+			if expectedValues['newly_diagnosed'] == 'no' and not self.newly_diagnosedNo_radio.get_attribute('checked'):
 				failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
-			elif expectedValues['newly_diagnosed'] == 'yes' and not self.newly_diagnosedYes_radio.get_attribute('checked')
+			elif expectedValues['newly_diagnosed'] == 'yes' and not self.newly_diagnosedYes_radio.get_attribute('checked'):
 				failure.append('MyelDiagForm: Expecting "yes" to being newly diagnosed')
 
 			if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['date']:
@@ -121,7 +120,7 @@ class MyelomaDiagnosisFreshForm():
 
 			if expectedValues['additional'] == 'no' and not self.add_diagno_radio.get_attribute('checked'):
 				failure.append('MyelDiagForm: Expecting "no" to an additional diagnosis')
-			elif expectedValues['additional'] == 'yes' and not self.add_diagyes_radio.get_attribute('checked')
+			elif expectedValues['additional'] == 'yes' and not self.add_diagyes_radio.get_attribute('checked'):
 				failure.append('MyelDiagForm: Expecting "yes" to an additional diagnosis')
 
 			if self.phys_name_input.get_attribute('value') != expectedValues['phys_name']:
@@ -129,13 +128,55 @@ class MyelomaDiagnosisFreshForm():
 			if self.phys_facility_input.get_attribute('value') != expectedValues['phys_facility']:
 				failure.append('MyelDiagForm: Expecting physician facility "' + expectedValues['phys_facility'] + '", got "' + self.phys_facility_input.get_attribute('value') + '"')
 			if self.phys_city_input.get_attribute('value') != expectedValues['phys_city']:
-				failure.append('MyelDiagForm: Expecting physician city "' + expectedValues['phys_city'] + '", got "' self.phys_city_input.get_attribute('value') + '"')
+				failure.append('MyelDiagForm: Expecting physician city "' + expectedValues['phys_city'] + '", got "' + self.phys_city_input.get_attribute('value') + '"')
 			if self.phys_state_input.get_attribute('value') != expectedValues['phys_state']:
-				failure.append('MyelDiagForm: Expecting physician state "' + expectedValues['phys_state'] + '", got "' self.phys_state_input.get_attribute('value') + '"')
+				failure.append('MyelDiagForm: Expecting physician state "' + expectedValues['phys_state'] + '", got "' + self.phys_state_input.get_attribute('value') + '"')
 
 		if len(failures) > 0:
 			print(failures)
 			raise NoSuchElementException('Failed to load CreateAcctForm')
+
+	def load_first_diagnosis_dropdown(self):
+		self.first_diagnosis_cont = self.driver.find_element_by_class_name('frst-diag-name')
+
+		# Is value already set? Should have either value or placeholder element
+		self.first_diagnosis_preSet = False
+		try:
+			self.firstDiagnosis_value = self.first_diagnosis_cont.find_element_by_class_name('Select-value-label')
+			self.firstDiagnosis_placeholder = None
+			self.first_diagnosis_preSet = True
+		except NoSuchElementException:
+			self.firstDiagnosis_value = None
+			self.firstDiagnosis_placeholder = self.placeholders[0] # 'Select diagnosis'
+
+	def set_first_diagnosis(self, value):
+		value = value.lower()
+		# Click value div if already set. Placeholder if not set
+		if self.first_diagnosis_preSet:
+			self.firstDiagnosis_value.click()
+		else:
+			self.firstDiagnosis_placeholder.click()
+
+		# Load dropdown options
+		options = {}
+		try:
+			menu = self.form.find_element_by_class_name('Select-menu-outer')
+			divs = menu.find_elements_by_tag_name('div')
+			for i, div in enumerate(divs):
+				if i != 0: # First div is container
+					options[div.text.lower()] = divs[i]
+		except NoSuchElementException:
+			print('Unable to find dropdown items for first diagnosis')
+
+		try: # click one that matches value
+			option = options[value]
+			option.click()
+		except IndexError:
+			print('invalid index: ' + value)
+
+	def load_facility_state(self):
+		self.facility_state_input = inputs[15]
+		self.facility_state_clicker = self.placeholders[1]
 
 
 	# def read_warning(self):
@@ -176,17 +217,13 @@ class MyelomaDiagnosisFreshForm():
 				else:
 					self.newlyDiagnosedNo_radio.click()
 
-			if formInfo['diagnosis_date'] is not None:
-				# raw_input('clicking date input')
-				self.dateDiagnosis_input.click()
-				# raw_input('clicked date input. loading date picker')
-				picker = datePicker.DatePicker(self.driver)
-				# raw_input('loaded date picker. setting date')
-				picker.set_date(formInfo['diagnosis_date'])
+			# if formInfo['diagnosis_date'] is not None:
+			# 	self.dateDiagnosis_input.click()
+			# 	picker = datePicker.DatePicker(self.driver)
+			# 	picker.set_date(formInfo['diagnosis_date'])
 
 			if formInfo['first_diagnosis'] is not None:
-				self.firstDiagnosis_clicker.click()
-				# todo: dropdown component
+				self.set_first_diagnosis(formInfo['first_diagnosis'])
 
 			if formInfo['high_risk'] is not None:
 				high_risk = formInfo['high_risk']

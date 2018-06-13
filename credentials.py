@@ -74,8 +74,8 @@ andrew = {
 		'bone_pain': 'no',
 		'bone_weak': 'no',
 		'hypercalc': 'no',
-		'spinal': 'no', 'no',
-		'other_bone': 'no', 'no',
+		'spinal': 'no',
+		'other_bone': 'no',
 		'renal_fail': 'no',
 		'renal_trans': 'no',
 		'dialysis': 'no',
@@ -134,7 +134,7 @@ andrew = {
 			'brain': False,
 			'breast': True,
 			'heart': True,
-			'hysterectomy':
+			'hysterectomy': False,
 			'hernia': False,
 			'liver': True,
 			'lung': False,
@@ -153,7 +153,7 @@ andrew = {
 		'osteo': 'no',
 		'kidney': 'no',
 		'rheumatoid': 'no',
-		'sjögren': 'no',
+		'sjogren': 'no',
 		'hashimoto': 'no',
 		'psoriasis': 'no',
 		'psoriatic': 'no',
@@ -167,7 +167,7 @@ andrew = {
 		'light_chain': 'no',
 
 	},
-	'family_history_data' {
+	'family_history_data': {
 		'father': 'brain',
 		'mother': 'brain',
 		'sibling': 'brain',
