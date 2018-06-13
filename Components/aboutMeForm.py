@@ -69,35 +69,43 @@ class AboutMeForm():
 			print(failures)
 			raise NoSuchElementException('Failed to load AboutMeForm')
 
-	# def read_warning(self):
-	# 	inputs = ['username', 'email', 'password', 'confirm password']
-	# 	warnings = []
-	# 	warning_els = [
-	# 		self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
-	# 	]
-	# 	for i, warning_el in enumerate(warning_els):
-	# 		text = warning_el.text
-	# 		if len(text) > 0:
-	# 			warnings.append({
-	# 				'inputName': inputs[i],
-	# 				'text': text,
-	# 			})
-	# 	if len(warnings) > 0:
-	# 		return warnings
-	# 	return None
+	def read_warnings(self):
+		warnings = []
+		# Look for elements w/ class text-error
 
-	# def interpret_warning(self, warningText):
-	# 	warningType = 'undefined'
-	# 	warningMsg = ''
-	# 	if warningText == 'Please enter a valid email address.':
-	# 		warningType = 'Invalid credentials'
-	# 		warningMsg = 'forgotPwForm: Submit form warning'
+		# For each element, check if it has text.
 
-	# 	return {
-	# 		'msg', warningMsg,
-	# 		'text', warningText,
-	# 		'type', warningType,
-	# 	}
+		# If it has text, add it to warnings
+			# warnings.append(text)
+		# pass warnings into interpret_warning() and return the response
+
+	def interpret_warning(self, warnings):
+		warningObjects = []
+		# Loop through each warning in warnings
+
+		# If warning matches error for
+			# 1. missing terms
+			# 2. missing sparkCures
+			# 3. first name
+			# 4. last name
+			# etc...
+
+		# create warning object
+
+		# return all warning objects
+
+		warningType = 'undefined'
+		warningMsg = ''
+		if warningText == 'Please enter a valid email address.':
+			warningType = 'Invalid credentials'
+			warningMsg = 'forgotPwForm: Submit form warning'
+
+		warningObjects.append({
+			'msg', warningMsg,
+			'text', warningText,
+			'type', warningType,
+		});
+		return warningObjects
 
 	def enter_info(self, form_info):
 		if form_info:

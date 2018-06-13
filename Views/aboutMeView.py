@@ -53,6 +53,7 @@ class AboutMeView(view.View):
 				url = self.driver.current_url
 				if '/about-me' not in url:
 					self.error = self.readErrors()
+					self.warnings = self.aboutMeForm.read_warnings()
 					if self.error:
 						raise MsgError('Login Error')
 			return True
