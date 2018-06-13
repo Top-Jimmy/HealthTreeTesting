@@ -1,7 +1,9 @@
 from selenium.common.exceptions import (NoSuchElementException,
-		StaleElementReferenceException)
+		StaleElementReferenceException, TimeoutException)
+from selenium.webdriver.support.wait import WebDriverWait as WDW
 from viewExceptions import MsgError
-from Components import signInForm
+from Components import myelomaDiagnosisFreshForm
+from Components import myelomaDiagnosisSavedForm
 from Components import menu
 from Components import header
 from Views import view
@@ -9,55 +11,72 @@ from Views import view
 class MyelDiagView(view.View):
 	postUrl = 'signup'
 
-	def load(self):
+	def load(self, expectedState=None):
 		try:
-			# Crap on left
-			self.signInForm = signInForm.SignInForm(self.driver)
-			self.menu = menu.Menu(self.driver)
-			self.header = header.AuthHeader(self.driver)
-			# self.validate()
-			return True
+			self.view_state = self.get_view_state()
+			if expectedState and expectedState != self.view_state:
+				print('Myeloma Diagnosis: Expected state: "' + expectedState + '", got state: "' + self.view_state + '"')
+			else:
+				if self.view_state == 'fresh':
+					self.myelomaDiagnosisFreshForm = myelomaDiagnosisFreshForm.MyelomaDiagnosisFreshForm(self.driver)
+				else:
+					self.myelomaDiagnosisSavedForm = myelomaDiagnosisSavedForm.MyelomaDiagnosisSavedForm(self.driver)
+				self.menu = menu.Menu(self.driver)
+				self.header = header.AuthHeader(self.driver)
+				# self.validate()
+				return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
-			return False
+			pass
+		return False
 
-	def validate(self):
-		failures = []
-		if self.createAccount_link.text != 'Create Account':
-			failures.append('1. Create Account link. Expecting text "Create Account", got "' + self.createAccount_link.text + '"')
-		if len(failures) > 0:
-			print(failures)
-			raise NoSuchElementException('Failed to load HomeView')
+	# def validate(self):
+	# 	failures = []
+	# 	if self.createAccount_link.text != 'Create Account':
+	# 		failures.append('1. Create Account link. Expecting text "Create Account", got "' + self.createAccount_link.text + '"')
+	# 	if len(failures) > 0:
+	# 		print(failures)
+	# 		raise NoSuchElementException('Failed to load myelomaDiagnosisView')
 
-	def createErrorObj(self, errorText):
-		errorType = 'undefined';
-		errorMsg = '';
-
-		if 'confirm your email address' in errorText:
-			errorType = 'confirmation'
-			errorMsg = 'homeView.login: Confirmation error'
-		elif 'invalid username or password' in errorText:
-			errorType = 'invalid credentials'
-			errorMsg = 'homeView.login: Invalid Credentials error'
-
-		return {
-			'errorText': errorText,
-			'errorType': errorType,
-			'errorMsg': errorMsg,
-		}
-
-	def login(self, credentials, expectedErrorType=None):
+	def get_view_state(self):
+		# Is myelomaDiagnosisForm fresh or already saved?
 		try:
-			if self.signInForm.enter_credentials(credentials):
-				# Should be on home page
-				url = self.driver.current_url
-				if '/about-me' not in url:
+			el = self.driver.find_element_by_id('newly_diagnosedYes')
+			return 'fresh'
+		except NoSuchElementException:
+			return 'saved'
+
+	# def createErrorObj(self, errorText):
+	# 	errorType = 'undefined';
+	# 	errorMsg = '';
+
+	# 	if 'confirm your email address' in errorText:
+	# 		errorType = 'confirmation'
+	# 		errorMsg = 'homeView.login: Confirmation error'
+	# 	elif 'invalid username or password' in errorText:
+	# 		errorType = 'invalid credentials'
+	# 		errorMsg = 'homeView.login: Invalid Credentials error'
+
+	# 	return {
+	# 		'errorText': errorText,
+	# 		'errorType': errorType,
+	# 		'errorMsg': errorMsg,
+	# 	}
+
+	def submitFreshForm(self, formInfo, expectedErrorType=None):
+		try:
+			if self.myelomaDiagnosisFreshForm.submit(formInfo):
+				# Should be displaying 'saved' form
+				try:
+					WDW(self.driver, 10).until(lambda x: self.load('saved'))
+					return True
+				except TimeoutException:
+					# Could not load view in 'saved' state
 					self.error = self.readErrors()
 					if self.error:
-						raise MsgError('Login Error')
-			return True
+						raise MsgError('MyelomaDiagnosisFreshForm submit error')
 		except MsgError:
-			# Is login expected to fail?
+			# Is form submission expected to fail?
 			errorType = self.error['errorType']
 			if expectedErrorType and errorType == expectedErrorType:
 				return True
@@ -66,9 +85,6 @@ class MyelDiagView(view.View):
 				print('Undefined error: ' + self.error['errorText'])
 		return False
 
-	def click_link(self, link):
-		if link == 'sign in':
-			self.createAccount_link.click()
 
 
 

@@ -2,7 +2,7 @@ from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError
 from Components import signInForm
-from Components import Menu
+from Components import menu
 from Components import header
 from Views import view
 

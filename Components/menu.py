@@ -33,6 +33,3 @@ class Menu():
 		else:
 			print('Menu: Unexpected destination: ' + destination)
 			return False
-
-
-

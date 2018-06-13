@@ -2,7 +2,9 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
+from selenium.webdriver import ActionChains as AC
 import datePicker
+
 # Form on 'Myeloma Diagnosis' when user has not saved diagnosis info.
 
 class MyelomaDiagnosisFreshForm():
@@ -14,6 +16,7 @@ class MyelomaDiagnosisFreshForm():
 	def load(self, expectedValues=None):
 		self.form = self.driver.find_element_by_id('diagnosis_form')
 		inputs = self.form.find_elements_by_tag_name('input')
+		dropdowns = self.form.find_elements_by_class_name('Select-placeholder')
 
 		self.newlyDiagnosedNo_radio = self.form.find_element_by_id('newly_diagnosedNo')
 		self.newlyDiagnosedYes_radio = self.form.find_element_by_id('newly_diagnosedYes')
@@ -22,8 +25,9 @@ class MyelomaDiagnosisFreshForm():
 		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
 
 		self.firstDiagnosis_input = inputs[3]
+		self.firstDiagnosis_clicker = dropdowns[0]
 
-		self.highRisk1_radio = self.form.find_element_by_tag_name('highRisk1')
+		self.highRisk1_radio = self.form.find_element_by_id('highRisk1')
 		self.highRisk2_radio = self.form.find_element_by_id('highRisk2')
 		self.highRisk3_radio = self.form.find_element_by_id('highRisk3')
 
@@ -39,16 +43,33 @@ class MyelomaDiagnosisFreshForm():
 		self.facility_input = self.form.find_element_by_id('facility_name')
 		self.facility_city_input = self.form.find_element_by_id('Last')
 		self.facility_state_input = inputs[15]
+		self.facility_state_clicker = dropdowns[1]
 
-		self.add_diagno_radio = self.form.find_element_by_id('yesno0')
-		self.add_diagyes_radio = self.form.find_element_by_id('yesno1')
+		self.add_diagNo_radio = self.form.find_element_by_id('yesno0')
+		self.add_diagYes_radio = self.form.find_element_by_id('yesno1')
 
 		# todo handle loading multiple diagnosis inputs, delete diagnosis button, add diagnosis action
 
+		# Physician Name
+		self.phys_name_cont = self.form.find_element_by_class_name('rbt-input-hint-container')
+		phys_inputs = self.phys_name_cont.find_elements_by_tag_name('input')
+		# self.phys_name_input = self.form.find_element_by_id('physician_name_0')
+		# self.phys_name_hiddenInput = self.form.find_element_by_class_name('rbt-input-hint')
 		self.phys_name_input = self.form.find_element_by_id('physician_name_0')
-		self.phys_facility_input = self.form.find_element_by_id('facility_name')
-		self.phys_city_input = self.form.find_element_by_id('city')
-		self.phys_state_input = inputs[21]
+		self.phys_name_hiddenInput = phys_inputs[1]
+
+		# Physician Facility
+		cont = self.form.find_element_by_id('facility_name_0')
+		self.phys_facility_input = cont.find_element_by_tag_name('input')
+
+		# Physician City
+		cont = self.form.find_element_by_id('city0')
+		self.phys_city_input = cont.find_element_by_tag_name('input')
+
+		# Physician State
+		cont = self.form.find_element_by_id('state0')
+		self.phys_state_input = cont.find_element_by_tag_name('input')
+		self.phys_state_clicker = dropdowns[2]
 		# todo: load additional physician button
 
 		button_cont = self.form.find_element_by_class_name('submit_button')
@@ -116,6 +137,7 @@ class MyelomaDiagnosisFreshForm():
 			print(failures)
 			raise NoSuchElementException('Failed to load CreateAcctForm')
 
+
 	# def read_warning(self):
 	# 	inputs = ['username', 'email', 'password', 'confirm password']
 	# 	warnings = []
@@ -155,31 +177,34 @@ class MyelomaDiagnosisFreshForm():
 					self.newlyDiagnosedNo_radio.click()
 
 			if formInfo['diagnosis_date'] is not None:
+				# raw_input('clicking date input')
 				self.dateDiagnosis_input.click()
-				datePicker = datePicker.DatePicker(self.driver)
-				datePicker.setDate(formInfo['diagnosis_date'])
+				# raw_input('clicked date input. loading date picker')
+				picker = datePicker.DatePicker(self.driver)
+				# raw_input('loaded date picker. setting date')
+				picker.set_date(formInfo['diagnosis_date'])
 
 			if formInfo['first_diagnosis'] is not None:
-				self.firstDiagnosis_input.click()
+				self.firstDiagnosis_clicker.click()
 				# todo: dropdown component
 
 			if formInfo['high_risk'] is not None:
 				high_risk = formInfo['high_risk']
 				if high_risk == 'no':
-					highRisk1_radio.click()
+					self.highRisk1_radio.click()
 				elif high_risk == 'yes':
-					highRisk2_radio.click()
+					self.highRisk2_radio.click()
 				else:
-					highRisk3_radio.click()
+					self.highRisk3_radio.click()
 
 			if formInfo['transplant_eligible'] is not None:
 				eligible = formInfo['transplant_eligible']
 				if eligible == 'no':
-					stemCell1_radio.click()
+					self.stemCell1_radio.click()
 				elif eligible == 'yes':
-					stemCell2_radio.click()
+					self.stemCell2_radio.click()
 				else:
-					stemCell3_radio.click()
+					self.stemCell3_radio.click()
 
 			if formInfo['bone_lesions'] is not None:
 				bone_lesions = formInfo['bone_lesions']
@@ -207,9 +232,9 @@ class MyelomaDiagnosisFreshForm():
 			if formInfo['additional_diagnosis'] is not None:
 				add_diag = formInfo['additional_diagnosis']
 				if not add_diag:
-					add_diagNo_radio.click()
+					self.add_diagNo_radio.click()
 				else:
-					add_diagYes_radio.click()
+					self.add_diagYes_radio.click()
 					if formInfo['additional_diagnoses']:
 						pass
 						# todo: recursive function: check for errors, load new inputs, check for additional_diagnoses, enter data
@@ -219,8 +244,9 @@ class MyelomaDiagnosisFreshForm():
 				# todo: handle adding multiple physicians
 				for i, physician in enumerate(formInfo['physicians']):
 					if physician['name']:
-						self.phys_name_input.clear()
-						self.phys_name_input.send_keys(physician['name'])
+						self.phys_name_input.click()
+						AC(self.driver).send_keys(physician['name']).perform()
+
 					if physician['facility']:
 						self.phys_facility_input.clear()
 						self.phys_facility_input.send_keys(physician['facility'])

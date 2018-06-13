@@ -27,7 +27,11 @@ class TestAboutMe(unittest.TestCase):
 		'''AboutMe : AboutMe . test_validate'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
+
 		self.assertTrue(homeView.go())
 		self.assertTrue(homeView.login(self.andrew.credentials))
 
 		self.assertTrue(aboutMeView.on(self.andrew.credentials['about_me_data']))
+
+
+

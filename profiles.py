@@ -13,7 +13,7 @@ class Profile:
 
   	# Authenticated
   	self.aboutMeView = aboutMeView.AboutMeView(driver)
-  	self.myelDiagView = myelDiagView.MyelDiagView(driver)
+  	self.myelomaDiagnosisView = myelDiagView.MyelDiagView(driver)
   	self.currentHealthView = currentHealthView.CurrentHealthView(driver)
   	self.fitLvlView = fitLvlView.FitLvlView(driver)
   	self.fullHealthView = fullHealthView.FullHealthView(driver)

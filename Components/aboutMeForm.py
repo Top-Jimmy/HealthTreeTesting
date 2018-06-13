@@ -14,7 +14,6 @@ class AboutMeForm():
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		inputs = self.form.find_elements_by_tag_name('input')
 		anchors = self.form.find_elements_by_tag_name('a')
-		# small[2] hidden element
 
 		self.firstname_input = self.form.find_element_by_id('about_first')
 		self.lastname_input = self.form.find_element_by_id('Last')
@@ -49,14 +48,14 @@ class AboutMeForm():
 				failures.append('AboutMeForm: Expecting date of birth "' + expectedValues['dob'] + '", got "' + self.birth_input.get_attribute('value') + '"')
 			if self.zipcode_input.get_attribute('value') != expectedValues['zip_code']:
 				failures.append('AboutMeForm: Expecting zip code "' + expectedValues['zip_code'] + '", got"' + self.zipcode_input.get_attribute('value') + '"')
-			
+
 			if expectedValues['gender'] == 'male' and not self.male_radio.get_attribute('checked'):
-				failure.append('AboutMeForm: Expecting gender "male"')		
+				failure.append('AboutMeForm: Expecting gender "male"')
 			elif expectedValues['gender'] == 'female' and not self.female_radio.get_attribute('checked'):
 				failure.append('AboutMeForm: Expecting gender "female"')
 
 			if expectedValues['assisted'] == 'no' and not self.cancerCareNo_radio('checked'):
-				failure.append('AboutMeForm: Expecting "no" to family assistance')		
+				failure.append('AboutMeForm: Expecting "no" to family assistance')
 			elif expectedValues['assisted'] == 'yes' and not self.cancerCareYes_radio.get_attribute('checked'):
 				failure.append('AboutMeForm: Expecting "yes" to family assistance')
 
@@ -70,36 +69,35 @@ class AboutMeForm():
 			print(failures)
 			raise NoSuchElementException('Failed to load AboutMeForm')
 
-	def read_warning(self):
-		inputs = ['username', 'email', 'password', 'confirm password']
-		warnings = []
-		warning_els = [
-			self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
-		]
-		for i, warning_el in enumerate(warning_els):
-			text = warning_el.text
-			if len(text) > 0:
-				warnings.append({
-					'inputName': inputs[i],
-					'text': text,
-				})
-		if len(warnings) > 0:
-			return warnings
-		return None
+	# def read_warning(self):
+	# 	inputs = ['username', 'email', 'password', 'confirm password']
+	# 	warnings = []
+	# 	warning_els = [
+	# 		self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
+	# 	]
+	# 	for i, warning_el in enumerate(warning_els):
+	# 		text = warning_el.text
+	# 		if len(text) > 0:
+	# 			warnings.append({
+	# 				'inputName': inputs[i],
+	# 				'text': text,
+	# 			})
+	# 	if len(warnings) > 0:
+	# 		return warnings
+	# 	return None
 
-	def interpret_warning(self, warningText):
-		warningType = 'undefined'
-		warningMsg = ''
-		if warningText == 'Please enter a valid email address.':
-			warningType = 'Invalid credentials'
-			warningMsg = 'forgotPwForm: Submit form warning'
+	# def interpret_warning(self, warningText):
+	# 	warningType = 'undefined'
+	# 	warningMsg = ''
+	# 	if warningText == 'Please enter a valid email address.':
+	# 		warningType = 'Invalid credentials'
+	# 		warningMsg = 'forgotPwForm: Submit form warning'
 
-		return {
-			'msg', warningMsg,
-			'text', warningText,
-			'type', warningType,
-		}
-
+	# 	return {
+	# 		'msg', warningMsg,
+	# 		'text', warningText,
+	# 		'type', warningType,
+	# 	}
 
 	def enter_info(self, form_info):
 		if form_info:

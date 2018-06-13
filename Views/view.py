@@ -20,7 +20,7 @@ class View:
 		return self.on()
 
 	def on(self, arg1=None, arg2=None):
-		wait_time = 20
+		wait_time = 10
 		try:
 			if arg1 is None:
 				WDW(self.driver, wait_time).until(lambda x: self.load())

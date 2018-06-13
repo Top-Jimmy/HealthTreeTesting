@@ -13,7 +13,6 @@ class CurrentHealthForm():
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		inputs = self.form.find_elements_by_tag_name('input')
 		anchors = self.form.find_elements_by_tag_name('a')
-		# small[2] hidden element
 
 		self.status_stableyes_radio = inputs[0]
 		self.status_stableno_radio = inputs[1]
@@ -146,36 +145,35 @@ class CurrentHealthForm():
 			print(failures)
 			raise NoSuchElementException('Failed to load CreateAcctForm')
 
-	def read_warning(self):
-		inputs = ['username', 'email', 'password', 'confirm password']
-		warnings = []
-		warning_els = [
-			self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
-		]
-		for i, warning_el in enumerate(warning_els):
-			text = warning_el.text
-			if len(text) > 0:
-				warnings.append({
-					'inputName': inputs[i],
-					'text': text,
-				})
-		if len(warnings) > 0:
-			return warnings
-		return None
+	# def read_warning(self):
+	# 	inputs = ['username', 'email', 'password', 'confirm password']
+	# 	warnings = []
+	# 	warning_els = [
+	# 		self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
+	# 	]
+	# 	for i, warning_el in enumerate(warning_els):
+	# 		text = warning_el.text
+	# 		if len(text) > 0:
+	# 			warnings.append({
+	# 				'inputName': inputs[i],
+	# 				'text': text,
+	# 			})
+	# 	if len(warnings) > 0:
+	# 		return warnings
+	# 	return None
 
-	def interpret_warning(self, warningText):
-		warningType = 'undefined'
-		warningMsg = ''
-		if warningText == 'Please enter a valid email address.':
-			warningType = 'Invalid credentials'
-			warningMsg = 'forgotPwForm: Submit form warning'
+	# def interpret_warning(self, warningText):
+	# 	warningType = 'undefined'
+	# 	warningMsg = ''
+	# 	if warningText == 'Please enter a valid email address.':
+	# 		warningType = 'Invalid credentials'
+	# 		warningMsg = 'forgotPwForm: Submit form warning'
 
-		return {
-			'msg', warningMsg,
-			'text', warningText,
-			'type', warningType,
-		}
-
+	# 	return {
+	# 		'msg', warningMsg,
+	# 		'text', warningText,
+	# 		'type', warningType,
+	# 	}
 
 	def enter_credentials(self, credentials):
 		if credentials['username'] and credentials['password']:
