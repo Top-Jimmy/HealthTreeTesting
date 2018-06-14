@@ -30,61 +30,31 @@ class MyelomaDiagnosisSavedForm():
 	def validate(self, expectedValues):
 		if expectedValues:
 			failures = []
+			expectedDiagnoses = self.convert_expected_diagnoses(self, expectedValues)
 
 			# Right # of diagnoses and physicians?
-			expectedDiagnoses = 1 + len(expectedValues['additional_diagnoses'])
-			expectedPhysicians = len(expectedValues['physicians'])
-			if expectedDiagnoses != len(self.diagnoses):
+			if len(expectedDiagnoses) != len(self.diagnoses):
 				failures.append('MyelDiagSavedForm: Expected ' + str(expectedDiagnoses) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
-			if expectedPhysicians != len(self.physicians):
+			if len(expectedValues['physicians']) != len(self.physicians):
 				failures.append('MyelDiagSavedForm: Expected ' + str(expectedPhysicians) + ' physicians. Form has ' + str(len(self.physicians)))
 
-			# Diagnoses have expected values?
-			'newly_diagnosed': 'no',
-			'diagnosis_date': '05/2018',
-			'first_diagnosis': 'plasmacytoma',
-			'high_risk': 'no',
-			'transplant_eligible': 'no',
-			'bone_lesions': 'no lesions',
-			'diagnosis_location': {
-				'facility': 'Huntsman Cancer',
-				'city': 'Salt Lake City',
-				'state': 'Utah',
-			},
-			'additional_diagnosis': False,
-			'additional_diagnoses': [], # i.e. [{'date': '01/2000', 'diagnosis': 'Smoldering Myeloma'},]
+			# Diagnoses match expected values?
+			keys = ['date', 'type', 'lesions', 'facility', 'city', 'state']
 			for i, diagnosis in enumerate(self.diagnoses):
+				for key in keys:
 
-				# Date
-				if not self.equivalent_dates(expectedValues['diagnosis_date'] != self.diagnoses[i]['date']):
-					failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
+					if key in expectedDiagnoses and diagnosis[key] != expectedDiagnoses[key]:
+						failures.append('MyelDiagForm: Diagnosis ' + str(i) + ' expected "' + key + '" ' + expectedDiagnoses[key]
+							+ '", got ' + diagnoses[key])
 
-				# Diagnosis Type
+			expectedPhysicians = expectedValues['physicians']
+			physician_keys = ['name', 'facility', 'city', 'state']
+			for i, physician in enumerate(self.physicians):
+				for p_key in physician_keys:
 
-				# Bone Lesions
-
-				# Facility Name
-
-				# Facility City
-
-				# Facility State
-
-'physicians': [
-				{'name': 'David Avigan',
-					'facility': 'Beth Israel Deaconess Medical Center',
-					'city': 'Boston',
-					'state': 'Massachusetts',
-				},
-			],
-
-
-			# Physician Name
-
-			# Facility Name
-
-			# City
-
-			# State
+					if p_key in expectedPhysicians and physician[p_key] != expectedPhysicians[p_key]:
+						failures.append('MyelDiagForm: Physican ' + str(i) + ' expected "' + p_key + '" ' + expectedPhysicians[key]
+							+ '", got ' + physician[key])
 
 			if len(failures) > 0:
 				print(failures)
@@ -99,7 +69,7 @@ class MyelomaDiagnosisSavedForm():
 				# Data
 				diagnosis['date'] = rows[i].find_element_by_class_name('diagnosis-date-sec').text
 				diagnosis['type'] = rows[i].find_element_by_class_name('diagnosis-type-sec').text
-				diagnosis['bone lesions'] = rows[i].find_element_by_class_name('diagnosis-bone-sec')
+				diagnosis['lesions'] = rows[i].find_element_by_class_name('diagnosis-bone-sec')
 				diagnosis['facility'] = rows[i].find_element_by_class_name('diagnosis-facility-sec')
 				diagnosis['city'] = rows[i].find_element_by_class_name('diagnosis-city-sec')
 				diagnosis['state'] = rows[i].find_element_by_class_name('diagnosis-state-sec')
@@ -157,103 +127,17 @@ class MyelomaDiagnosisSavedForm():
 	# 		'type', warningType,
 	# 	}
 
-	def submit(self, formInfo):
-		if formInfo:
-			if formInfo['newly_diagnosed'] is not None:
-				if formInfo['newly_diagnosed']:
-					self.newlyDiagnosedYes_radio.click()
-				else:
-					self.newlyDiagnosedNo_radio.click()
 
-			if formInfo['diagnosis_date'] is not None:
-				self.dateDiagnosis_input.click()
-				datePicker = datePicker.DatePicker(self.driver)
-				datePicker.setDate(formInfo['diagnosis_date'])
+########################### Utility Functions #############################
 
-			if formInfo['first_diagnosis'] is not None:
-				self.firstDiagnosis_input.click()
-				# todo: dropdown component
+	# def equivalent_dates(self, date1, date2):
+	# 	# Convert dates to 'jan 2011' format and evaluate equivalency
+	# 	if date1.index('/') != -1:
+	# 		date1 = self.parse_date(date1)
+	# 	if date2.index('/') != -1:
+	# 		date2 = self.parse_date(date2)
 
-			if formInfo['high_risk'] is not None:
-				high_risk = formInfo['high_risk']
-				if high_risk == 'no':
-					highRisk1_radio.click()
-				elif high_risk == 'yes':
-					highRisk2_radio.click()
-				else:
-					highRisk3_radio.click()
-
-			if formInfo['transplant_eligible'] is not None:
-				eligible = formInfo['transplant_eligible']
-				if eligible == 'no':
-					stemCell1_radio.click()
-				elif eligible == 'yes':
-					stemCell2_radio.click()
-				else:
-					stemCell3_radio.click()
-
-			if formInfo['bone_lesions'] is not None:
-				bone_lesions = formInfo['bone_lesions']
-				if bone_lesions == 'no lesions':
-					self.boneLesion0_radio.click()
-				elif bone_lesions == '5 or less':
-					self.boneLesion1_radio.click()
-				elif bone_lesions == '6 or more':
-					self.boneLesion2_radio.click()
-				else:
-					self.boneLesion3_radio.click()
-
-			if formInfo['diagnosis_location']: # Empty dict should evaluate to False
-				location = formInfo['diagnosis_location']
-				if location['facility']:
-					self.facility_input.clear()
-					self.facility_input.send_keys(location['facility'])
-				if location['city']:
-					self.facility_city_input.clear()
-					self.facility_city_input.send_keys(location['city'])
-				if location['state']:
-					# todo: state dropdown
-					pass
-
-			if formInfo['additional_diagnosis'] is not None:
-				add_diag = formInfo['additional_diagnosis']
-				if not add_diag:
-					add_diagNo_radio.click()
-				else:
-					add_diagYes_radio.click()
-					if formInfo['additional_diagnoses']:
-						pass
-						# todo: recursive function: check for errors, load new inputs, check for additional_diagnoses, enter data
-
-			if formInfo['physicians']:
-				# todo: handle multiple physician inputs. load into list
-				# todo: handle adding multiple physicians
-				for i, physician in enumerate(formInfo['physicians']):
-					if physician['name']:
-						self.phys_name_input.clear()
-						self.phys_name_input.send_keys(physician['name'])
-					if physician['facility']:
-						self.phys_facility_input.clear()
-						self.phys_facility_input.send_keys(physician['facility'])
-					if physician['city']:
-						self.phys_city_input.clear()
-						self.phys_city_input.send_keys(physician['city'])
-					if physician['state']:
-						self.phys_state_input.clear()
-						self.phys_state_input.send_keys(physician['state'])
-
-					self.continue_button.click()
-			return True
-		return False
-
-	def equivalent_dates(self, date1, date2):
-		# Convert dates to 'jan 2011' format and evaluate equivalency
-		if date1.index('/') != -1:
-			date1 = self.parse_date(date1)
-		if date2.index('/') != -1:
-			date2 = self.parse_date(date2)
-
-		return date1 == date2
+	# 	return date1 == date2
 
 	def parse_date(self, dateStr):
 		# Given dateStr "mm/yyyy", parse and return 'mmm yyyy'
@@ -265,3 +149,31 @@ class MyelomaDiagnosisSavedForm():
 		year = dateStr[divider + 1:]
 
 		return month + ' ' + year
+
+	def convert_expected_diagnoses(self, expectedValues):
+		# Convert initialDiagnosis and additional_diagnoses from expectedValues.
+		# Save into object equivalent to what this form loads.
+		diagnoses = []
+		# Convert date from 'mm/yyyy' to 'mmm yyyy'
+		initialDiagnosis = {
+			'date': self.parseDate(expectedValues['diagnosis_date']),
+			'type': expectedValues['type'],
+			'lesions': expectedValues['lesions'],
+			'facility': expectedValues['diagnosis_location']['facility'],
+			'city': expectedValues['diagnosis_location']['city'],
+			'state': expectedValues['diagnosis_location']['state'],
+		}
+		diagnoses.append(initialDiagnosis)
+
+		# Additional diagnoses only have date and type.
+		for diagnosis in expectedValues['additional_diagnoses']:
+			additional_diagnosis = {
+				'date': self.parseDate(diagnosis['date']),
+				'type': diagnosis['type'],
+			}
+			diagnoses.append(additional_diagnosis)
+
+		return {
+			'diagnoses': diagnoses,
+		}
+

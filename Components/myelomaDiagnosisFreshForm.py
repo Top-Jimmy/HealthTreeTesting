@@ -322,8 +322,8 @@ class MyelomaDiagnosisFreshForm():
 						print('Failed to set date. Page probably reloaded')
 						time.sleep(.4)
 
-			if formInfo['first_diagnosis'] is not None:
-				self.set_first_diagnosis(formInfo['first_diagnosis'])
+			if formInfo['type'] is not None:
+				self.set_first_diagnosis(formInfo['type'])
 
 			if formInfo['high_risk'] is not None:
 				high_risk = formInfo['high_risk']
@@ -343,8 +343,8 @@ class MyelomaDiagnosisFreshForm():
 				else:
 					self.stemCell3_radio.click()
 
-			if formInfo['bone_lesions'] is not None:
-				bone_lesions = formInfo['bone_lesions']
+			if formInfo['lesions'] is not None:
+				bone_lesions = formInfo['lesions']
 				if bone_lesions == 'no lesions':
 					self.boneLesion0_radio.click()
 				elif bone_lesions == '5 or less':

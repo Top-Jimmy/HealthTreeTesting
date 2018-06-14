@@ -13,6 +13,10 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 	def tearDown(self):
 		self.driver.quit()
 
+	def test_additional_physicians(self):
+		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_physicians'''
+		# Fresh form: Test adding, editing and deleting multiple physicians
+
 	def test_fresh_form(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_submit'''
 		# User submits fresh form, then verifies saved form loads and has expectedValues
@@ -22,10 +26,10 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		formData =  {
 			'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
-			'first_diagnosis': 'plasmacytoma',
+			'type': 'plasmacytoma',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',
-			'bone_lesions': 'no lesions',
+			'lesions': 'no lesions',
 			'diagnosis_location': {
 				'facility': 'Huntsman Cancer',
 				'city': 'Salt Lake City',

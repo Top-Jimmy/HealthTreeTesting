@@ -21,10 +21,10 @@ andrew = {
 	'myel_diag_data': {
 		'newly_diagnosed': 'no',
 		'diagnosis_date': '05/2018',
-		'first_diagnosis': 'plasmacytoma',
+		'type': 'plasmacytoma',
 		'high_risk': 'no',
 		'transplant_eligible': 'no',
-		'bone_lesions': 'no lesions',
+		'lesions': 'no lesions',
 		'diagnosis_location': {
 			'facility': 'Huntsman Cancer',
 			'city': 'Salt Lake City',
