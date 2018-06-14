@@ -33,7 +33,7 @@ class AuthHeader():
 	def sign_out(self):
 		self.logout_button.click()
 
-	def send_feedback(self, feedback, action='send'):
+	def send_feedback(self, feedbackText, action='send'):
 		self.feedback_button.click()
 		self.feedbackForm = feedback.FeedbackForm(self.driver)
-		self.feedbackForm.submit(feedback, action)
+		self.feedbackForm.submit(feedbackText, action)

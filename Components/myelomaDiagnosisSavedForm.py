@@ -177,3 +177,15 @@ class MyelomaDiagnosisSavedForm():
 			'diagnoses': diagnoses,
 		}
 
+########################### User Functions #############################
+
+	def delete_diagnosis(self, diagnosis_index=0, action='submit'):
+		self.diagnoses[diagnosis_index]['delete'].click()
+		self.popUpForm = popUpForm.PopUpForm(self.driver)
+		if action='submit'
+			self.confirm_button.click()
+		else:
+			self.cancel_button.click()
+
+
+

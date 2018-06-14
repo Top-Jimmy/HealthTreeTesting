@@ -1,7 +1,7 @@
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError
-from Components import signInForm
+from Components import currentHealthForm
 from Components import menu
 from Components import header
 from Views import view
@@ -12,7 +12,7 @@ class CurrentHealthView(view.View):
 	def load(self):
 		try:
 			# Crap on left
-			self.signInForm = signInForm.SignInForm(self.driver)
+			self.currentHealthForm = currentHealthForm.CurrentHealthForm(self.driver)
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 			# self.validate()
@@ -48,7 +48,7 @@ class CurrentHealthView(view.View):
 
 	def login(self, credentials, expectedErrorType=None):
 		try:
-			if self.signInForm.enter_credentials(credentials):
+			if self.currentHealthForm.enter_credentials(credentials):
 				# Should be on home page
 				url = self.driver.current_url
 				if '/about-me' not in url:

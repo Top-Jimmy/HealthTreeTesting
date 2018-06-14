@@ -2,33 +2,30 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 
-class FeedbackForm():
+class PopUpForm():
 
 	def __init__(self, driver):
 		self.driver = driver
 		self.load()
 
 	def load(self):
-		self.form = self.driver.find_element_by_class_name('editroll')
-		buttons = self.form.find_elements_by_tag_name('button')
+		self.container = self.driver.find_element_by_class_name('react-confirm-alert')
+		buttons = self.container.find_elements_by_tag_name('button')
 
-		self.feedback_input = self.form.find_element_by_tag_name('textarea')
-		self.submit_button = self.buttons[0]
+		self.confirm_button = self.buttons[0]
 		self.cancel_button = self.buttons[1]
 		self.validate()
 		return True
 
 	def validate(self):
 		failures = []
-		if self.feedback_input.get_attribute('placeholder') != 'Your highly valuable feedback goes here...':
-			failures.append('FeedbackForm: Unexpected textarea placeholder')
-		if self.submit_button.text != 'Submit':
-			failures.append('FeedbackForm: Unexpected submit button text: ' + self.submit_button.text)
+		if self.confirm_button.text != 'Confirm':
+			failures.append('PopUpForm: Unexpected confirm button text: ' + self.confirm_button.text)
 		if self.cancel_button.text != 'Cancel':
-			failures.append('FeedbackForm: Unexpected cancel button text ' + self.cancel_button.text)
+			failures.append('PopUpForm: Unexpected cancel button text ' + self.cancel_button.text)
 		if len(failures) > 0:
 			print(failures)
-			raise NoSuchElementException('Failed to load FeedbackForm')
+			raise NoSuchElementException('Failed to load PopUpForm')
 
 	# def read_warning(self):
 	# 	inputs = ['Sign In', 'Password']
@@ -59,12 +56,9 @@ class FeedbackForm():
 	# 		'type': warningType,
 	# 	}
 
-	def submit(self, feedbackText, action='submit'):
-		if feedback:
-			self.feedback_input.clear()
-			self.feedback_input.send_keys(feedback)
+	def confirm(self, action='submit'):
 		if action == 'submit':
-			self.submit_button.click()
+			self.confirm_button.click()
 		else:
 			self.cancel_button.click()
 		return True

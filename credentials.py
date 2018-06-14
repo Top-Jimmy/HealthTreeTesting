@@ -49,7 +49,7 @@ andrew = {
 		'condition_kidney': 'dont know',
 		'condition_diabetes': 'dont know',
 		'condition_blood_pressure': 'dont know',
-		'conditioin_blood_clot': 'dont know',
+		'condition_blood_clot': 'dont know',
 		'condition_neuropathy': 'dont know',
 		'condition_other': 'dont know',
 	},
@@ -193,6 +193,8 @@ andrew = {
 }
 
 elliot = {
+	'username': 'elliot',
+	'password': 'celtics',
 	'about_me_data': {
 		'first_name': 'Elliot',
 		'last_name': 'Tidd',
@@ -209,6 +211,77 @@ elliot = {
 		'terms': True,
 		'sparkCures': True,
 	},
+	'current_health_data': [
+		{'name': 'Is your myeloma currently stable?',
+			'value': 'yes',
+			'secondaryQuestions': [],
+		},
+		{'name': 'Are your M-protein or light chains moving up (relapsing)?',
+			'value': 'no',
+			'secondaryQuestions': [],
+		},
+		{'name': 'Do you have recent issues with pain, anemia, elevated calcium or bone pain?',
+			'value': 'no',
+			'secondaryQuestions': [],
+		},
+		{'name': 'Heart Conditions',
+		 	'value': 'no',
+		 	'secondaryQuestions': [
+		 		{'Heart disease but not heart failure': False},
+		 		{'History of heart failure but well controlled': False},
+		 		{'Ongoing heart failure': False},
+	 		],
+		},
+		{'name': 'Lung Conditions',
+			'value': 'no',
+			'secondaryQuestions': [
+				{'Known lung disease and difficulty breathing when exercising': False},
+				{'Known lung disease and difficulty breathing when resting': False},
+			],
+		},		 
+		{'name': 'Kidney Conditions',
+			'value': 'dont know',
+			'secondaryQuestions': [
+				{'Mild kidney problems (renal impairment)': False},
+				{'Severe kidney problems or on dialysis': False},
+			],
+		},
+		{'name': 'Diabetes Conditions',
+			'value': 'yes',
+			'secondaryQuestions': [
+				{'Pre-diabetic': True},
+				{'Active Type I or Type II Diabetes': False},
+			],
+		},
+		{'name': 'Blood Pressure Condtions',
+			'value': 'dont know',
+			'secondaryQuestions': [
+				{'High blood pressure but under control': False},
+				{'Difficult to control blood pressure': False},
+			],
+		},
+		{'name': 'Blood Clot (DVT) Condtions',
+			'value': 'dont know',
+			'secondaryQuestions': [
+				{'History of Deep Vein Thrombosis but now off anti-coagulation': False},
+				{'Currently on anti-coagulation for Deep Vein Thrombosis': False},
+			],
+		},
+		{'name': 'Neuropathy Conditions',
+			'value': 'yes',
+			'secondaryQuestions': [
+				{'Mild neuropathy': True},
+				{'Moderate to Severe Neuropathy': True},
+			],
+		},
+		{'name': 'Other Health Conditions',
+			'value': 'no',
+			'secondaryQuestions': [
+				{'History of anxiety or mania': False},
+				{'Active infection': False}
+			],
+		},
+	]
 }
 
 def get_credentials(name):

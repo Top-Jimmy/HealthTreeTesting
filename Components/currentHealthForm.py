@@ -12,84 +12,118 @@ class CurrentHealthForm():
 	def load(self):
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		inputs = self.form.find_elements_by_tag_name('input')
-		self.question_elements = self.form.find_element_by_class_name('custom-current-health')
+		self.question_elements = self.form.find_elements_by_class_name('custom-current-health')
 		self.questions = []
 
-		for i, question in self.question_elements:
+		for i, question in enumerate(self.question_elements):
 			self.load_question(self.question_elements[i])
 
-		self.status_stableyes_radio = inputs[0]
-		self.status_stableno_radio = inputs[1]
-		self.status_stableidk_radio = inputs[2]
 
-		self.status_relapseyes_radio = inputs[3]
-		self.status_relapseno_radio = inputs[4]
-		self.status_relapseidk_radio = inputs[5]
+		# self.status_stableyes_radio = inputs[0]
+		# self.status_stableno_radio = inputs[1]
+		# self.status_stableidk_radio = inputs[2]
 
-		self.status_issuesyes_radio = inputs[6]
-		self.status_issuesno_radio = inputs[7]
-		self.status_issuesidk_radio = inputs[8]
+		# self.status_relapseyes_radio = inputs[3]
+		# self.status_relapseno_radio = inputs[4]
+		# self.status_relapseidk_radio = inputs[5]
 
-		self.condition_heartyes_radio = inputs[9]
-		self.condition_heartno_radio = inputs[10]
-		self.condition_heartidk_radio = inputs[11]
+		# self.status_issuesyes_radio = inputs[6]
+		# self.status_issuesno_radio = inputs[7]
+		# self.status_issuesidk_radio = inputs[8]
 
-		self.condition_lungyes_radio = inputs[12]
-		self.condition_lungno_radio = inputs[13]
-		self.condition_lungidk_radio = inputs[14]
+		# self.condition_heartyes_radio = inputs[9]
+		# self.condition_heartno_radio = inputs[10]
+		# self.condition_heartidk_radio = inputs[11]
 
-		self.condition_kidneyyes_radio = inputs[15]
-		self.condition_kidneyno_radio = inputs[16]
-		self.condition_kidneyidk_radio = inputs[17]
+		# self.condition_lungyes_radio = inputs[12]
+		# self.condition_lungno_radio = inputs[13]
+		# self.condition_lungidk_radio = inputs[14]
 
-		self.condition_diabetesyes_radio = inputs[18]
-		self.condition_diabetesno_radio = inputs[19]
-		self.condition_diabetesidk_radio = inputs[20]
+		# self.condition_kidneyyes_radio = inputs[15]
+		# self.condition_kidneyno_radio = inputs[16]
+		# self.condition_kidneyidk_radio = inputs[17]
 
-		self.condition_blood_pressureyes_radio = inputs[21]
-		self.condition_blood_pressureno_radio = inputs[22]
-		self.condition_blood_pressureidk_radio = inputs[23]
+		# self.condition_diabetesyes_radio = inputs[18]
+		# self.condition_diabetesno_radio = inputs[19]
+		# self.condition_diabetesidk_radio = inputs[20]
 
-		self.condition_blood_clotyes_radio = inputs[24]
-		self.condition_blood_clotno_radio = inputs[25]
-		self.condition_blood_clotidk_radio = inputs[26]
+		# self.condition_blood_pressureyes_radio = inputs[21]
+		# self.condition_blood_pressureno_radio = inputs[22]
+		# self.condition_blood_pressureidk_radio = inputs[23]
 
-		self.condition_neuropathyyes_radio = inputs[27]
-		self.condition_neuropathyno_radio = inputs[28]
-		self.condition_neuropathyidk_radio = inputs[29]
+		# self.condition_blood_clotyes_radio = inputs[24]
+		# self.condition_blood_clotno_radio = inputs[25]
+		# self.condition_blood_clotidk_radio = inputs[26]
 
-		self.condition_otheryes_radio = inputs[30]
-		self.condition_otherno_radio = inputs[31]
-		self.condition_otheridk_radio = inputs[32]
+		# self.condition_neuropathyyes_radio = inputs[27]
+		# self.condition_neuropathyno_radio = inputs[28]
+		# self.condition_neuropathyidk_radio = inputs[29]
+
+		# self.condition_otheryes_radio = inputs[30]
+		# self.condition_otherno_radio = inputs[31]
+		# self.condition_otheridk_radio = inputs[32]
 
 		# self.validate()
 		return True
 
 	def load_question(self, container):
 		labels = container.find_elements_by_tag_name('label')
-		question_label = lables[0].text
+		question_label = labels[0].text
 		value = None
 		secondaryQuestions = []
 
 
 		# Value: 'yes', 'no', 'dont know' or None (not set)
+		for i, label in enumerate(labels):
+			if i > 0 and i < 4:
+				 classes = label.get_attribute('class')
+				 if 'active' in classes:
+				 	if i == 1:
+				 		value = 'yes'
+				 	elif i == 2:
+				 		value = 'no'
+				 	else:
+				 		value = 'dont know'
 
-		# if value is yes...
+		# Find secondary questions
+		if value == 'yes':
 			# load element w/ class 'custom-history_label'
-			# Search that element for inputs (the checkboxes)
-				# for each input, create a dictionary and add it to secondaryQuestions
-					# {'name': 'lung_disease_exercising',
-					# 	'value': True/False
-					# }
+			secondary_container = container.find_element_by_class_name('custom-history_label')
+			secondary_questions = container.find_element_by_class_name('form-check')
+
+			for secondary_question in secondary_questions:
+				secondary_label = secondary_question.text
+				secondary_input = secondary_question.find_elements_by_tag_name('input')
+
+				selected = secondary_input.is_selected()
+
+				secondaryQuestions.append({secondary_label: selected})
+				
+				
 
 
 
-		question = [
+		question = {
 			'name': question_label,
-			'value': value
+			'value': value,
 			'secondaryQuestions': secondaryQuestions,
-		]
-		return question
+		}
+		self.questions.append(question)
+		# self.questions = [
+		# 	{
+		# 	'name': 'Heart Conditions',
+		# 		'value': 'yes',
+		# 		'secondaryQuestions': [
+		# 				{'History of heart failure but well controlled': False},
+		# 				{'History of heart failure but well controlled': False},
+		# 			],
+		# 	},
+		# 	{
+		# 		'name': question_label,
+		# 		'value': value,
+		# 		'secondaryQuestions': secondaryQuestions,
+		# 	},
+		# ]
 
 	def validate(self):
 		failures = []
