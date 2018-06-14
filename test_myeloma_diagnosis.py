@@ -2,6 +2,7 @@ import unittest
 import main
 import initDriver
 import profiles
+import time
 
 class TestMyelomaDiagnosis(unittest.TestCase):
 
@@ -12,29 +13,8 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 	def tearDown(self):
 		self.driver.quit()
 
-	def test_typeahead(self):
-		'''MyelomaDiagnosis : MyelomaDiagosis . test_typeahead'''
-		# Physician name field will suggest options as user types. Tab will autofill physician fields
-		homeView = self.andrew.homeView
-		aboutMeView = self.andrew.aboutMeView
-		myelDiagView = self.andrew.myelomaDiagnosisView
-
-		self.assertTrue(homeView.go())
-		self.assertTrue(homeView.login(self.andrew.credentials))
-
-	def test_saved_form(self):
-		'''MyelomaDiagnosis : MyelomaDiagnosis . test_saved_form'''
-		# User already has fresh form submitted. Saved form loads and has expectedValues
-		homeView = self.andrew.homeView
-		aboutMeView = self.andrew.aboutMeView
-		myelDiagView = self.andrew.myelomaDiagnosisView
-
-		self.assertTrue(homeView.go())
-		self.assertTrue(homeView.login(self.andrew.credentials))
-
-	def test_submit(self):
+	def test_fresh_form(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_submit'''
-
 		# User submits fresh form, then verifies saved form loads and has expectedValues
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -70,5 +50,32 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 
 		self.assertTrue(myelDiagView.on('fresh'))
 		self.assertTrue(myelDiagView.submitFreshForm(formData))
+
+	def test_saved_form(self):
+		'''MyelomaDiagnosis : MyelomaDiagnosis . test_saved_form'''
+		# User already has fresh form submitted. Saved form loads and has expectedValues
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelDiagView = self.andrew.myelomaDiagnosisView
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Myeloma Diagnosis')
+
+		self.assertTrue(myelDiagView.on('saved'))
+
+	def test_typeahead(self):
+		'''MyelomaDiagnosis : MyelomaDiagosis . test_typeahead'''
+		# Physician name field will suggest options as user types. Tab will autofill physician fields
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelDiagView = self.andrew.myelomaDiagnosisView
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+
 
 

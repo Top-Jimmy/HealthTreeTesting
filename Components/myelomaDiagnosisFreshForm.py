@@ -1,7 +1,7 @@
 import time
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
-		StaleElementReferenceException)
+		StaleElementReferenceException, ElementNotVisibleException)
 from selenium.webdriver import ActionChains as AC
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 import datePicker
@@ -310,9 +310,17 @@ class MyelomaDiagnosisFreshForm():
 
 			if formInfo['diagnosis_date'] is not None:
 				picker = datePicker.DatePicker(self.driver)
-				self.dateDiagnosis_input.click()
-				time.sleep(.6)
-				picker.set_date(formInfo['diagnosis_date'])
+				# self.dateDiagnosis_input.click()
+				# picker.set_date(formInfo['diagnosis_date'], self.dateDiagnosis_input)
+				dateSet = False
+				while not dateSet:
+					try:
+						self.dateDiagnosis_input.click()
+						picker.set_date(formInfo['diagnosis_date'])
+						dateSet = True
+					except (ElementNotVisibleException, StaleElementReferenceException) as e:
+						print('Failed to set date. Page probably reloaded')
+						time.sleep(.4)
 
 			if formInfo['first_diagnosis'] is not None:
 				self.set_first_diagnosis(formInfo['first_diagnosis'])

@@ -52,7 +52,6 @@ class AboutMeView(view.View):
 				# Should be on myeloma diagnosis page
 				url = self.driver.current_url
 				if '/myeloma-diagnosis' not in url:
-					raw_input('wait')
 					self.error = self.readErrors()
 					self.warnings = self.aboutMeForm.read_warnings()
 					if self.error:
@@ -78,7 +77,6 @@ class AboutMeView(view.View):
 					expected = False
 					warningType = warning['type']
 					for expectedWarning in expectedWarnings:
-						raw_input('expectedWarning: ' + expectedWarning + '. warningType: ' + warningType)
 						if expectedWarning == warningType:
 							expected = True
 					if not expected:

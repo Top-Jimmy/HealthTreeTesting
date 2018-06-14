@@ -12,7 +12,11 @@ class CurrentHealthForm():
 	def load(self):
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		inputs = self.form.find_elements_by_tag_name('input')
-		anchors = self.form.find_elements_by_tag_name('a')
+		self.question_elements = self.form.find_element_by_class_name('custom-current-health')
+		self.questions = []
+
+		for i, question in self.question_elements:
+			self.load_question(self.question_elements[i])
 
 		self.status_stableyes_radio = inputs[0]
 		self.status_stableno_radio = inputs[1]
@@ -60,6 +64,32 @@ class CurrentHealthForm():
 
 		# self.validate()
 		return True
+
+	def load_question(self, container):
+		labels = container.find_elements_by_tag_name('label')
+		question_label = lables[0].text
+		value = None
+		secondaryQuestions = []
+
+
+		# Value: 'yes', 'no', 'dont know' or None (not set)
+
+		# if value is yes...
+			# load element w/ class 'custom-history_label'
+			# Search that element for inputs (the checkboxes)
+				# for each input, create a dictionary and add it to secondaryQuestions
+					# {'name': 'lung_disease_exercising',
+					# 	'value': True/False
+					# }
+
+
+
+		question = [
+			'name': question_label,
+			'value': value
+			'secondaryQuestions': secondaryQuestions,
+		]
+		return question
 
 	def validate(self):
 		failures = []
@@ -144,6 +174,7 @@ class CurrentHealthForm():
 		if len(failures) > 0:
 			print(failures)
 			raise NoSuchElementException('Failed to load CreateAcctForm')
+
 
 	# def read_warning(self):
 	# 	inputs = ['username', 'email', 'password', 'confirm password']

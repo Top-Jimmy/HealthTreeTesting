@@ -11,16 +11,16 @@ from Views import view
 class MyelDiagView(view.View):
 	postUrl = 'signup'
 
-	def load(self, expectedState=None):
+	def load(self, expectedState=None, expectedValues=None):
 		try:
 			self.view_state = self.get_view_state()
 			if expectedState and expectedState != self.view_state:
 				print('Myeloma Diagnosis: Expected state: "' + expectedState + '", got state: "' + self.view_state + '"')
 			else:
 				if self.view_state == 'fresh':
-					self.myelomaDiagnosisFreshForm = myelomaDiagnosisFreshForm.MyelomaDiagnosisFreshForm(self.driver)
+					self.myelomaDiagnosisFreshForm = myelomaDiagnosisFreshForm.MyelomaDiagnosisFreshForm(self.driver, expectedValues)
 				else:
-					self.myelomaDiagnosisSavedForm = myelomaDiagnosisSavedForm.MyelomaDiagnosisSavedForm(self.driver)
+					self.myelomaDiagnosisSavedForm = myelomaDiagnosisSavedForm.MyelomaDiagnosisSavedForm(self.driver, expectedValues)
 				self.menu = menu.Menu(self.driver)
 				self.header = header.AuthHeader(self.driver)
 				# self.validate()
@@ -68,7 +68,7 @@ class MyelDiagView(view.View):
 			if self.myelomaDiagnosisFreshForm.submit(formInfo):
 				# Should be displaying 'saved' form
 				try:
-					WDW(self.driver, 10).until(lambda x: self.load('saved'))
+					WDW(self.driver, 10).until(lambda x: self.load('saved', formInfo))
 					return True
 				except TimeoutException:
 					# Could not load view in 'saved' state

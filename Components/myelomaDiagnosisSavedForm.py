@@ -24,18 +24,71 @@ class MyelomaDiagnosisSavedForm():
 		self.physicians = self.load_physicians()
 		self.add_physician_button = add_buttons[1]
 
-		# self.validate(expectedValues)
+		self.validate(expectedValues)
 		return True
 
-	# def validate(self, expectedValues):
-	# 	if expectedValues:
-	# 		failures = []
-	# 		if expectedValues['newly_diagnosed'] == 'no' and not self.newly_diagnosedNo.get_attribute('checked')
-	# 			failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
+	def validate(self, expectedValues):
+		if expectedValues:
+			failures = []
 
-	# 		if len(failures) > 0:
-	# 			print(failures)
-	# 			raise NoSuchElementException('Failed to load CreateAcctForm')
+			# Right # of diagnoses and physicians?
+			expectedDiagnoses = 1 + len(expectedValues['additional_diagnoses'])
+			expectedPhysicians = len(expectedValues['physicians'])
+			if expectedDiagnoses != len(self.diagnoses):
+				failures.append('MyelDiagSavedForm: Expected ' + str(expectedDiagnoses) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
+			if expectedPhysicians != len(self.physicians):
+				failures.append('MyelDiagSavedForm: Expected ' + str(expectedPhysicians) + ' physicians. Form has ' + str(len(self.physicians)))
+
+			# Diagnoses have expected values?
+			'newly_diagnosed': 'no',
+			'diagnosis_date': '05/2018',
+			'first_diagnosis': 'plasmacytoma',
+			'high_risk': 'no',
+			'transplant_eligible': 'no',
+			'bone_lesions': 'no lesions',
+			'diagnosis_location': {
+				'facility': 'Huntsman Cancer',
+				'city': 'Salt Lake City',
+				'state': 'Utah',
+			},
+			'additional_diagnosis': False,
+			'additional_diagnoses': [], # i.e. [{'date': '01/2000', 'diagnosis': 'Smoldering Myeloma'},]
+			for i, diagnosis in enumerate(self.diagnoses):
+
+				# Date
+				if not self.equivalent_dates(expectedValues['diagnosis_date'] != self.diagnoses[i]['date']):
+					failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
+
+				# Diagnosis Type
+
+				# Bone Lesions
+
+				# Facility Name
+
+				# Facility City
+
+				# Facility State
+
+'physicians': [
+				{'name': 'David Avigan',
+					'facility': 'Beth Israel Deaconess Medical Center',
+					'city': 'Boston',
+					'state': 'Massachusetts',
+				},
+			],
+
+
+			# Physician Name
+
+			# Facility Name
+
+			# City
+
+			# State
+
+			if len(failures) > 0:
+				print(failures)
+				raise NoSuchElementException('Failed to load MyelomaDiagnosisSavedForm')
 
 	def load_diagnoses(self):
 		diagnoses = []
@@ -67,8 +120,8 @@ class MyelomaDiagnosisSavedForm():
 				# Data
 				physician['name'] = rows[i].find_element_by_class_name('phy_name').text
 				physician['facility'] = rows[i].find_element_by_class_name('phy_fac_name').text
-				physician['city'] = rows[i].find_element_by_class_name('phy_city')
-				physician['state'] = rows[i].find_element_by_class_name('phy_state')
+				physician['city'] = rows[i].find_element_by_class_name('physician-city')
+				physician['state'] = rows[i].find_element_by_class_name('physician-state')
 
 				# actions
 				physician['delete'] = rows[i].find_element_by_tag_name('button')
@@ -192,3 +245,23 @@ class MyelomaDiagnosisSavedForm():
 					self.continue_button.click()
 			return True
 		return False
+
+	def equivalent_dates(self, date1, date2):
+		# Convert dates to 'jan 2011' format and evaluate equivalency
+		if date1.index('/') != -1:
+			date1 = self.parse_date(date1)
+		if date2.index('/') != -1:
+			date2 = self.parse_date(date2)
+
+		return date1 == date2
+
+	def parse_date(self, dateStr):
+		# Given dateStr "mm/yyyy", parse and return 'mmm yyyy'
+		divider = dateStr.index('/')
+
+		months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+		month = months[int(dateStr[:divider])]
+
+		year = dateStr[divider + 1:]
+
+		return month + ' ' + year

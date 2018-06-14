@@ -22,7 +22,7 @@ def start(browser=None):
 
   # set default window settings
   driver.set_window_size(1200, 960)
-  # driver.set_window_position(500, 0);
+  driver.set_window_position(500, 0);
   if browser.lower() == 'safari':
     driver.maximize_window()
 

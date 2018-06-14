@@ -1,4 +1,5 @@
-from selenium.common.exceptions import (NoSuchElementException, StaleElementReferenceException)
+from selenium.common.exceptions import (NoSuchElementException,
+	ElementNotVisibleException, StaleElementReferenceException, WebDriverException)
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 import time
 
@@ -9,14 +10,15 @@ class DatePicker():
 		self.driver = driver
 
 	def load(self, expectedState=None):
-		raw_input('starting load. checking state')
 		try:
 			self.picker_state = self.get_picker_state()
-			if expectedState and expectedState != self.picker_state:
+			if self.picker_state == 'undefined':
+				print('DatePicker: undefined state')
+				return False
+			elif expectedState and expectedState != self.picker_state:
 				print('DatePicker: Expected state: "' + expectedState + '". Got state: "' + self.picker_state + '"')
 				return False
 			else:
-				raw_input('state matches. loading picker')
 				time.sleep(.4)
 				if self.picker_state == 'month':
 					# Header should display current year. # Picker table should have months
@@ -45,12 +47,19 @@ class DatePicker():
 
 	def get_picker_state(self):
 		# Currently selecting years or months? Default should be months
-		state = 'month'
+		state = 'undefined'
 		try:
 			el = self.driver.find_element_by_class_name('rdtYears')
 			state = 'year'
 		except NoSuchElementException:
 			pass
+
+		if state == 'undefined':
+			try:
+				el = self.driver.find_element_by_class_name('rdtMonths')
+				state = 'month'
+			except NoSuchElementException:
+				pass
 		return state
 
 	def load_picker_table_items(self, expectedType):
@@ -76,6 +85,20 @@ class DatePicker():
 			self.set_month(month)
 		# Wait for datepicker to disappear
 		time.sleep(.4)
+
+		# try:
+		# 	if self.current_year != year:
+		# 		self.set_year(year)
+		# 	if self.current_month != month:
+		# 		self.set_month(month)
+		# 	# Wait for datepicker to disappear
+		# 	time.sleep(.4)
+		# except (StaleElementReferenceException, ElementNotVisibleException, WebDriverException) as e:
+		# 	# page probably reloaded.
+		# 	dateElement.click()
+		# 	self.load()
+		# 	self.set_date(date)
+
 
 	def parse_date(self, dateStr, dateType):
 		# Given dateStr "mm/yyyy", parse and return month or year
@@ -163,7 +186,7 @@ class DatePicker():
 			if lowest_year < 3000:
 				return lowest_year
 			else:
-				raw_input("Error! Failed to get earliest year")
+				print('Datepicker: Failed to get earliest year')
 
 	def load_current_year(self):
 		if self.picker_state == 'month':
