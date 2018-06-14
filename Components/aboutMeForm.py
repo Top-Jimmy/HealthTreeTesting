@@ -97,7 +97,7 @@ class AboutMeForm():
 				warningType = 'Missing date'
 			elif warningText == 'Please enter zip code.':
 				warningType = 'Missing zip code'
-			elif warningText == 'Please share your treatment goals':
+			elif warningText == 'Please share your treatment goals.':
 				warningType = 'Missing treatment goals'
 			elif warningText == 'Please enter name.':
 				warningType = 'Missing caregiver name'
@@ -107,7 +107,7 @@ class AboutMeForm():
 				warningType = 'Missing caregiver email'
 			elif warningText == 'Please check privacy policy.':
 				warningType = 'Missing privacy agreement'
-			elif warningText == 'Please check license agreement':
+			elif warningText == 'Please check license agreement.':
 				warningType = 'Missing license agreement'
 
 			# create warning object

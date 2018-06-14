@@ -38,8 +38,8 @@ class TestAboutMe(unittest.TestCase):
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		about_me_data = self.andrew.credentials['about_me_data']
-		about_me_data['first_name'] = ''
-		expectedWarnings = ['Missing first name']
+		about_me_data['treatment_goals'] = ''
+		expectedWarnings = ['Missing treatement goals']
 
 		self.assertTrue(homeView.go())
 		self.assertTrue(homeView.login(self.andrew.credentials))
