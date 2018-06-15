@@ -199,7 +199,7 @@ elliot = {
 		'first_name': 'Elliot',
 		'last_name': 'Tidd',
 		'gender': 'male',
-		'dob': '06/01/2018',
+		'dob': '06/01/2016',
 		'zip_code': '10000',
 		'treatment_goals': 'asdf',
 		'assisted': {
@@ -210,6 +210,28 @@ elliot = {
 		},
 		'terms': True,
 		'sparkCures': True,
+	},
+	'myeloma_diagnosis_data': {
+		'newly_diagnosed': 'yes',
+		'when_diagnosis': '01/2018',
+		'first_diagnosis': 'smoldering myeloma',
+		'high_risk': 'no',
+		'transplant_eligible': 'no',
+		'bone_lesions': 'no lesions',
+		'diagnosis_location': {
+			'facility': 'Huntsman Cancer',
+			'city': 'Salt Lake City',
+			'state': 'Utah',
+		},
+		'additional_diagnosis': False,
+		'additional_diagnoses': [], # i.e. [{'date': '01/2000', 'diagnosis': 'Smoldering Myeloma'},]
+		'physicians': [
+			{'name': 'David Avigan',
+				'facility': 'Beth Israel Deaconess Medical Center',
+				'city': 'Boston',
+				'state': 'Massachusetts',
+			},
+		],
 	},
 	'current_health_data': [
 		{'name': 'Is your myeloma currently stable?',

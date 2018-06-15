@@ -18,7 +18,6 @@ class MyelomaDiagnosisFreshForm():
 
 	def load(self, expectedValues=None):
 		self.form = self.driver.find_element_by_id('diagnosis_form')
-		inputs = self.form.find_elements_by_tag_name('input')
 		# self.placeholders = self.form.find_elements_by_class_name('Select-placeholder')
 
 		self.newlyDiagnosedNo_radio = self.form.find_element_by_id('newly_diagnosedNo')
@@ -117,7 +116,7 @@ class MyelomaDiagnosisFreshForm():
 
 		if len(failures) > 0:
 			print(failures)
-			raise NoSuchElementException('Failed to load CreateAcctForm')
+			raise NoSuchElementException('Failed to load MyelomaDiagnosisFreshForm')
 
 	def load_physicians(self):
 		# todo: need id for physician container
