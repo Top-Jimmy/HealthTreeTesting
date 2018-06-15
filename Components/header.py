@@ -35,5 +35,5 @@ class AuthHeader():
 
 	def send_feedback(self, feedbackText, action='send'):
 		self.feedback_button.click()
-		self.feedbackForm = feedback.FeedbackForm(self.driver)
+		self.feedbackForm = feedbackForm.FeedbackForm(self.driver)
 		self.feedbackForm.submit(feedbackText, action)
