@@ -5,6 +5,9 @@ from selenium.common.exceptions import (NoSuchElementException,
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 import datePicker
 import popUpForm
+import editDiagnosisForm
+import additionalDiagnosisForm
+import addPhysicianForm
 
 # Form on 'Myeloma Diagnosis' displaying user's saved diagnosis info
 
@@ -186,10 +189,27 @@ class MyelomaDiagnosisSavedForm():
 		}
 
 ########################### User Functions #############################
+	def edit_diagnosis(self, diagnosis_index=0, action='submit'):
+		self.diagnoses[diagnosis_index]['edit'].click()
+		self.editDiagnosisForm = editDiagnosisForm.EditDiagnosisForm(self.driver)
+		self.editDiagnosisForm.submit(action)
 
 	def delete_diagnosis(self, diagnosis_index=0, action='submit'):
 		self.diagnoses[diagnosis_index]['delete'].click()
 		self.popUpForm = popUpForm.PopUpForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
 		self.popUpForm.confirm(action)
+
+	def add_diagnosis(self, diagnosis_index=0, action='submit'):
+		self.diagnoses[diagnosis_index][''].click()
+		self.additionalDiagnosisForm = additionalDiagnosisForm.AdditionalDiagnosisForm(self.driver)
+		self.additionalDiagnosisForm.submit(action)
+
+	def add_physician(self, diagnosis_index=0, action='submit'):
+		self.diagnoses[diagnosis_index][''].click()
+		self.addPhysicianForm = addPhysicianForm.AddPhysicianForm(self.driver)
+		self.addPhysicianForm.submit(action)
+
+
+
 

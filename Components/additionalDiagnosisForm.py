@@ -32,8 +32,8 @@ class AdditionalDiagnosisForm():
 
 	def validate(self, expectedValues):
 		failures = []
-			if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['date']:
-				failures.append('MyelDiagForm: Expecting date of diagnosis "' + expectedValues['date'] + '", got "' + self.dateDiagnosis_form-control.get_attribute('value') + '"')
+		if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['date']:
+			failures.append('MyelDiagForm: Expecting date of diagnosis "' + expectedValues['date'] + '", got "' + self.dateDiagnosis_form-control.get_attribute('value') + '"')
 
 		if len(failures) > 0:
 			print(failures)
@@ -136,6 +136,6 @@ class AdditionalDiagnosisForm():
 			if formInfo['type'] is not None:
 				self.set_first_diagnosis(formInfo['type'])
 
-					self.continue_button.click()
+				self.submit_button.click()
 			return True
 		return False

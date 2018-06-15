@@ -17,8 +17,8 @@ class EditDiagnosisForm():
 	def load(self, expectedValues=None):
 		self.cont = self.driver.find_element_by_class_name('modal-content')
 		buttons = self.cont.find_elements_by_tag_name('button')
-		# self.placeholders = self.form.find_elements_by_class_name('Select-placeholder')
-		self.close_button = self.buttons[0]
+
+		# self.close_button = self.buttons[0]
 
 		self.dateDiagnosis_cont = self.cont.find_element_by_class_name('mnth-datepicker')
 		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
@@ -41,7 +41,8 @@ class EditDiagnosisForm():
 
 	def validate(self, expectedValues):
 		failures = []
-			if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['date']:
+		if expectedValues:
+			if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['diagnosis_date']:
 				failures.append('MyelDiagForm: Expecting date of diagnosis "' + expectedValues['date'] + '", got "' + self.dateDiagnosis_form-control.get_attribute('value') + '"')
 
 			if expectedValues['lesions'] == 'no lesions' and not self.boneLesion0_radio.get_attribute('checked'):
@@ -59,6 +60,12 @@ class EditDiagnosisForm():
 				failure.append('MyelDiagForm: Expecting city "' + expectedValues['city'] + '", got "' + self.city_input.get_attribute('value') + '"')
 			if self.state_input.get_attribute('value') != expectedValues['state']:
 				failure.append('MyelDiagForm: Expecfting state "' + expectedValues['state'] + '", got "' + self.state_input.get_attribute('value') + '"')
+
+		if self.submit_button.text != 'Submit':
+			failures.append('PopUpForm: Unexpected submit button text: ' + self.submit_button.text)
+		if self.cancel_button.text != 'Cancel':
+			failures.append('PopUpForm: Unexpected cancel button text ' + self.cancel_button.text)
+
 
 		if len(failures) > 0:
 			print(failures)
@@ -221,7 +228,7 @@ class EditDiagnosisForm():
 					self.facility_city_input.send_keys(location['city'])
 				if location['state']:
 					self.set_facility_state(location['state'])
-############### Come back to later #################
-					self.continue_button.click()
+					
+					self.submit_button.click()
 			return True
 		return False
