@@ -2,7 +2,9 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
+from selenium.webdriver.support.wait import WebDriverWait as WDW
 import datePicker
+import popUpForm
 
 # Form on 'Myeloma Diagnosis' displaying user's saved diagnosis info
 
@@ -30,13 +32,14 @@ class MyelomaDiagnosisSavedForm():
 	def validate(self, expectedValues):
 		if expectedValues:
 			failures = []
-			expectedDiagnoses = self.convert_expected_diagnoses(self, expectedValues)
+			expectedDiagnoses = self.convert_expected_diagnoses(expectedValues)
+			expectedPhysicians = expectedValues['physicians']
 
 			# Right # of diagnoses and physicians?
 			if len(expectedDiagnoses) != len(self.diagnoses):
-				failures.append('MyelDiagSavedForm: Expected ' + str(expectedDiagnoses) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
+				failures.append('MyelDiagSavedForm: Expected ' + str(len(expectedDiagnoses)) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
 			if len(expectedValues['physicians']) != len(self.physicians):
-				failures.append('MyelDiagSavedForm: Expected ' + str(expectedPhysicians) + ' physicians. Form has ' + str(len(self.physicians)))
+				failures.append('MyelDiagSavedForm: Expected ' + str(len(expectedPhysicians)) + ' physicians. Form has ' + str(len(self.physicians)))
 
 			# Diagnoses match expected values?
 			keys = ['date', 'type', 'lesions', 'facility', 'city', 'state']
@@ -47,7 +50,7 @@ class MyelomaDiagnosisSavedForm():
 						failures.append('MyelDiagForm: Diagnosis ' + str(i) + ' expected "' + key + '" ' + expectedDiagnoses[key]
 							+ '", got ' + diagnoses[key])
 
-			expectedPhysicians = expectedValues['physicians']
+			# Physicians match expected values?
 			physician_keys = ['name', 'facility', 'city', 'state']
 			for i, physician in enumerate(self.physicians):
 				for p_key in physician_keys:
@@ -57,7 +60,8 @@ class MyelomaDiagnosisSavedForm():
 							+ '", got ' + physician[key])
 
 			if len(failures) > 0:
-				print(failures)
+				for failure in failures:
+					print('failure')
 				raise NoSuchElementException('Failed to load MyelomaDiagnosisSavedForm')
 
 	def load_diagnoses(self):
@@ -79,6 +83,8 @@ class MyelomaDiagnosisSavedForm():
 				diagnosis['edit'] = buttons[0]
 				diagnosis['delete'] = buttons[1]
 
+				diagnoses.append(diagnosis)
+
 		return diagnoses
 
 	def load_physicians(self):
@@ -95,6 +101,8 @@ class MyelomaDiagnosisSavedForm():
 
 				# actions
 				physician['delete'] = rows[i].find_element_by_tag_name('button')
+
+				physicians.append(physician)
 		return physicians
 
 	# def read_warning(self):
@@ -156,7 +164,7 @@ class MyelomaDiagnosisSavedForm():
 		diagnoses = []
 		# Convert date from 'mm/yyyy' to 'mmm yyyy'
 		initialDiagnosis = {
-			'date': self.parseDate(expectedValues['diagnosis_date']),
+			'date': self.parse_date(expectedValues['diagnosis_date']),
 			'type': expectedValues['type'],
 			'lesions': expectedValues['lesions'],
 			'facility': expectedValues['diagnosis_location']['facility'],
@@ -168,7 +176,7 @@ class MyelomaDiagnosisSavedForm():
 		# Additional diagnoses only have date and type.
 		for diagnosis in expectedValues['additional_diagnoses']:
 			additional_diagnosis = {
-				'date': self.parseDate(diagnosis['date']),
+				'date': self.parse_date(diagnosis['date']),
 				'type': diagnosis['type'],
 			}
 			diagnoses.append(additional_diagnosis)
@@ -182,10 +190,6 @@ class MyelomaDiagnosisSavedForm():
 	def delete_diagnosis(self, diagnosis_index=0, action='submit'):
 		self.diagnoses[diagnosis_index]['delete'].click()
 		self.popUpForm = popUpForm.PopUpForm(self.driver)
-		if action='submit'
-			self.confirm_button.click()
-		else:
-			self.cancel_button.click()
-
-
+		WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+		self.popUpForm.confirm(action)
 

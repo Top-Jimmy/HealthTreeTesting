@@ -15,7 +15,54 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 
 	def test_additional_physicians(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_physicians'''
-		# Fresh form: Test adding, editing and deleting multiple physicians
+		# Fresh and Saved form: Test adding, editing and deleting multiple physicians
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelDiagView = self.andrew.myelomaDiagnosisView
+		formInfo =  {
+			'newly_diagnosed': 'no',
+			'diagnosis_date': '05/2018',
+			'type': 'plasmacytoma',
+			'high_risk': 'no',
+			'transplant_eligible': 'no',
+			'lesions': 'no lesions',
+			'diagnosis_location': {
+				'facility': 'Huntsman Cancer',
+				'city': 'Salt Lake City',
+				'state': 'Utah',
+			},
+			'additional_diagnosis': False,
+			'additional_diagnoses': [], # i.e. [{'date': '01/2000', 'diagnosis': 'Smoldering Myeloma'},]
+			'physicians': [
+				{'name': 'David Avigan',
+					'facility': 'Beth Israel Deaconess Medical Center',
+					'city': 'Boston',
+					'state': 'Massachusetts',
+				},
+				{'name': 'Kenneth Anderson',
+					'facility': 'Dana Farber Cancer Institute',
+					'city': 'Brookline',
+					'state': 'Massachusetts',
+				},
+				{'name': 'Tomer Mark',
+					'facility': 'Weill Cornell Medicine Myeloma Center',
+					'city': 'New York City',
+					'state': 'New York',
+				},
+			],
+		}
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Myeloma Diagnosis')
+
+		self.assertTrue(myelDiagView.on('fresh'))
+		self.assertTrue(myelDiagView.myelomaDiagnosisFreshForm.submit(formInfo, False))
+
+
+
 
 	def test_fresh_form(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_submit'''
@@ -23,7 +70,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView
-		formData =  {
+		formInfo =  {
 			'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
 			'type': 'plasmacytoma',
@@ -53,7 +100,10 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 
 		self.assertTrue(myelDiagView.on('fresh'))
-		self.assertTrue(myelDiagView.submitFreshForm(formData))
+		self.assertTrue(myelDiagView.submitFreshForm(formInfo))
+		myelDiagView.myelomaDiagnosisSavedForm.delete_diagnosis()
+
+		self.assertTrue(myelDiagView.on('fresh'))
 
 	def test_saved_form(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_saved_form'''
@@ -76,10 +126,20 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView
+		physicianInfo = {'name': 'David Avigan',
+			'facility': 'Beth Israel Deaconess Medical Center',
+			'city': 'Boston',
+			'state': 'Massachusetts',
+		}
 
 		self.assertTrue(homeView.go())
 		self.assertTrue(homeView.login(self.andrew.credentials))
 
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Myeloma Diagnosis')
+		self.assertTrue(myelDiagView.on('fresh'))
+
+		myelDiagView.myelomaDiagnosisFreshForm.add_physician_typeahead('David', 'David Avigan', physicianInfo)
 
 
 

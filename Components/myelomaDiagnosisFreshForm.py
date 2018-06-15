@@ -4,6 +4,8 @@ from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException, ElementNotVisibleException)
 from selenium.webdriver import ActionChains as AC
 from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 import datePicker
 
 # Form on 'Myeloma Diagnosis' when user has not saved diagnosis info.
@@ -69,11 +71,11 @@ class MyelomaDiagnosisFreshForm():
 				failures.append('MyelDiagForm: Expecting date of diagnosis "' + expectedValues['date'] + '", got "' + self.dateDiagnosis_form-control.get_attribute('value') + '"')
 
 			if expectedValues['high_risk'] == 'no' and not self.highRisk1_radio.get_attribute('checked'):
-				failure.append('MyelDiagForm: Expecting "no" to being high risk')
+				failure.append('MyelDiagForm: High Risk, Expecting "no"')
 			elif expectedValues['high_risk'] == 'yes' and not self.highRisk2_radio.get_attribute('checked'):
-				failure.append('MyelDiagForm: Expecting "yes" to being high risk')
+				failure.append('MyelDiagForm: High Risk, Expecting "yes"')
 			elif expectedValues['high_risk'] == 'I dont know' and not self.highRisk3_radio.get_attribute('checked'):
-				failure.append('MyelDiagForm: Expecting "I dont know to being high risk')
+				failure.append('MyelDiagForm: High Risk, Expecting "I dont know"')
 
 			if expectedValues['stem_cell'] == 'no' and not self.stemCell1_radio.get_attribute('checked'):
 				failure.append('MyelDiagForm: Expecting "no" to being eligible for stem cell')
@@ -103,6 +105,7 @@ class MyelomaDiagnosisFreshForm():
 			elif expectedValues['additional'] == 'yes' and not self.add_diagyes_radio.get_attribute('checked'):
 				failure.append('MyelDiagForm: Expecting "yes" to an additional diagnosis')
 
+			# todo: handle verifying multiple physicians
 			if self.phys_name_input.get_attribute('value') != expectedValues['phys_name']:
 				failure.append('MyelDiagForm: Expecting physician name "' + expectedValues['phys_name'] + '", got "' + self.phys_name_input.get_attribute('value') + '"')
 			if self.phys_facility_input.get_attribute('value') != expectedValues['phys_facility']:
@@ -138,10 +141,50 @@ class MyelomaDiagnosisFreshForm():
 		self.phys_city_input = cont.find_element_by_tag_name('input')
 
 		self.load_physician_state(0)
-		# cont = self.form.find_element_by_id('state0')
-		# self.phys_state_input = cont.find_element_by_tag_name('input')
-		# self.phys_state_clicker = self.placeholders[2]
-		# todo: load additional physician button
+
+
+
+
+		# physicians = []
+
+		# physician_cont = self.form.find_element_by_class_name('??')
+		# rows = physician_cont.find_elements_by_class_name('form-group')
+		# for i, row in enumerate(rows):
+		# 	inputs = row.find_element_by_tag_name('input')
+
+		# 	try:
+		# 		el = row.find_element_by_class_name('Select-value')
+		# 		state = el.text
+		# 	except NoSuchElementException:
+		# 		state = None
+
+		# 	try:
+		# 		delete_name_button = row.find_element_by_class_name('rbt-close')
+		# 	except NoSuchElementException:
+		# 		delete_name_button = None
+
+		# 	try:
+		# 		delete_physician_button = row.find_element_by_class_name('delete_physician_icon')
+		# 	except NoSuchElementException:
+		# 		delete_physician_button = None
+
+
+
+		# 	physician = {
+		# 		'name': inputs[0].text,
+		# 		'facility': inputs[2].text,
+		# 		'city': inputs[3].text,
+		# 		'state': state,
+
+
+		# 		'delete_name_button': delete_button,
+		# 		'delete_physician_button': delete_physician_button,
+		# 	}
+
+		# 	physicians.append(physician)
+
+		# 	return physicians
+
 
 ############################### Dropdown functions #####################################
 
@@ -266,7 +309,46 @@ class MyelomaDiagnosisFreshForm():
 			print('invalid state: ' + value)
 		WDW(self.driver, 5).until(lambda x: self.load())
 
-############################## Error handling ##################################
+############################## Typeahead functions ############################
+
+	def add_physician_typeahead(self, partial_name, full_name, physicianInfo):
+		# todo: needs to be able to add a new physician
+
+		self.phys_name_input.click()
+		AC(self.driver).send_keys(partial_name).perform()
+
+		# Wait for options to show up, then click option that matches full_name
+		WDW(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'rbt-menu')))
+
+		count = 0
+		loaded = False
+		while not loaded or count > 10:
+			count += 1
+			try:
+				menu = self.driver.find_element_by_class_name('rbt-menu')
+				options = menu.find_elements_by_tag_name('li')
+				for option in options:
+					option_text = option.text
+					if option_text == 'No matches found.':
+						time.sleep(.5)
+						break
+					elif option.text == full_name:
+						anchor = option.find_element_by_tag_name('a')
+						anchor.click()
+						loaded = True
+			except StaleElementReferenceException:
+				pass
+
+		# todo: need to verify physicianInfo matches data loaded for last physician
+
+		# Verify physicianInfo
+		# self.load('fresh', physicianInfo)
+
+	# def clear_physician(self, physicianIndex=0):
+		# Use typeahead
+
+
+############################## Error handling #################################
 
 	# def read_warning(self):
 	# 	inputs = ['username', 'email', 'password', 'confirm password']
@@ -300,7 +382,7 @@ class MyelomaDiagnosisFreshForm():
 
 ############################## Test functions ##################################
 
-	def submit(self, formInfo):
+	def submit(self, formInfo, submit=True):
 		if formInfo:
 			if formInfo['newly_diagnosed'] is not None:
 				if formInfo['newly_diagnosed']:
@@ -391,9 +473,8 @@ class MyelomaDiagnosisFreshForm():
 						self.phys_city_input.send_keys(physician['city'])
 					if physician['state']:
 						self.set_physician_state(physician['state'])
-						# self.phys_state_input.clear()
-						# self.phys_state_input.send_keys(physician['state'])
 
-					self.continue_button.click()
+			if submit:
+				self.continue_button.click()
 			return True
 		return False
