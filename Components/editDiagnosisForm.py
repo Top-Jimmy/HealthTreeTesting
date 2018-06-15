@@ -12,30 +12,31 @@ class EditDiagnosisForm():
 
 	def __init__(self, driver, expectedValues=None):
 		self.driver = driver
-		self.load(expectedValues)
+		WDW(self.driver, 10).until(lambda x: self.load(expectedValues))
 
 	def load(self, expectedValues=None):
-		self.cont = self.driver.find_element_by_class_name('modal-content')
-		buttons = self.cont.find_elements_by_tag_name('button')
+		self.popup = self.driver.find_element_by_class_name('modal-content')
+		self.form = self.driver.find_element_by_class_name('edit-Diag-Modal')
+		self.rows = self.form.find_elements_by_class_name('form-group')
+		buttons = self.popup.find_elements_by_tag_name('button')
 
-		# self.close_button = self.buttons[0]
-
-		self.dateDiagnosis_cont = self.cont.find_element_by_class_name('mnth-datepicker')
-		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
+		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
+		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_id('diagnosis_date')
 
 		self.load_first_diagnosis_dropdown()
-		
-		self.boneLesion0_radio = self.cont.find_element_by_id('0')
-		self.boneLesion1_radio = self.cont.find_element_by_id('1')
-		self.boneLesion2_radio = self.cont.find_element_by_id('2')
-		self.boneLesion3_radio = self.cont.find_element_by_id('3')	
+
+		self.boneLesion0_radio = self.form.find_element_by_id('0')
+		self.boneLesion1_radio = self.form.find_element_by_id('1')
+		self.boneLesion2_radio = self.form.find_element_by_id('2')
+		self.boneLesion3_radio = self.form.find_element_by_id('3')
 
 		self.facility_input = self.form.find_element_by_id('facility_name')
 		self.facility_city_input = self.form.find_element_by_id('Last')
 		self.load_facility_state()
 
-		self.submit_button = self.buttons[1]
-		self.cancel_button = self.buttons[2]
+		self.close_button = buttons[0]
+		self.submit_button = buttons[1]
+		self.cancel_button = buttons[2]
 		# self.validate(expectedValues)
 		return True
 
@@ -68,24 +69,25 @@ class EditDiagnosisForm():
 
 
 		if len(failures) > 0:
-			print(failures)
+			for failure in failures:
+				print(failure)
 			raise NoSuchElementException('Failed to load EditDiagnosisForm')
 
 ############################### Dropdown functions #####################################
 
 	def load_first_diagnosis_dropdown(self):
-		self.first_diagnosis_cont = self.driver.find_elements_by_class_name('frst-diag-name')[1]
+		# self.first_diagnosis_cont = self.driver.find_elements_by_class_name('frst-diag-name')[1]
 
 		# Is value already set? Should have either value or placeholder element
 		self.first_diagnosis_preSet = False
 		try:
-			self.firstDiagnosis_value = self.first_diagnosis_cont.find_element_by_class_name('Select-value-label')
+			self.firstDiagnosis_value = self.rows[1].find_element_by_class_name('Select-value-label')
 			self.firstDiagnosis_placeholder = None
 			self.first_diagnosis_preSet = True
 		except NoSuchElementException:
 			self.firstDiagnosis_value = None
 			# 'Select diagnosis' placeholder
-			self.firstDiagnosis_placeholder = self.first_diagnosis_cont.find_element_by_class_name('Select-placeholder')
+			self.firstDiagnosis_placeholder = self.rows[1].find_element_by_class_name('Select-placeholder')
 
 	def set_first_diagnosis(self, value):
 		# Click value div if already set. Placeholder if not set
@@ -113,8 +115,7 @@ class EditDiagnosisForm():
 		WDW(self.driver, 5).until(lambda x: self.load())
 
 	def load_facility_state(self):
-		conts = self.form.find_elements_by_class_name('state-font-custom')
-		facility_cont = conts[0]
+		facility_cont = self.form.find_elements_by_class_name('stateFont')[1]
 
 		# Is value already set? Should have either value or placeholder element
 		self.facility_state_preSet = False
@@ -152,7 +153,7 @@ class EditDiagnosisForm():
 			print('invalid state: ' + value)
 		WDW(self.driver, 5).until(lambda x: self.load())
 
-	
+
 
 ############################## Error handling ##################################
 
@@ -188,7 +189,7 @@ class EditDiagnosisForm():
 
 ############################## Test functions ##################################
 
-	def submit(self, formInfo):
+	def submit(self, formInfo, action='submit'):
 		if formInfo:
 			if formInfo['diagnosis_date'] is not None:
 				picker = datePicker.DatePicker(self.driver)
@@ -200,6 +201,7 @@ class EditDiagnosisForm():
 						self.dateDiagnosis_input.click()
 						picker.set_date(formInfo['diagnosis_date'])
 						dateSet = True
+						time.sleep(.6)
 					except (ElementNotVisibleException, StaleElementReferenceException) as e:
 						print('Failed to set date. Page probably reloaded')
 						time.sleep(.4)
@@ -228,7 +230,12 @@ class EditDiagnosisForm():
 					self.facility_city_input.send_keys(location['city'])
 				if location['state']:
 					self.set_facility_state(location['state'])
-					
-					self.submit_button.click()
+
+			if action == 'submit':
+				self.submit_button.click()
+			elif action == 'cancel':
+				self.cancel_button.click()
+			else:
+				self.close_button.click()
 			return True
 		return False

@@ -14,6 +14,50 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 	def tearDown(self):
 		self.driver.quit()
 
+	def test_additional_diagnoses(self):
+		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_diagnoses'''
+		# Fresh and Saved form: Test adding, editing and deleting multiple diagnoses
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelDiagView = self.andrew.myelomaDiagnosisView
+		formInfo =  {
+			'newly_diagnosed': 'no',
+			'diagnosis_date': '05/2018',
+			'type': 'plasmacytoma',
+			'high_risk': 'no',
+			'transplant_eligible': 'no',
+			'lesions': 'no lesions',
+			'diagnosis_location': {
+				'facility': 'Huntsman Cancer',
+				'city': 'Salt Lake City',
+				'state': 'Utah',
+			},
+			'additional_diagnosis': True,
+			'additional_diagnoses': [
+				{'date': '01/2000', 'type': 'Smoldering Myeloma'},
+				{'date': '12/2004', 'type': 'Multiple myeloma and amyloidosis'},
+			], # i.e. [{'date': '01/2000', 'diagnosis': 'Smoldering Myeloma'},]
+			'physicians': [
+				{'name': 'David Avigan',
+					'facility': 'Beth Israel Deaconess Medical Center',
+					'city': 'Boston',
+					'state': 'Massachusetts',
+				},
+			],
+		}
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Myeloma Diagnosis')
+
+		self.assertTrue(myelDiagView.on('fresh'))
+		self.assertTrue(myelDiagView.myelomaDiagnosisFreshForm.submit(formInfo, False))
+
+
+
+
 	def test_additional_physicians(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_physicians'''
 		# Fresh and Saved form: Test adding, editing and deleting multiple physicians
@@ -112,6 +156,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		homeView = self.elliot.homeView
 		aboutMeView = self.elliot.aboutMeView
 		myelDiagView = self.elliot.myelomaDiagnosisView
+		default_diagnosis = self.elliot.credentials['myeloma_diagnosis_data']
 
 		self.assertTrue(homeView.go())
 		self.assertTrue(homeView.login(self.elliot.credentials))
@@ -119,7 +164,20 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 
-		self.assertTrue(myelDiagView.on('saved', self.elliot.credentials['myeloma_diagnosis_data']))
+		self.assertTrue(myelDiagView.on('saved', default_diagnosis))
+
+		# Edit diagnosis. Check that changes are reflected on saved form
+		edited_diagnosis = default_diagnosis
+		edited_diagnosis['lesions'] == '6 or more'
+		edited_diagnosis['diagnosis_location']['city'] = 'Logan'
+		myelDiagView.myelomaDiagnosisSavedForm.edit_diagnosis(edited_diagnosis)
+		self.assertTrue(myelDiagView.on('saved', edited_diagnosis))
+		# reset diagnosis back to original info
+		myelDiagView.myelomaDiagnosisSavedForm.edit_diagnosis(default_diagnosis)
+		self.assertTrue(myelDiagView.on('saved', default_diagnosis))
+
+		# Edit physicians. Check that changes are reflected on saved form
+
 
 	def test_typeahead(self):
 		'''MyelomaDiagnosis : MyelomaDiagosis . test_typeahead'''

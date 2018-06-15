@@ -53,12 +53,9 @@ andrew = {
 		'condition_neuropathy': 'dont know',
 		'condition_other': 'dont know',
 	},
-	'fitness_level_data': {
-		'walk_sixhours': 'no',
-		'walk_fivehours': 'no',
-		'walk_unassisted': 'no',
-		'shop': 'yes',
-	},
+	'fitness_level_data': [
+		False, False, False, True,
+	],
 	'health_demographic': {
 		'race': 'white',
 		'ethnicity': 'not Hispanic',

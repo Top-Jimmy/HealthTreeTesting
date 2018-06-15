@@ -175,7 +175,6 @@ class MyelomaDiagnosisFreshForm():
 		# 		'city': inputs[3].text,
 		# 		'state': state,
 
-
 		# 		'delete_name_button': delete_button,
 		# 		'delete_physician_button': delete_physician_button,
 		# 	}
@@ -184,6 +183,23 @@ class MyelomaDiagnosisFreshForm():
 
 		# 	return physicians
 
+
+	def load_additional_diagnoses(self):
+		additional_diagnoses = []
+		conts = self.driver.find_element_by_tag_name('diagnose-thrd-sec')
+		for i, cont in enumerate(conts):
+			dateEl = cont.find_element_by_id('diagnosisDate_' + str(i))
+			dateInput = dateEl.find_element_by_tag_name('input')
+			date = dateInput.get_attribute('value')
+
+
+
+			additional_diagnoses.append({
+				'date': date,
+				'type': diagnosis_type
+			})
+
+		return additional_diagnoses
 
 ############################### Dropdown functions #####################################
 
@@ -452,6 +468,8 @@ class MyelomaDiagnosisFreshForm():
 					self.add_diagNo_radio.click()
 				else:
 					self.add_diagYes_radio.click()
+					# todo: function to load
+					self.load_additional_diagnoses()
 					if formInfo['additional_diagnoses']:
 						pass
 						# todo: recursive function: check for errors, load new inputs, check for additional_diagnoses, enter data

@@ -189,10 +189,11 @@ class MyelomaDiagnosisSavedForm():
 		}
 
 ########################### User Functions #############################
-	def edit_diagnosis(self, diagnosis_index=0, action='submit'):
+	def edit_diagnosis(self, diagnosisInfo, diagnosis_index=0, action='submit'):
 		self.diagnoses[diagnosis_index]['edit'].click()
+		time.sleep(1)
 		self.editDiagnosisForm = editDiagnosisForm.EditDiagnosisForm(self.driver)
-		self.editDiagnosisForm.submit(action)
+		self.editDiagnosisForm.submit(diagnosisInfo, action)
 
 	def delete_diagnosis(self, diagnosis_index=0, action='submit'):
 		self.diagnoses[diagnosis_index]['delete'].click()
