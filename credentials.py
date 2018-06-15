@@ -213,11 +213,11 @@ elliot = {
 	},
 	'myeloma_diagnosis_data': {
 		'newly_diagnosed': 'yes',
-		'when_diagnosis': '01/2018',
-		'first_diagnosis': 'smoldering myeloma',
+		'diagnosis_date': '01/2018',
+		'type': 'smoldering myeloma',
 		'high_risk': 'no',
 		'transplant_eligible': 'no',
-		'bone_lesions': 'no lesions',
+		'lesions': 'no lesions',
 		'diagnosis_location': {
 			'facility': 'Huntsman Cancer',
 			'city': 'Salt Lake City',
@@ -260,7 +260,7 @@ elliot = {
 				{'Known lung disease and difficulty breathing when exercising': False},
 				{'Known lung disease and difficulty breathing when resting': False},
 			],
-		},		 
+		},
 		{'name': 'Kidney Conditions',
 			'value': 'dont know',
 			'secondaryQuestions': [

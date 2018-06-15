@@ -9,6 +9,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 	def setUp(self):
 		self.driver = initDriver.start(main.browser)
 		self.andrew = profiles.Profile(self.driver, 'andrew')
+		self.elliot = profiles.Profile(self.driver, 'elliot')
 
 	def tearDown(self):
 		self.driver.quit()
@@ -108,17 +109,17 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 	def test_saved_form(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_saved_form'''
 		# User already has fresh form submitted. Saved form loads and has expectedValues
-		homeView = self.andrew.homeView
-		aboutMeView = self.andrew.aboutMeView
-		myelDiagView = self.andrew.myelomaDiagnosisView
+		homeView = self.elliot.homeView
+		aboutMeView = self.elliot.aboutMeView
+		myelDiagView = self.elliot.myelomaDiagnosisView
 
 		self.assertTrue(homeView.go())
-		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(homeView.login(self.elliot.credentials))
 
 		self.assertTrue(aboutMeView.on())
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 
-		self.assertTrue(myelDiagView.on('saved'))
+		self.assertTrue(myelDiagView.on('saved', self.elliot.credentials['myeloma_diagnosis_data']))
 
 	def test_typeahead(self):
 		'''MyelomaDiagnosis : MyelomaDiagosis . test_typeahead'''
