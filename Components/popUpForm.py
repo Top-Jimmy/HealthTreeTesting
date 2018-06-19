@@ -18,14 +18,14 @@ class PopUpForm():
 	def validate(self):
 		failures = []
 		if self.confirm_button.text != 'Confirm':
-			failures.append('PopUpForm: Unexpected confirm button text: ' + self.confirm_button.text)
+			failures.append('PopUpForm: Unexpected confirm button text: "' + self.confirm_button.text + '"')
 		if self.cancel_button.text != 'Cancel':
-			failures.append('PopUpForm: Unexpected cancel button text ' + self.cancel_button.text)
+			failures.append('PopUpForm: Unexpected cancel button text: "' + self.cancel_button.text + '"')
 		if len(failures) > 0:
 			for failure in failures:
 				print(failure)
 			return False
-			raise NoSuchElementException('Failed to load PopUpForm')
+			# raise NoSuchElementException('Failed to load PopUpForm')
 		return True
 
 	def confirm(self, action='submit'):

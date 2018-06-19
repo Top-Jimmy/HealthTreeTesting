@@ -148,7 +148,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 			},
 			'additional_diagnosis': False,
 			'additional_diagnoses': [], # i.e. [{'date': '01/2000', 'diagnosis': 'Smoldering Myeloma'},]
-			'physicians': [],
+			'physicians': [david, tomer],
 		}
 
 		self.assertTrue(homeView.go())
@@ -162,13 +162,12 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 
 		# Add a third physician. Then delete 2 of the 3
 
-		myelDiagView.add_physician(new_physician)
-		myelDiagView.delete('physician', 2)
-		myelDiagView.delete('physician', 1)
+		myelDiagView.add_physician(kenneth, {'meta': [{'num_physicians': 3}]})
+		myelDiagView.delete('physician', 2, {'meta': [{'num_physicians': 2}]})
+		myelDiagView.delete('physician', 1, {'meta': [{'num_physicians': 1}]})
 
 		# Delete diagnosis and reload fresh form
-		myelDiagView.myelomaDiagnosisSavedForm.delete_diagnosis()
-		self.assertTrue(myelDiagView.on('fresh'))
+		myelDiagView.delete('diagnosis', 0)
 
 	def test_saved_form(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_saved_form'''
@@ -211,10 +210,10 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(myelDiagView.on('saved', edited_diagnosis))
 
 		myelDiagView.delete('diagnosis', 2, {'meta': [{'num_diagnoses': 2}]})
-		# raw_input('deleted first')
 		myelDiagView.delete('diagnosis', 1, {'meta': [{'num_diagnoses': 1}]})
-		# raw_input('deleted second')
 		self.assertTrue(myelDiagView.on('saved', default_diagnosis))
+
+		# Add a few physicians, then delete them
 
 	def test_typeahead(self):
 		'''MyelomaDiagnosis : MyelomaDiagosis . test_typeahead'''

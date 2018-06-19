@@ -41,41 +41,48 @@ class MyelomaDiagnosisSavedForm():
 			# meta validation
 			try:
 				meta_validators = expectedValues['meta']
-				for key, value in meta_validators.iteritems():
-					if key == 'num_diagnoses' and value != len(self.diagnoses):
-						failures.append('MyelDiagSavedForm Meta: Expected ' + str(value) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
-					elif key == 'num_physicians' and value != len(self.physicians):
-						failures.append('MyelDiagSavedForm Meta: Expected ' + str(value) + ' physicians. Form has ' + str(len(self.physicians)))
+				for validator in meta_validators:
+					for key, value in validator.iteritems():
+						if key == 'num_diagnoses' and value != len(self.diagnoses):
+							failures.append('MyelDiagSavedForm Meta: Expected ' + str(value) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
+						elif key == 'num_physicians' and value != len(self.physicians):
+							failures.append('MyelDiagSavedForm Meta: Expected ' + str(value) + ' physicians. Form has ' + str(len(self.physicians)))
 			except KeyError:
 				pass
 
-			# form validation
-			expectedDiagnoses = self.convert_expected_diagnoses(expectedValues)
-			expectedPhysicians = expectedValues['physicians']
+			# Only perform form validation if 'whole' formData dictionary is passed in
+			try:
+				# Should only have 'diagnosis_date' if whole dictionary passed in
+				test = expectedValues['diagnosis_date']
 
-			# Right # of diagnoses and physicians?
-			if len(expectedDiagnoses) != len(self.diagnoses):
-				failures.append('MyelDiagSavedForm: Expected ' + str(len(expectedDiagnoses)) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
-			if len(expectedValues['physicians']) != len(self.physicians):
-				failures.append('MyelDiagSavedForm: Expected ' + str(len(expectedPhysicians)) + ' physicians. Form has ' + str(len(self.physicians)))
+				expectedDiagnoses = self.convert_expected_diagnoses(expectedValues)
+				expectedPhysicians = expectedValues['physicians']
 
-			# Diagnoses match expected values?
-			keys = ['date', 'type', 'lesions', 'facility', 'city', 'state']
-			for i, diagnosis in enumerate(self.diagnoses):
-				for key in keys:
+				# Right # of diagnoses and physicians?
+				if len(expectedDiagnoses) != len(self.diagnoses):
+					failures.append('MyelDiagSavedForm: Expected ' + str(len(expectedDiagnoses)) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
+				if len(expectedValues['physicians']) != len(self.physicians):
+					failures.append('MyelDiagSavedForm: Expected ' + str(len(expectedPhysicians)) + ' physicians. Form has ' + str(len(self.physicians)))
 
-					if key in expectedDiagnoses and diagnosis[key] != expectedDiagnoses[key]:
-						failures.append('MyelDiagForm: Diagnosis ' + str(i) + ' expected "' + key + '" ' + expectedDiagnoses[key]
-							+ '", got ' + diagnoses[key])
+				# Diagnoses match expected values?
+				keys = ['date', 'type', 'lesions', 'facility', 'city', 'state']
+				for i, diagnosis in enumerate(self.diagnoses):
+					for key in keys:
 
-			# Physicians match expected values?
-			physician_keys = ['name', 'facility', 'city', 'state']
-			for i, physician in enumerate(self.physicians):
-				for p_key in physician_keys:
+						if key in expectedDiagnoses and diagnosis[key] != expectedDiagnoses[key]:
+							failures.append('MyelDiagForm: Diagnosis ' + str(i) + ' expected "' + key + '" ' + expectedDiagnoses[key]
+								+ '", got ' + diagnoses[key])
 
-					if p_key in expectedPhysicians and physician[p_key] != expectedPhysicians[p_key]:
-						failures.append('MyelDiagForm: Physican ' + str(i) + ' expected "' + p_key + '" ' + expectedPhysicians[key]
-							+ '", got ' + physician[key])
+				# Physicians match expected values?
+				physician_keys = ['name', 'facility', 'city', 'state']
+				for i, physician in enumerate(self.physicians):
+					for p_key in physician_keys:
+
+						if p_key in expectedPhysicians and physician[p_key] != expectedPhysicians[p_key]:
+							failures.append('MyelDiagForm: Physican ' + str(i) + ' expected "' + p_key + '" ' + expectedPhysicians[key]
+								+ '", got ' + physician[key])
+			except KeyError:
+				pass
 
 			if len(failures) > 0:
 				for failure in failures:
@@ -212,6 +219,7 @@ class MyelomaDiagnosisSavedForm():
 		# Wait for modal and loading overlay to disappear
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		return True
 
 	def edit_diagnosis(self, diagnosisInfo, diagnosis_index=0, action='submit'):
 		self.diagnoses[diagnosis_index]['edit'].click()
@@ -221,6 +229,7 @@ class MyelomaDiagnosisSavedForm():
 		# Wait for modal and loading overlay to disappear
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		return True
 
 	def delete(self, del_type='diagnosis', index=0, action='submit'):
 		# Handles deleting diagnoses or physicians
@@ -235,17 +244,17 @@ class MyelomaDiagnosisSavedForm():
 		# Wait for confirm popup and loading overlay to disappear
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'react-confirm-alert')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		return True
 
 	def add_physician(self, physicianInfo, action='submit'):
 		self.add_physician_button.click()
-		raw_input('clicked add physician')
 		self.addPhysicianForm = addPhysicianForm.AddPhysicianForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.addPhysicianForm.load())
 		self.addPhysicianForm.submit(physicianInfo, action)
 		# Wait for modal and loading overlay to disappear
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
-
+		return True
 
 
 

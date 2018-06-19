@@ -87,7 +87,7 @@ class MyelDiagView(view.View):
 
 ########################### Saved Form ##############################
 
-	def add_physician(self, physicianInfo, action='submit', expectedInfo=None):
+	def add_physician(self, physicianInfo, expectedInfo=None, action='submit',):
 		# Enter info and submit addPhysicianForm. Then reload page
 		if self.myelomaDiagnosisSavedForm:
 			if self.myelomaDiagnosisSavedForm.add_physician(physicianInfo, action):
@@ -96,7 +96,7 @@ class MyelDiagView(view.View):
 			# todo: handle working on fresh form
 			pass
 
-	def add_diagnosis(self, diagnosisInfo, action='submit', expectedInfo=None):
+	def add_diagnosis(self, diagnosisInfo, expectedInfo=None, action='submit'):
 		# Enter info and submit additionalDiagnosisForm. Then reload page
 		if self.myelomaDiagnosisSavedForm:
 			if self.myelomaDiagnosisSavedForm.add_diagnosis(diagnosisInfo, action):
@@ -105,7 +105,7 @@ class MyelDiagView(view.View):
 			# todo: handle working on fresh form
 			pass
 
-	def delete(self, del_type='diagnosis', index=0, action='submit', expectedInfo=None):
+	def delete(self, del_type='diagnosis', index=0, expectedInfo=None, action='submit'):
 		# Handles deleting physician or diagnosis
 		if self.myelomaDiagnosisSavedForm:
 			if self.myelomaDiagnosisSavedForm.delete(del_type, index, action):
