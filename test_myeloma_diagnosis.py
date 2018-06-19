@@ -191,8 +191,10 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		edited_diagnosis['diagnosis_date'] = '05/2018'
 		edited_diagnosis['lesions'] = '6 or more'
 		edited_diagnosis['diagnosis_location']['city'] = 'Logan'
+		edited_diagnosis['diagnosis_date'] = '04/2018'
 		myelDiagView.myelomaDiagnosisSavedForm.edit_diagnosis(edited_diagnosis)
 		self.assertTrue(myelDiagView.on('saved', edited_diagnosis))
+		raw_input('edited?')
 		# reset diagnosis back to original info
 		myelDiagView.myelomaDiagnosisSavedForm.edit_diagnosis(default_diagnosis)
 		self.assertTrue(myelDiagView.on('saved', default_diagnosis))

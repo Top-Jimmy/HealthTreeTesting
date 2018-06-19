@@ -42,6 +42,11 @@ class EditDiagnosisForm():
 
 	def validate(self, expectedValues):
 		failures = []
+		if self.submit_button.text != "Submit":
+			failure.append('AddPhysicianForm: Expecting submit button "submit", got "' + self.submit_button.text + '"')
+		if self.cancel_button.text != "Cancel":
+			failure.append('AddPhysicianForm: Expecting cancel button "cancel", got "' + self.cancel_button.text + '"')
+		
 		if expectedValues:
 			if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['diagnosis_date']:
 				failures.append('MyelDiagForm: Expecting date of diagnosis "' + expectedValues['date'] + '", got "' + self.dateDiagnosis_form-control.get_attribute('value') + '"')

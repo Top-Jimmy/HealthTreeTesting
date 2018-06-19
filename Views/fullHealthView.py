@@ -12,7 +12,7 @@ class FullHealthView(view.View):
 	def load(self):
 		try:
 			# Crap on left
-			self.signInForm = signInForm.SignInForm(self.driver)
+			self.fullHealthForm = fullHealthForm.FullHealthForm(self.driver)
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 			# self.validate()
