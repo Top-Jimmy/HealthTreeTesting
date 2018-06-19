@@ -40,7 +40,6 @@ class MyelomaDiagnosisFreshForm():
 		self.boneLesion2_radio = self.form.find_element_by_id('2')
 		self.boneLesion3_radio = self.form.find_element_by_id('3')
 
-		# todo: handle loading state dropdown based on whether first diagnosis is preSet
 		self.facility_input = self.form.find_element_by_id('facility_name')
 		self.facility_city_input = self.form.find_element_by_id('Last')
 		self.load_facility_state()
@@ -55,12 +54,20 @@ class MyelomaDiagnosisFreshForm():
 		button_cont = self.form.find_element_by_class_name('submit_button')
 		self.continue_button = button_cont.find_element_by_tag_name('button')
 
-		# self.validate(expectedValues)
+		self.validate(expectedValues)
 		return True
 
 	def validate(self, expectedValues):
 		failures = []
 		if expectedValues:
+			# Right # of diagnoses and physicians?
+			#
+			# if len(expectedDiagnoses) != len(self.diagnoses):
+			# 	failures.append('MyelDiagSavedForm: Expected ' + str(len(expectedDiagnoses)) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
+			if len(expectedValues['physicians']) != len(self.physicians):
+				failures.append('MyelDiagForm: Expected ' + str(len(expectedPhysicians)) + ' physicians. Form has ' + str(len(self.physicians)))
+
+
 			if expectedValues['newly_diagnosed'] == 'no' and not self.newly_diagnosedNo_radio.get_attribute('checked'):
 				failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
 			elif expectedValues['newly_diagnosed'] == 'yes' and not self.newly_diagnosedYes_radio.get_attribute('checked'):
@@ -105,6 +112,7 @@ class MyelomaDiagnosisFreshForm():
 				failure.append('MyelDiagForm: Expecting "yes" to an additional diagnosis')
 
 			# todo: handle verifying multiple physicians
+			# For multiple physicians: Need to handle fact that physicians aren't necessarily displayed in same order they were created
 			if self.phys_name_input.get_attribute('value') != expectedValues['phys_name']:
 				failure.append('MyelDiagForm: Expecting physician name "' + expectedValues['phys_name'] + '", got "' + self.phys_name_input.get_attribute('value') + '"')
 			if self.phys_facility_input.get_attribute('value') != expectedValues['phys_facility']:
@@ -119,70 +127,56 @@ class MyelomaDiagnosisFreshForm():
 			raise NoSuchElementException('Failed to load MyelomaDiagnosisFreshForm')
 
 	def load_physicians(self):
-		# todo: need id for physician container
-			# keep track of # of physicians
-			# loop through and find (name, facility, city, state)
-				# for physicians after the first, load delete button
-			# find 'add physician' button
-			# put all physicians in object? Maybe not necessary if we're keeping track of # of physicians
+		self.physician_cont = self.driver.find_element_by_id('physician_container')
+		self.physician_rows = self.physician_cont.find_elements_by_class_name('form-group')
 
+		button_cont = self.physician_cont.find_element_by_class_name('addDiagnoisisButton')
+		self.add_physician_button = button_cont.find_element_by_tag_name('i')
 
-		# First physician: Name, Facility, City, State
-		self.phys_name_cont = self.form.find_element_by_class_name('rbt-input-hint-container')
-		phys_inputs = self.phys_name_cont.find_elements_by_tag_name('input')
-		self.phys_name_input = self.form.find_element_by_id('physician_name_0')
-		self.phys_name_hiddenInput = phys_inputs[1]
+		self.physicians = []
+		for i, physician in enumerate(self.physician_rows):
+			# name, facility, city, state
+			name_cont = physician.find_element_by_id('physician_name_' + str(i))
+			name_inputs = name_cont.find_elements_by_tag_name('input')
+			name_input = name_inputs[0]
+			name_hidden_input = name_inputs[1]
 
-		cont = self.form.find_element_by_id('facility_name_0')
-		self.phys_facility_input = cont.find_element_by_tag_name('input')
+			facility_input = physician.find_element_by_id('facility_name_input_' + str(i))
 
-		cont = self.form.find_element_by_id('city0')
-		self.phys_city_input = cont.find_element_by_tag_name('input')
+			city_input = physician.find_element_by_id('city_' + str(i))
 
-		self.load_physician_state(0)
+			# State selector element depends on if state has been set already
+			state_cont = physician.find_element_by_id('state' + str(i))
+			state_selector = None
+			state_value = ''
+			try:
+				value_el = state_cont.find_element_by_class_name('Select-value')
+				state_value = value_el.text
+				state_selector = value_el
+			except NoSuchElementException:
+				state_selector = state_cont.find_element_by_class_name('Select-placeholder')
 
+			# first physician won't have delete button
+			try:
+				delete_button = physician.find_element_by_class_name('delete_physician_icon')
+			except NoSuchElementException:
+				delete_button = None
 
-
-
-		# physicians = []
-
-		# physician_cont = self.form.find_element_by_class_name('??')
-		# rows = physician_cont.find_elements_by_class_name('form-group')
-		# for i, row in enumerate(rows):
-		# 	inputs = row.find_element_by_tag_name('input')
-
-		# 	try:
-		# 		el = row.find_element_by_class_name('Select-value')
-		# 		state = el.text
-		# 	except NoSuchElementException:
-		# 		state = None
-
-		# 	try:
-		# 		delete_name_button = row.find_element_by_class_name('rbt-close')
-		# 	except NoSuchElementException:
-		# 		delete_name_button = None
-
-		# 	try:
-		# 		delete_physician_button = row.find_element_by_class_name('delete_physician_icon')
-		# 	except NoSuchElementException:
-		# 		delete_physician_button = None
-
-
-
-		# 	physician = {
-		# 		'name': inputs[0].text,
-		# 		'facility': inputs[2].text,
-		# 		'city': inputs[3].text,
-		# 		'state': state,
-
-		# 		'delete_name_button': delete_button,
-		# 		'delete_physician_button': delete_physician_button,
-		# 	}
-
-		# 	physicians.append(physician)
-
-		# 	return physicians
-
+			physician = {
+				'name': name_input.get_attribute('value'),
+				'facility': facility_input.get_attribute('value'),
+				'city': city_input.get_attribute('value'),
+				'state': state_value,
+				'elements': {
+					'name_input': name_input,
+					'name_hidden_input': name_hidden_input,
+					'facility_input': facility_input,
+					'city_input': city_input,
+					'state_selector': state_selector,
+					'delete_button': delete_button,
+				}
+			}
+			self.physicians.append(physician)
 
 	def load_additional_diagnoses(self):
 		additional_diagnoses = []
@@ -243,10 +237,11 @@ class MyelomaDiagnosisFreshForm():
 		WDW(self.driver, 5).until(lambda x: self.load())
 
 	def load_facility_state(self):
+		# Each state dropdown should have this class. Facility state should always be 1st
 		conts = self.form.find_elements_by_class_name('state-font-custom')
 		facility_cont = conts[0]
 
-		# Is value already set? Should have either value or placeholder element
+		# Is value already set? Should have either value (set) or placeholder (not set) element
 		self.facility_state_preSet = False
 		try:
 			self.facility_state_value = facility_cont.find_element_by_class_name('Select-value-label')
@@ -282,54 +277,67 @@ class MyelomaDiagnosisFreshForm():
 			print('invalid state: ' + value)
 		WDW(self.driver, 5).until(lambda x: self.load())
 
-	def load_physician_state(self, physicianIndex):
-		# todo: don't assign to variables. Put into object (needs to handle n physicians)
-		cont = self.form.find_element_by_id('state' + str(physicianIndex))
-
-		# Is value already set? Should have either value or placeholder element
-		self.physician_state_preSet = False
-		try:
-			self.physician_state_value = cont.find_element_by_class_name('Select-value')
-			self.physician_state_placeholder = None
-			self.physician_state_preSet = True
-		except NoSuchElementException:
-			self.physician_state_value = None
-			 # 'Select state' placeholder
-			self.physician_state_placeholder = cont.find_element_by_class_name('Select-placeholder')
-
 	def set_physician_state(self, value, physicianIndex=0):
-		# todo: handle grabbing right physician object, instead of static variables
-
-		# Click value div if already set. Placeholder if not set
-		if self.physician_state_preSet:
-			self.physician_state_value.click()
-		else:
-			self.physician_state_placeholder.click()
+		# Click state_selector to open dropdown menu
+		physician = self.physicians[physicianIndex]
+		physician['elements']['state_selector'].click()
 
 		# Load dropdown options
 		dropdownOptions = {}
 		try:
-			menu = self.form.find_element_by_class_name('Select-menu-outer')
+			menu = self.physician_rows[physicianIndex].find_element_by_class_name('Select-menu-outer')
 			divs = menu.find_elements_by_tag_name('div')
 			for i, div in enumerate(divs):
 				if i != 0: # First div is container
 					dropdownOptions[div.text.lower()] = divs[i]
 		except NoSuchElementException:
-			print('Unable to find dropdown items for physician state')
+			print('Unable to find dropdown items for physician ' + str(physicianIndex) + ' state')
 
 		try: # click one that matches value
 			option = dropdownOptions[value.lower()]
 			option.click()
 		except IndexError:
 			print('invalid state: ' + value)
+		# reload page to update physician values
 		WDW(self.driver, 5).until(lambda x: self.load())
+
+	def set_physician(self, physicianInfo, index):
+		p_elements = self.physicians[index]['elements']
+		if physicianInfo['name']:
+			p_elements['name_input'].click()
+			AC(self.driver).send_keys(physicianInfo['name']).perform()
+
+		p_elements['facility_input'].clear()
+		if physicianInfo['facility']:
+			p_elements['facility_input'].send_keys(physicianInfo['facility'])
+
+		p_elements['city_input'].clear()
+		if physicianInfo['city']:
+			p_elements['city_input'].send_keys(physicianInfo['city'])
+
+		if physicianInfo['state']:
+			self.set_physician_state(physicianInfo['state'], index)
 
 ############################## Typeahead functions ############################
 
-	def add_physician_typeahead(self, partial_name, full_name, physicianInfo):
-		# todo: needs to be able to add a new physician
+	# 'name': name_input.get_attribute('value'),
+	# 'facility': facility_input.get_attribute('value'),
+	# 'city': city_input.get_attribute('value'),
+	# 'state': state_value,
+	# 'elements': {
+	# 	'name_input': name_input,
+	# 	'name_hidden_input': name_hidden_input,
+	# 	'facility_input': facility_input,
+	# 	'city_input': city_input,
+	# 	'state_selector': state_selector,
+	# 	'delete_button': delete_button,
+	# }
 
-		self.phys_name_input.click()
+	def add_physician_typeahead(self, partial_name, full_name, physicianInfo, physicianPosition):
+
+		physician_elements = self.physicians[-1]['elements']
+
+		physician_elements['name_input'].click()
 		AC(self.driver).send_keys(partial_name).perform()
 
 		# Wait for options to show up, then click option that matches full_name
@@ -354,13 +362,14 @@ class MyelomaDiagnosisFreshForm():
 			except StaleElementReferenceException:
 				pass
 
-		# todo: need to verify physicianInfo matches data loaded for last physician
+	def clear_physician(self, index):
+		cont = self.physician_rows[-1]
+		physician_elements = self.physicians[-1]['elements']
 
-		# Verify physicianInfo
-		# self.load('fresh', physicianInfo)
+		clear_physician_info_button = cont.find_element_by_class_name('rbt-close')
+		clear_phy
 
-	# def clear_physician(self, physicianIndex=0):
-		# Use typeahead
+
 
 
 ############################## Error handling #################################
@@ -478,20 +487,20 @@ class MyelomaDiagnosisFreshForm():
 				# todo: handle multiple physician inputs. load into list
 				# todo: handle adding multiple physicians
 				for i, physician in enumerate(formInfo['physicians']):
-					if physician['name']:
-						self.phys_name_input.click()
-						AC(self.driver).send_keys(physician['name']).perform()
-
-					if physician['facility']:
-						self.phys_facility_input.clear()
-						self.phys_facility_input.send_keys(physician['facility'])
-					if physician['city']:
-						self.phys_city_input.clear()
-						self.phys_city_input.send_keys(physician['city'])
-					if physician['state']:
-						self.set_physician_state(physician['state'])
+					# print('i: ' + str(i))
+					# print('# physician inputs: ' + str(len(self.physicians)))
+					if i >= len(self.physicians):
+						# Form doesn't have enough rows. Add physician row and reload page
+						# raw_input('adding physician')
+						self.add_physician_button.click()
+						WDW(self.driver, 5).until(lambda x: self.load())
+						# print(str(len(self.physicians)))
+						# raw_input('right # physicians?')
+					# enter formInfo into last row of physician inputs
+					self.set_physician(physician, i)
 
 			if submit:
 				self.continue_button.click()
 			return True
 		return False
+

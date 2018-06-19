@@ -25,7 +25,7 @@ class PopUpForm():
 			for failure in failures:
 				print(failure)
 			return False
-			# raise NoSuchElementException('Failed to load PopUpForm')
+			raise NoSuchElementException('Failed to load PopUpForm')
 		return True
 
 	def confirm(self, action='submit'):

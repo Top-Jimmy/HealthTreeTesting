@@ -3,8 +3,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 import datePicker
-import popUpForm
+import popUpForm # Popup for deleting diagosis or physician
 import editDiagnosisForm
 import additionalDiagnosisForm
 import addPhysicianForm
@@ -23,11 +25,11 @@ class MyelomaDiagnosisSavedForm():
 
 		self.diagnosis_table = self.form.find_element_by_class_name('diagnosis-frst-table')
 		self.diagnoses = self.load_diagnoses()
-		self.add_diagnosis_button = add_buttons[0]
+		self.add_diagnosis_button = add_buttons[0].find_element_by_tag_name('i')
 
 		self.physician_table = self.form.find_element_by_class_name('diagnosis-scnd-table')
 		self.physicians = self.load_physicians()
-		self.add_physician_button = add_buttons[1]
+		self.add_physician_button = add_buttons[1].find_element_by_tag_name('i')
 
 		self.validate(expectedValues)
 		return True
@@ -35,6 +37,19 @@ class MyelomaDiagnosisSavedForm():
 	def validate(self, expectedValues):
 		if expectedValues:
 			failures = []
+
+			# meta validation
+			try:
+				meta_validators = expectedValues['meta']
+				for key, value in meta_validators.iteritems():
+					if key == 'num_diagnoses' and value != len(self.diagnoses):
+						failures.append('MyelDiagSavedForm Meta: Expected ' + str(value) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
+					elif key == 'num_physicians' and value != len(self.physicians):
+						failures.append('MyelDiagSavedForm Meta: Expected ' + str(value) + ' physicians. Form has ' + str(len(self.physicians)))
+			except KeyError:
+				pass
+
+			# form validation
 			expectedDiagnoses = self.convert_expected_diagnoses(expectedValues)
 			expectedPhysicians = expectedValues['physicians']
 
@@ -64,7 +79,7 @@ class MyelomaDiagnosisSavedForm():
 
 			if len(failures) > 0:
 				for failure in failures:
-					print('failure')
+					print(failure)
 				raise NoSuchElementException('Failed to load MyelomaDiagnosisSavedForm')
 
 	def load_diagnoses(self):
@@ -162,7 +177,7 @@ class MyelomaDiagnosisSavedForm():
 		return month + ' ' + year
 
 	def convert_expected_diagnoses(self, expectedValues):
-		# Convert initialDiagnosis and additional_diagnoses from expectedValues.
+		# Combine 'initialDiagnosis' and 'additional_diagnoses' from expectedValues.
 		# Save into object equivalent to what this form loads.
 		diagnoses = []
 		# Convert date from 'mm/yyyy' to 'mmm yyyy'
@@ -184,32 +199,53 @@ class MyelomaDiagnosisSavedForm():
 			}
 			diagnoses.append(additional_diagnosis)
 
-		return {
-			'diagnoses': diagnoses,
-		}
+		return diagnoses
 
 ########################### User Functions #############################
+
+	def add_diagnosis(self, diagnosisInfo, action='submit'):
+		self.add_diagnosis_button.click()
+
+		self.additionalDiagnosisForm = additionalDiagnosisForm.AdditionalDiagnosisForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.additionalDiagnosisForm.load())
+		self.additionalDiagnosisForm.submit(diagnosisInfo)
+		# Wait for modal and loading overlay to disappear
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
 	def edit_diagnosis(self, diagnosisInfo, diagnosis_index=0, action='submit'):
 		self.diagnoses[diagnosis_index]['edit'].click()
 		time.sleep(1)
 		self.editDiagnosisForm = editDiagnosisForm.EditDiagnosisForm(self.driver)
 		self.editDiagnosisForm.submit(diagnosisInfo, action)
+		# Wait for modal and loading overlay to disappear
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
-	def delete_diagnosis(self, diagnosis_index=0, action='submit'):
-		self.diagnoses[diagnosis_index]['delete'].click()
+	def delete(self, del_type='diagnosis', index=0, action='submit'):
+		# Handles deleting diagnoses or physicians
+		if del_type == 'physician':
+			self.physicians[index]['delete'].click()
+		else:
+			self.diagnoses[index]['delete'].click()
+
 		self.popUpForm = popUpForm.PopUpForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
 		self.popUpForm.confirm(action)
+		# Wait for confirm popup and loading overlay to disappear
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'react-confirm-alert')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
-	def add_diagnosis(self, diagnosis_index=0, action='submit'):
-		self.diagnoses[diagnosis_index][''].click()
-		self.additionalDiagnosisForm = additionalDiagnosisForm.AdditionalDiagnosisForm(self.driver)
-		self.additionalDiagnosisForm.submit(action)
-
-	def add_physician(self, diagnosis_index=0, action='submit'):
-		self.diagnoses[diagnosis_index][''].click()
+	def add_physician(self, physicianInfo, action='submit'):
+		self.add_physician_button.click()
+		raw_input('clicked add physician')
 		self.addPhysicianForm = addPhysicianForm.AddPhysicianForm(self.driver)
-		self.addPhysicianForm.submit(action)
+		WDW(self.driver, 10).until(lambda x: self.addPhysicianForm.load())
+		self.addPhysicianForm.submit(physicianInfo, action)
+		# Wait for modal and loading overlay to disappear
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
 
 
 

@@ -18,12 +18,13 @@ class AboutMeForm():
 		self.firstname_input = self.form.find_element_by_id('about_first')
 		self.lastname_input = self.form.find_element_by_id('Last')
 
-		container = rows[2]
+		container = self.driver.find_element_by_id('gender_radio_group')
 		labels = container.find_elements_by_tag_name('label')
-		self.female_radio = labels[1]
-		self.male_radio = labels[2]
+		self.female_radio = labels[0]
+		self.male_radio = labels[1]
 
-		self.birth_input = inputs[4]
+		dob_cont = self.driver.find_element_by_class_name('mui-select')
+		self.dob_input = dob_cont.find_element_by_tag_name('input')
 
 		self.zipcode_input = self.form.find_element_by_id('zip-code')
 
@@ -31,8 +32,17 @@ class AboutMeForm():
 
 		self.load_cancer_care()
 
+		# Terms of Use and Privacy Policy checkboxes and links
+		label_conts = self.form.find_elements_by_class_name('checkbox-custom-label')
 		self.termsprivacy_checkbox = self.form.find_element_by_id('agreed')
+		terms_links = label_conts[0].find_elements_by_tag_name('a')
+		self.ht_terms_link = terms_links[0]
+		self.ht_privacy_link = terms_links[1]
+
 		self.SparkCuresterms_checkbox = self.form.find_element_by_id('accepted_understand_clause')
+		spark_links = label_conts[1].find_elements_by_tag_name('a')
+		self.spark_terms_link = spark_links[0]
+		self.spark_privacy_link = spark_links[1]
 
 		# self.validate(expectedValues)
 		return True
@@ -44,8 +54,8 @@ class AboutMeForm():
 				failures.append('AboutMeForm: Expecting first name "' + expectedValues['first_name'] + '", got "' + self.firstname_input.get_attribute('value') + '"')
 			if self.lastname_input.get_attribute('value') != expectedValues['last_name']:
 				failures.append('AboutMeForm: Expecting last name "' + expectedValues['last_name'] + '", got "' + self.lastname_input.get_attribute('value') + '"')
-			if self.birth_input.get_attribute('value') != expectedValues['dob']:
-				failures.append('AboutMeForm: Expecting date of birth "' + expectedValues['dob'] + '", got "' + self.birth_input.get_attribute('value') + '"')
+			if self.dob_input.get_attribute('value') != expectedValues['dob']:
+				failures.append('AboutMeForm: Expecting date of birth "' + expectedValues['dob'] + '", got "' + self.dob_input.get_attribute('value') + '"')
 			if self.zipcode_input.get_attribute('value') != expectedValues['zip_code']:
 				failures.append('AboutMeForm: Expecting zip code "' + expectedValues['zip_code'] + '", got"' + self.zipcode_input.get_attribute('value') + '"')
 
@@ -120,8 +130,12 @@ class AboutMeForm():
 		return warningObjects
 
 	def load_cancer_care(self):
-		inputs = self.form.find_elements_by_tag_name('input')
+		cont = self.form.find_element_by_id('cancerCare_radio_group')
+		inputs = cont.find_elements_by_tag_name('input')
+		self.cancerCareYes_radio = inputs[0]
+		self.cancerCareNo_radio = inputs[1]
 
+		# caregiver inputs only there if radio group is set to 'Yes'
 		try:
 			self.caregiver_name_input = self.form.find_element_by_id('c_name')
 			self.caregiver_phone_input = self.form.find_element_by_id('c_phone')
@@ -130,9 +144,6 @@ class AboutMeForm():
 			self.caregiver_name_input = None
 			self.caregiver_phone_input = None
 			self.caregiver_email_input = None
-
-		self.cancerCareYes_radio = inputs[6]
-		self.cancerCareNo_radio = inputs[7]
 
 	def enter_info(self, form_info):
 		if form_info:
@@ -144,8 +155,8 @@ class AboutMeForm():
 				self.male_radio.click()
 			else:
 				self.female_radio.click()
-			self.birth_input.clear()
-			self.birth_input.send_keys(form_info['dob'])
+			self.dob_input.clear()
+			self.dob_input.send_keys(form_info['dob'])
 			self.zipcode_input.clear()
 			self.zipcode_input.send_keys(form_info['zip_code'])
 			self.treatment_textarea.clear()

@@ -79,33 +79,20 @@ class DatePicker():
 		month = self.parse_date(date, 'month')
 		year = self.parse_date(date, 'year')
 		self.load()
+
 		if self.current_year != year:
 			self.set_year(year)
-		if self.current_month != month:
-			self.set_month(month)
+		self.set_month(month)
+
 		# Wait for datepicker to disappear
 		time.sleep(.4)
-
-		# try:
-		# 	if self.current_year != year:
-		# 		self.set_year(year)
-		# 	if self.current_month != month:
-		# 		self.set_month(month)
-		# 	# Wait for datepicker to disappear
-		# 	time.sleep(.4)
-		# except (StaleElementReferenceException, ElementNotVisibleException, WebDriverException) as e:
-		# 	# page probably reloaded.
-		# 	dateElement.click()
-		# 	self.load()
-		# 	self.set_date(date)
-
 
 	def parse_date(self, dateStr, dateType):
 		# Given dateStr "mm/yyyy", parse and return month or year
 		divider = dateStr.index('/')
 		if dateType == 'month':
 			months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-			return months[int(dateStr[:divider])]
+			return months[int(dateStr[:divider]) - 1]
 		else:
 			year = dateStr[divider + 1:]
 			return year
@@ -164,11 +151,11 @@ class DatePicker():
 		# Is year visible? Before or after current page?
 		first_year = self.get_earliest_year()
 		last_year = first_year + 11 	# Always displays 12 years
-		if year < first_year:
+		if int(year) < first_year:
 			self.previous_button.click()
 			self.load('year')
 			self.set_year(year)
-		elif year > last_year:
+		elif int(year) > last_year:
 			self.next_button.click()
 			self.load('year')
 			self.set_year(year)
@@ -184,7 +171,7 @@ class DatePicker():
 				if int(year) < lowest_year:
 					lowest_year = int(year)
 			if lowest_year < 3000:
-				return lowest_year
+				return int(lowest_year)
 			else:
 				print('Datepicker: Failed to get earliest year')
 

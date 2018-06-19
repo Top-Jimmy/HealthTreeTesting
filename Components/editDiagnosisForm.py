@@ -6,7 +6,7 @@ from selenium.webdriver import ActionChains as AC
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 import datePicker
 
-# Form on 'Myeloma Diagnosis' when user has not saved diagnosis info.
+# Form on 'Myeloma Diagnosis' when user has already saved diagnosis but wants to edit info
 
 class EditDiagnosisForm():
 
@@ -193,8 +193,6 @@ class EditDiagnosisForm():
 		if formInfo:
 			if formInfo['diagnosis_date'] is not None:
 				picker = datePicker.DatePicker(self.driver)
-				# self.dateDiagnosis_input.click()
-				# picker.set_date(formInfo['diagnosis_date'], self.dateDiagnosis_input)
 				dateSet = False
 				while not dateSet:
 					try:
@@ -221,12 +219,12 @@ class EditDiagnosisForm():
 					self.boneLesion3_radio.click()
 
 			if formInfo['diagnosis_location']: # Empty dict should evaluate to False
+				self.facility_input.clear()
+				self.facility_city_input.clear()
 				location = formInfo['diagnosis_location']
 				if location['facility']:
-					self.facility_input.clear()
 					self.facility_input.send_keys(location['facility'])
 				if location['city']:
-					self.facility_city_input.clear()
 					self.facility_city_input.send_keys(location['city'])
 				if location['state']:
 					self.set_facility_state(location['state'])
