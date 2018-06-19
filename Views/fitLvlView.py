@@ -1,7 +1,7 @@
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError
-from Components import signInForm
+from Components import fitLvlForm
 from Components import menu
 from Components import header
 from Views import view
@@ -12,7 +12,7 @@ class FitLvlView(view.View):
 	def load(self):
 		try:
 			# Crap on left
-			self.signInForm = signInForm.SignInForm(self.driver)
+			self.fitLvlForm = fitLvlForm.FitLvlForm(self.driver)
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 			# self.validate()

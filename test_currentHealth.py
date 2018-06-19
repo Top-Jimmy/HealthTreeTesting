@@ -23,5 +23,3 @@ class TestCurrentHealth(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Current Health')
 		self.assertTrue(currentHealthView.on())
-
-		raw_input('wait')

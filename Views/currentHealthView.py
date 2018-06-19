@@ -15,19 +15,19 @@ class CurrentHealthView(view.View):
 			self.currentHealthForm = currentHealthForm.CurrentHealthForm(self.driver)
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
-			# self.validate()
+
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
 			return False
 
-	def validate(self):
-		failures = []
-		if self.createAccount_link.text != 'Create Account':
-			failures.append('1. Create Account link. Expecting text "Create Account", got "' + self.createAccount_link.text + '"')
-		if len(failures) > 0:
-			print(failures)
-			raise NoSuchElementException('Failed to load HomeView')
+	# def validate(self):
+	# 	failures = []
+	# 	if self.current_health_label.text != 
+	# 		failures.append('1. Create Account link. Expecting text "Create Account", got "' + self.createAccount_link.text + '"')
+	# 	if len(failures) > 0:
+	# 		print(failures)
+	# 		raise NoSuchElementException('Failed to load currentHealthView')
 
 	def createErrorObj(self, errorText):
 		errorType = 'undefined';

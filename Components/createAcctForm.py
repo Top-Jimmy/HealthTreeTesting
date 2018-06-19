@@ -32,13 +32,12 @@ class CreateAcctForm():
 		self.validate()
 		return True
 
-	def validate(self):
-		failures = []
-		if self.submit_button.text != 'Sign Up':
-			failures.append('1. Sign Up button. Expecting text "Sign Up", got "' + self.submit_button.text + '"')
-		if len(failures) > 0:
-			print(failures)
-			raise NoSuchElementException('Failed to load CreateAcctForm')
+	# def validate(self):
+	# 	failures = []
+		
+	# 	if len(failures) > 0:
+	# 		print(failures)
+	# 		raise NoSuchElementException('Failed to load CreateAcctForm')
 
 	# def read_warning(self):
 	# 	inputs = ['username', 'email', 'password', 'confirm password']
@@ -70,13 +69,13 @@ class CreateAcctForm():
 	# 		'type', warningType,
 	# 	}
 
-	def enter_credentials(self, credentials):
-		if credentials['username'] and credentials['password']:
-			self.login_input.send_keys(credentials['username'])
-			time.sleep(.4)
-			self.password_input.send_keys(credentials['password'])
-			time.sleep(.4)
-			self.signIn_button.click()
-			time.sleep(.4)
-			return True
-		return False
+	# def enter_credentials(self, credentials):
+	# 	if credentials['username'] and credentials['password']:
+	# 		self.login_input.send_keys(credentials['username'])
+	# 		time.sleep(.4)
+	# 		self.password_input.send_keys(credentials['password'])
+	# 		time.sleep(.4)
+	# 		self.signIn_button.click()
+	# 		time.sleep(.4)
+	# 		return True
+	# 	return False

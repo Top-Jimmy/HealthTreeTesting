@@ -238,7 +238,6 @@ class MyelomaDiagnosisSavedForm():
 
 	def add_physician(self, physicianInfo, action='submit'):
 		self.add_physician_button.click()
-		raw_input('clicked add physician')
 		self.addPhysicianForm = addPhysicianForm.AddPhysicianForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.addPhysicianForm.load())
 		self.addPhysicianForm.submit(physicianInfo, action)
