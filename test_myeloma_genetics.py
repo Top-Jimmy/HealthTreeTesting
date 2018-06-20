@@ -70,6 +70,79 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		myelomaGeneticsView.add_fish_test(fishInfo, 'save')
 
+		self.assertTrue(myelomaGeneticsView.on())
+
+		# riskInfo = {
+		# 	'high_b2m': 'Yes',
+		# 	'high_ldh': 'I dont know',
+		# 	'low_albumin': 'I dont know',
+		# }
+
+		# myelomaGeneticsView.edit_high_risk(riskInfo, 'save')
+
+		# self.assertTrue(myelomaGeneticsView.on())
+
+	def test_add_gep(self):
+
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelomaGeneticsView = self.andrew.myelomaGeneticsView
+		gepInfo = {
+			'test_gep_date': '04/2013',
+			'gep_comment': 'Doubts about validity',
+		}
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Myeloma Genetics')
+		self.assertTrue(myelomaGeneticsView.on())
+
+		myelomaGeneticsView.add_gep_test(gepInfo, 'save')
+
+		self.assertTrue(myelomaGeneticsView.on())
+
+	def test_add_ngs(self):
+
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelomaGeneticsView = self.andrew.myelomaGeneticsView
+		ngsInfo = {
+			'test_ngs_date': '11/2010',
+			'ngs_comment': 'jkl',
+			'mutate_nras': False,
+			'mutate_kras': True,
+			'mutate_braf': True,
+			'mutate_tp53': False,
+			'mutate_fam46c': True,
+			'mutate_dis3': False,
+			'mutate_traf3': True,
+			'mutate_fgfr3': True,
+			'mutate_atm': False,
+		}
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Myeloma Genetics')
+		self.assertTrue(myelomaGeneticsView.on())
+
+		myelomaGeneticsView.add_ngs_test(ngsInfo, 'save')
+
+		self.assertTrue(myelomaGeneticsView.on())
+
+		riskInfo = {
+			'high_b2m': 'Yes',
+			'high_ldh': 'I dont know',
+			'low_albumin': 'I dont know',
+		}
+
+		myelomaGeneticsView.edit_high_risk(riskInfo, 'save')
+
+		self.assertTrue(myelomaGeneticsView.on())
+
 
 
 

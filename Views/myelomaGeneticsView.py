@@ -4,9 +4,13 @@ from viewExceptions import MsgError, WarningError
 from Components import menu
 from Components import header
 from Components import fishTestForm
+from Components import gepTestForm
+from Components import ngsTestForm
+from Components import editHighRiskForm
 from Views import view
 from selenium.webdriver.support.wait import WebDriverWait as WDW
-
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class MyelomaGeneticsView(view.View):
 	post_url = 'myeloma-genetics'
@@ -16,12 +20,13 @@ class MyelomaGeneticsView(view.View):
 			cont = self.driver.find_element_by_class_name('genetics-btn')
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
-			
 
 			addDiagnosisButtons = self.driver.find_elements_by_class_name('addDiagnoisisButton')
 			self.add_fish_button = addDiagnosisButtons[0]
 			self.add_gep_button = addDiagnosisButtons[1]
 			self.add_ngs_button = addDiagnosisButtons[2]
+
+			self.edit_button = self.driver.find_element_by_class_name('editdetetegenetic')
 
 			self.continue_button = cont.find_element_by_tag_name('button')
 			# self.validate()
@@ -86,10 +91,37 @@ class MyelomaGeneticsView(view.View):
 	# 	elif link == 'forgot password':
 	# 		self.signInForm.forgotPassword_link.click()
 	def add_fish_test(self, fishInfo, action='save'):
-		self.add_fish_button.click()
+		self.add_fish_button.click()	
 		self.fishTestForm = fishTestForm.FishTestForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.fishTestForm.load())
 		self.fishTestForm.submit(fishInfo, action)
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+	def add_gep_test(self, gepInfo, action='save'):
+		self.add_gep_button.click()
+		self.gepTestForm = gepTestForm.GepTestForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.gepTestForm.load())
+		self.gepTestForm.submit(gepInfo, action)
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+	def add_ngs_test(self, ngsInfo, action='save'):
+		self.add_ngs_button.click()
+		self.ngsTestForm = ngsTestForm.NgsTestForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.ngsTestForm.load())
+		self.ngsTestForm.submit(ngsInfo, action)
+		# WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		# WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+	def edit_high_risk(self, riskInfo, action='save'):
+		self.edit_button.click()
+		self.editHighRiskForm = editHighRiskForm.EditHighRiskForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.editHighRiskForm.load())
+		self.editHighRiskForm.submit(riskInfo, action)
+		# WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		# WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
 
 
 

@@ -44,7 +44,7 @@ class AboutMeForm():
 		self.spark_terms_link = spark_links[0]
 		self.spark_privacy_link = spark_links[1]
 
-		# self.validate(expectedValues)
+		self.validate(expectedValues)
 		return True
 
 	def validate(self, expectedValues):
