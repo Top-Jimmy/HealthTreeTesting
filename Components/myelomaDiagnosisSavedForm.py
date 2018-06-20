@@ -31,6 +31,9 @@ class MyelomaDiagnosisSavedForm():
 		self.physicians = self.load_physicians()
 		self.add_physician_button = add_buttons[1].find_element_by_tag_name('i')
 
+		cont = self.form.find_element_by_class_name('submit_button')
+		self.continue_button = cont.find_element_by_tag_name('button')
+
 		self.validate(expectedValues)
 		return True
 
