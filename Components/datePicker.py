@@ -43,6 +43,7 @@ class DatePicker():
 				self.current_month = self.load_current_month()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException) as e:
+			print('failed to load datePicker')
 			return False
 
 	def get_picker_state(self):

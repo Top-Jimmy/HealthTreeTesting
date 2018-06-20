@@ -12,7 +12,7 @@ class AboutMeView(view.View):
 	def load(self, formInfo=None):
 		try:
 			# Crap on left
-			self.aboutMeForm = aboutMeForm.AboutMeForm(self.driver, formInfo)
+			# self.aboutMeForm = aboutMeForm.AboutMeForm(self.driver, formInfo)
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 			# self.validate()
