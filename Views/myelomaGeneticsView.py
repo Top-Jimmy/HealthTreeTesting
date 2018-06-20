@@ -3,23 +3,25 @@ from selenium.common.exceptions import (NoSuchElementException,
 from viewExceptions import MsgError, WarningError
 from Components import menu
 from Components import header
+from Components import fishTestForm
 from Views import view
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+
 
 class MyelomaGeneticsView(view.View):
 	post_url = 'myeloma-genetics'
 
 	def load(self, formInfo=None):
 		try:
-			cont = self.driver.find_element_by_class_name('row genetics-btn')
+			cont = self.driver.find_element_by_class_name('genetics-btn')
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
+			
 
 			addDiagnosisButtons = self.driver.find_elements_by_class_name('addDiagnoisisButton')
-			for i, addDiagnosisButton in enumerate(addDiagnosisButtons):
-				
-
-
-
+			self.add_fish_button = addDiagnosisButtons[0]
+			self.add_gep_button = addDiagnosisButtons[1]
+			self.add_ngs_button = addDiagnosisButtons[2]
 
 			self.continue_button = cont.find_element_by_tag_name('button')
 			# self.validate()
@@ -83,6 +85,17 @@ class MyelomaGeneticsView(view.View):
 	# 		self.createAccount_link.click()
 	# 	elif link == 'forgot password':
 	# 		self.signInForm.forgotPassword_link.click()
+	def add_fish_test(self, fishInfo, action='save'):
+		self.add_fish_button.click()
+		self.fishTestForm = fishTestForm.FishTestForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.fishTestForm.load())
+		self.fishTestForm.submit(fishInfo, action)
+
+
+
+
+
+
 
 
 
