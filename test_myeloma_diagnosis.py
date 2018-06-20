@@ -107,8 +107,6 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(myelDiagView.on('fresh'))
 		self.assertTrue(myelDiagView.myelomaDiagnosisFreshForm.submit(formInfo, False))
 
-
-
 	def test_fresh_form(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_fresh_form'''
 		# User submits fresh form, then verifies saved form loads and has expectedValues
@@ -194,7 +192,6 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		edited_diagnosis['diagnosis_date'] = '04/2018'
 		myelDiagView.myelomaDiagnosisSavedForm.edit_diagnosis(edited_diagnosis)
 		self.assertTrue(myelDiagView.on('saved', edited_diagnosis))
-		raw_input('edited?')
 		# reset diagnosis back to original info
 		myelDiagView.myelomaDiagnosisSavedForm.edit_diagnosis(default_diagnosis)
 		self.assertTrue(myelDiagView.on('saved', default_diagnosis))
