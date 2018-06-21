@@ -64,7 +64,7 @@ class DatePicker():
 		return state
 
 	def load_picker_table_items(self, expectedType):
-		# If state matches expectedType, return dict of tds in picker table
+		# If state matches expectedType, return dict of tds in picker table (months or years)
 		if expectedType and expectedType == self.picker_state:
 			items = {}
 			if self.picker_table:
@@ -79,6 +79,8 @@ class DatePicker():
 	def set_date(self, date):
 		month = self.parse_date(date, 'month')
 		year = self.parse_date(date, 'year')
+		if year == '':
+			raw_input('wtf')
 		self.load()
 
 		if self.current_year != year:

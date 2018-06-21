@@ -1,3 +1,5 @@
+from selenium.common.exceptions import WebDriverException
+import time
 
 class Menu():
 
@@ -29,7 +31,12 @@ class Menu():
 		option = self.menu_options[destination]
 		if option:
 			self.driver.execute_script('arguments[0].scrollIntoView();', option)
-			option.click()
+			try:
+				option.click()
+			except WebDriverException:
+				print('failed to click menu item.')
+				time.sleep(.4)
+				self.go_to(destination)
 		else:
 			print('Menu: Unexpected destination: ' + destination)
 			return False

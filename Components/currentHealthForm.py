@@ -18,6 +18,7 @@ class CurrentHealthForm():
 			self.load_question(self.question_elements[i])
 
 		self.continue_button = self.form.find_element_by_class_name('submitForm')
+		# raw_input(self.questions)
 		self.validate(expectedValues)
 		return True
 
@@ -38,11 +39,11 @@ class CurrentHealthForm():
 		# Find secondary questions
 		if value == 'yes':
 			secondary_container = container.find_element_by_class_name('custom-history_label')
-			secondary_questions = container.find_element_by_class_name('form-check')
+			secondary_questions = container.find_elements_by_class_name('form-check')
 
 			for secondary_question in secondary_questions:
 				secondary_label = secondary_question.text
-				secondary_input = secondary_question.find_elements_by_tag_name('input')
+				secondary_input = secondary_question.find_element_by_tag_name('input')
 
 				selected = secondary_input.is_selected()
 
@@ -54,7 +55,6 @@ class CurrentHealthForm():
 			'secondaryQuestions': secondaryQuestions, 		# secondaryQuesitons: [
 		} 																								# {'Mild kidney problems (renal impairment)': False},
 		self.questions.append(question)										# {'Severe kidney problems or on dialysis': False},]
-		self.question_elements
 
 	def validate(self, expectedValues):
 		failures = []
@@ -85,17 +85,19 @@ class CurrentHealthForm():
 					failures.append('CurrentHealthForm: Expecting ' + str(len(expectedQuestions)) + ' questions. Loaded '
 						+ str(len(self.questions)))
 				else:
-					# Loaded right # of questions. Verify info matches
+					# Each key in each expectedQuestion (secondaryQuestions, name, value) should exist in loadedQuestion and match it's value
 					for i, expectedQuestion in enumerate(expectedQuestions):
 						loadedQuestion = self.questions[i]
-
+						# print('comparing ' + str(i) + ': ' + str(expectedQuestion))
+						# print('with ' + str(loadedQuestion))
+						# raw_input('?')
 						for key, expectedValue in expectedQuestion.iteritems():
-							# Key should exist in loaded question and should match expected value
 							try:
 								if loadedQuestion[key] != expectedValue:
 									failures.append('CurrentHealthForm: Question ' + str(i) + ' expected value "'
 										+ expectedValue + '". Loaded "' + loadedQuestion[key] + '"')
 							except (TypeError, KeyError) as e:
+								# raw_input(str(self.questions[i]))
 								failures.append('CurrentHealthForm: Expected Key "' + key + '". Not found in question ' + str(i))
 
 		if len(failures) > 0:
@@ -139,8 +141,10 @@ class CurrentHealthForm():
 		except KeyError:
 			pass
 
+		results = []
 		for i, question in enumerate(questionInfo):
-			self.answer_question(i, question)
+			results.append(self.answer_question(i, question))
+
 		if action == 'submit':
 			self.continue_button.click()
 		return True
@@ -158,23 +162,30 @@ class CurrentHealthForm():
 
 			# Handle setting any secondary questions
 			if questionInfo['value'] == 'yes' and questionInfo['secondaryQuestions']:
-				expectedSecondary = questionInfo['secondaryQuestion']
+				expectedSecondaryInfo = questionInfo['secondaryQuestions']
 				secondary_container = container.find_element_by_class_name('custom-history_label')
-				secondary_questions = container.find_element_by_class_name('form-check')
+				secondary_questions = container.find_elements_by_class_name('form-check')
+
+				# Check # of secondary questions
+				if len(secondary_questions) != len(questionInfo['secondaryQuestions']):
+					print('CurrentHealth question "' + str(index) + '" expects ' + str(len(questionInfo['secondaryQuestions']))
+						+ '. Loaded ' + str(len(secondary_questions)))
+					return False
 
 				# Set value for each secondary question
-				for secondary in expectedSecondary:
-					question_name = secondary_question.text
-					secondary_input = secondary_question.find_elements_by_tag_name('input')
+				for i, question in enumerate(secondary_questions):
+					question_name = question.text
+					input_el = question.find_element_by_tag_name('input')
 
-					if secondary_input.is_selected() != secondary[secondary_label]:
-						secondary_input.click()
-					else:
-						print(str(index) + ' already has correct value')
+					if input_el.is_selected() != expectedSecondaryInfo[i][question_name]:
+						input_el.click()
+					# else:
+					# 	print(str(index) + ' already has correct value')
 
 		else:
 			print('Index "' + str(index) + '": Expecting ' + question_label + ' to equal ' + questionInfo['name'])
-
+			return False
+		return True
 
 
 

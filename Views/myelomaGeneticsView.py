@@ -62,15 +62,18 @@ class MyelomaGeneticsView(view.View):
 
 		values = [] # add text from each header row to values list
 		self.fish_tests = [] # add text from test rows to dictionary (use values as keys)
-		for i, row in enumerate(rows):
-			# find divs in row
-			# loop through divs
-			if i == 0:
-				# load text into values
-				# append to values
-			else:
-				# load text into dictionary w/ corresponding 'value' as key
-				# append to self.fish_tests
+		if len(rows) > 1:
+			for i, row in enumerate(rows):
+				# find divs in row
+				# loop through divs
+				if i == 0:
+					pass
+					# load text into values
+					# append to values
+				else:
+					pass
+					# load text into dictionary w/ corresponding 'value' as key
+					# append to self.fish_tests
 
 	def validate(self):
 		failures = []
