@@ -31,6 +31,9 @@ class TestMyelomaGenetics(unittest.TestCase):
 		myelomaGeneticsView = self.andrew.myelomaGeneticsView
 		fishInfo = {
 			'test_fish_date': '06/2018',
+			'gene_additions': [
+				{'3copies': False}, {'4copies': False}
+			],
 			'three_1q21': True,
 			'four_1q21': True,
 			'deletion_1p': False,
@@ -68,7 +71,8 @@ class TestMyelomaGenetics(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Genetics')
 		self.assertTrue(myelomaGeneticsView.on())
 
-		myelomaGeneticsView.add_fish_test(fishInfo, 'save')
+		# add fish test should automatically reload page
+		myelomaGeneticsView.add_fish_test(fishInfo)
 
 		self.assertTrue(myelomaGeneticsView.on())
 
@@ -99,7 +103,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Genetics')
 		self.assertTrue(myelomaGeneticsView.on())
 
-		myelomaGeneticsView.add_gep_test(gepInfo, 'save')
+		myelomaGeneticsView.add_gep_test(gepInfo)
 
 		self.assertTrue(myelomaGeneticsView.on())
 
@@ -129,7 +133,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Genetics')
 		self.assertTrue(myelomaGeneticsView.on())
 
-		myelomaGeneticsView.add_ngs_test(ngsInfo, 'save')
+		myelomaGeneticsView.add_ngs_test(ngsInfo)
 
 		self.assertTrue(myelomaGeneticsView.on())
 
@@ -139,7 +143,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 			'low_albumin': 'I dont know',
 		}
 
-		myelomaGeneticsView.edit_high_risk(riskInfo, 'save')
+		myelomaGeneticsView.edit_high_risk(riskInfo)
 
 		self.assertTrue(myelomaGeneticsView.on())
 

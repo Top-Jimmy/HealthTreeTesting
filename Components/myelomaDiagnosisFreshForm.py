@@ -25,35 +25,29 @@ class MyelomaDiagnosisFreshForm():
 
 		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
 		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
-
 		self.load_first_diagnosis_dropdown()
 		self.highRisk1_radio = self.form.find_element_by_id('highRisk1')
 		self.highRisk2_radio = self.form.find_element_by_id('highRisk2')
 		self.highRisk3_radio = self.form.find_element_by_id('highRisk3')
-
 		self.stemCell1_radio = self.form.find_element_by_id('stemCell1')
 		self.stemCell2_radio = self.form.find_element_by_id('stemCell2')
 		self.stemCell3_radio = self.form.find_element_by_id('stemCell3')
-
 		self.boneLesion0_radio = self.form.find_element_by_id('0')
 		self.boneLesion1_radio = self.form.find_element_by_id('1')
 		self.boneLesion2_radio = self.form.find_element_by_id('2')
 		self.boneLesion3_radio = self.form.find_element_by_id('3')
-
 		self.facility_input = self.form.find_element_by_id('facility_name')
 		self.facility_city_input = self.form.find_element_by_id('Last')
 		self.load_facility_state()
-
 		self.add_diagNo_radio = self.form.find_element_by_id('yesno0')
 		self.add_diagYes_radio = self.form.find_element_by_id('yesno1')
-
 		# todo handle loading multiple diagnosis inputs, delete diagnosis button, add diagnosis action
 
 		self.load_physicians()
-
+		print('7')
 		button_cont = self.form.find_element_by_class_name('submit_button')
 		self.continue_button = button_cont.find_element_by_tag_name('button')
-
+		print('8')
 		self.validate(expectedValues)
 		return True
 
@@ -132,7 +126,6 @@ class MyelomaDiagnosisFreshForm():
 
 		button_cont = self.physician_cont.find_element_by_class_name('addDiagnoisisButton')
 		self.add_physician_button = button_cont.find_element_by_tag_name('i')
-
 		self.physicians = []
 		for i, physician in enumerate(self.physician_rows):
 			# name, facility, city, state
@@ -140,11 +133,9 @@ class MyelomaDiagnosisFreshForm():
 			name_inputs = name_cont.find_elements_by_tag_name('input')
 			name_input = name_inputs[0]
 			name_hidden_input = name_inputs[1]
-
 			facility_input = physician.find_element_by_id('facility_name_input_' + str(i))
 
 			city_input = physician.find_element_by_id('city_' + str(i))
-
 			# State selector element depends on if state has been set already
 			state_cont = physician.find_element_by_id('state' + str(i))
 			state_selector = None
@@ -155,13 +146,11 @@ class MyelomaDiagnosisFreshForm():
 				state_selector = value_el
 			except NoSuchElementException:
 				state_selector = state_cont.find_element_by_class_name('Select-placeholder')
-
 			# first physician won't have delete button
 			try:
 				delete_button = physician.find_element_by_class_name('delete_physician_icon')
 			except NoSuchElementException:
 				delete_button = None
-
 			physician = {
 				'name': name_input.get_attribute('value'),
 				'facility': facility_input.get_attribute('value'),

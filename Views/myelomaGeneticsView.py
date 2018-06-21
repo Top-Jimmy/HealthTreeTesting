@@ -17,10 +17,10 @@ class MyelomaGeneticsView(view.View):
 
 	def load(self, formInfo=None):
 		try:
-			cont = self.driver.find_element_by_class_name('genetics-btn')
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 
+			# When user has already filled out info
 			addDiagnosisButtons = self.driver.find_elements_by_class_name('addDiagnoisisButton')
 			self.add_fish_button = addDiagnosisButtons[0]
 			self.add_gep_button = addDiagnosisButtons[1]
@@ -28,18 +28,55 @@ class MyelomaGeneticsView(view.View):
 
 			self.edit_button = self.driver.find_element_by_class_name('editdetetegenetic')
 
+			cont = self.driver.find_element_by_class_name('genetics-btn')
 			self.continue_button = cont.find_element_by_tag_name('button')
+
+			self.tables = self.driver.find_elements_by_class_name('marg-btm0')
+			self.load_fish_table(self)
+
+
+
+
+
+			# Load GEP table
+			gepTable = tables[1]
+
+			# Load NGS table
+			ngsTable = tables[2]
+
+			# Load
+
+
+			# When user hasn't filled anything out
+				# todo
+
 			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
 			return False
 
+	def load_fish_table(self):
+		fishTable = self.tables[0]
+		rows = fishTable.find_elements_by_class_name('row')
+
+		values = [] # add text from each header row to values list
+		self.fish_tests = [] # add text from test rows to dictionary (use values as keys)
+		for i, row in enumerate(rows):
+			# find divs in row
+			# loop through divs
+			if i == 0:
+				# load text into values
+				# append to values
+			else:
+				# load text into dictionary w/ corresponding 'value' as key
+				# append to self.fish_tests
+
 	def validate(self):
 		failures = []
 		if self.continue_button.text != 'Continue':
 			failure.append('MyelomaGeneticsView: Unexpected text "' + self.continue_button.text + '"')
-		
+
 	# def submit(self, formInfo, expectedError=None, expectedWarnings=None):
 	# 	try:
 	# 		if self.aboutMeForm.enter_info(formInfo):
@@ -91,7 +128,7 @@ class MyelomaGeneticsView(view.View):
 	# 	elif link == 'forgot password':
 	# 		self.signInForm.forgotPassword_link.click()
 	def add_fish_test(self, fishInfo, action='save'):
-		self.add_fish_button.click()	
+		self.add_fish_button.click()
 		self.fishTestForm = fishTestForm.FishTestForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.fishTestForm.load())
 		self.fishTestForm.submit(fishInfo, action)
@@ -111,16 +148,16 @@ class MyelomaGeneticsView(view.View):
 		self.ngsTestForm = ngsTestForm.NgsTestForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.ngsTestForm.load())
 		self.ngsTestForm.submit(ngsInfo, action)
-		# WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
-		# WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def edit_high_risk(self, riskInfo, action='save'):
 		self.edit_button.click()
 		self.editHighRiskForm = editHighRiskForm.EditHighRiskForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.editHighRiskForm.load())
 		self.editHighRiskForm.submit(riskInfo, action)
-		# WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
-		# WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 
 
