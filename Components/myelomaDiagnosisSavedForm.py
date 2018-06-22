@@ -49,7 +49,7 @@ class MyelomaDiagnosisSavedForm():
 						if key == 'num_diagnoses' and value != len(self.diagnoses):
 							failures.append('MyelDiagSavedForm Meta: Expected ' + str(value) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
 						elif key == 'num_physicians' and value != len(self.physicians):
-							failures.append('MyelDiagSavedForm Meta: Expected ' + str(value) + ' physicians. Form has ' + str(len(self.physicians)))
+							failures.append('MyelomaDiagnosisSavedForm Meta: Expected ' + str(value) + ' physicians. Form has ' + str(len(self.physicians)))
 			except KeyError:
 				pass
 
@@ -101,10 +101,10 @@ class MyelomaDiagnosisSavedForm():
 				# Data
 				diagnosis['date'] = rows[i].find_element_by_class_name('diagnosis-date-sec').text
 				diagnosis['type'] = rows[i].find_element_by_class_name('diagnosis-type-sec').text
-				diagnosis['lesions'] = rows[i].find_element_by_class_name('diagnosis-bone-sec')
-				diagnosis['facility'] = rows[i].find_element_by_class_name('diagnosis-facility-sec')
-				diagnosis['city'] = rows[i].find_element_by_class_name('diagnosis-city-sec')
-				diagnosis['state'] = rows[i].find_element_by_class_name('diagnosis-state-sec')
+				diagnosis['lesions'] = rows[i].find_element_by_class_name('diagnosis-bone-sec').text
+				diagnosis['facility'] = rows[i].find_element_by_class_name('diagnosis-facility-sec').text
+				diagnosis['city'] = rows[i].find_element_by_class_name('diagnosis-city-sec').text
+				diagnosis['state'] = rows[i].find_element_by_class_name('diagnosis-state-sec').text
 
 				# Actions
 				buttons = rows[i].find_elements_by_tag_name('button')
@@ -124,8 +124,8 @@ class MyelomaDiagnosisSavedForm():
 				# Data
 				physician['name'] = rows[i].find_element_by_class_name('phy_name').text
 				physician['facility'] = rows[i].find_element_by_class_name('phy_fac_name').text
-				physician['city'] = rows[i].find_element_by_class_name('physician-city')
-				physician['state'] = rows[i].find_element_by_class_name('physician-state')
+				physician['city'] = rows[i].find_element_by_class_name('physician-city').text
+				physician['state'] = rows[i].find_element_by_class_name('physician-state').text
 
 				# actions
 				physician['delete'] = rows[i].find_element_by_tag_name('button')

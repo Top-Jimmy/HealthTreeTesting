@@ -2,6 +2,7 @@ import unittest
 import main
 import initDriver
 import profiles
+import time
 
 class TestMyelomaGenetics(unittest.TestCase):
 
@@ -22,6 +23,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 
 		aboutMeView.menu.go_to('Myeloma Genetics')
+		time.sleep(3)
 		self.assertTrue(myelomaGeneticsView.on())
 
 	def test_add_fish(self):
@@ -34,8 +36,6 @@ class TestMyelomaGenetics(unittest.TestCase):
 			'gene_additions': [
 				{'3copies': False}, {'4copies': False}
 			],
-			'three_1q21': True,
-			'four_1q21': True,
 			'deletion_1p': False,
 			'deletion_17p': True,
 			'deletion_13q': False,

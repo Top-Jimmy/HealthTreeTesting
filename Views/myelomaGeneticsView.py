@@ -32,20 +32,16 @@ class MyelomaGeneticsView(view.View):
 			self.continue_button = cont.find_element_by_tag_name('button')
 
 			self.tables = self.driver.find_elements_by_class_name('marg-btm0')
-			self.load_fish_table(self)
+			self.load_fish_table()
+			self.load_gep_table()
+			self.load_ngs_table()
+			self.load_highRisk_table()
 
-
-
-
-
-			# Load GEP table
-			gepTable = tables[1]
-
-			# Load NGS table
-			ngsTable = tables[2]
-
-			# Load
-
+			# raw_input('fish: ' + str(self.fish_tests))
+			# raw_input('gep: ' + str(self.gep_tests))
+			# raw_input('ngs: ' + str(self.ngs_tests))
+			raw_input('high risk: ' + str(self.highRisk_tests))
+			raw_input(str(self.edit_high_risk_button))
 
 			# When user hasn't filled anything out
 				# todo
@@ -62,18 +58,145 @@ class MyelomaGeneticsView(view.View):
 
 		values = [] # add text from each header row to values list
 		self.fish_tests = [] # add text from test rows to dictionary (use values as keys)
-		if len(rows) > 1:
-			for i, row in enumerate(rows):
+		for i, row in enumerate(rows):
+			# print('row ' + str(i))
+			labResult = {}
+			divs = row.find_elements_by_tag_name('div')
+			# last 2 divs are containers for actions. Remove one of them
+			if i > 0:
+				del divs[-1]
+			# print('# fish divs: ' + str(len(divs)))
+			for divIndex, div in enumerate(divs):
+				text = div.text
 				# find divs in row
 				# loop through divs
 				if i == 0:
-					pass
-					# load text into values
-					# append to values
+					# Collect column headers
+					values.append(div.text)
 				else:
-					pass
-					# load text into dictionary w/ corresponding 'value' as key
-					# append to self.fish_tests
+					# print(str(divIndex))
+					key = values[divIndex]
+					if key.lower() == 'actions':
+						actions = []
+						buttons = row.find_elements_by_tag_name('button')
+						actions.append(buttons[0])
+						actions.append(buttons[1])
+						labResult[key] = actions
+					else:
+						labResult[key] = text
+			if labResult:
+				self.fish_tests.append(labResult)
+
+	def load_gep_table(self):
+		gepTable = self.tables[1]
+		rows = gepTable.find_elements_by_class_name('row')
+
+		values = [] # add text from each header row to values list
+		self.gep_tests = [] # add text from test rows to dictionary (use values as keys)
+		for i, row in enumerate(rows):
+			labResult = {}
+			divs = row.find_elements_by_tag_name('div')
+			# last 2 divs are containers for actions. Remove one of them
+			print('row ' + str(i))
+			print('# divs: ' + str(len(divs)))
+			if i > 0:
+				del divs[-1]
+			for divIndex, div in enumerate(divs):
+				text = div.text
+				# find divs in row
+				# loop through divs
+				if i == 0:
+					# Collect column headers
+					values.append(div.text)
+				else:
+					try:
+						key = values[divIndex]
+					except IndexError:
+						# No div for 'actions' in header.
+						key = 'actions'
+					if key.lower() == 'actions':
+						actions = []
+						buttons = row.find_elements_by_tag_name('button')
+						actions.append(buttons[0])
+						actions.append(buttons[1])
+						labResult['actions'] = actions
+					else:
+						labResult[key] = text
+			if labResult:
+				self.gep_tests.append(labResult)
+
+	def load_ngs_table(self):
+		ngsTable = self.tables[2]
+		rows = ngsTable.find_elements_by_class_name('row')
+
+		values = [] # add text from each header row to values list
+		self.ngs_tests = [] # add text from test rows to dictionary (use values as keys)
+		for i, row in enumerate(rows):
+			labResult = {}
+			divs = row.find_elements_by_tag_name('div')
+			# last 2 divs are containers for actions. Remove one of them
+			if i > 0:
+				del divs[-1]
+			# print('# divs in ngs table: ' + str(len(divs)))
+			for divIndex, div in enumerate(divs):
+				text = div.text
+				if i == 0:
+					# Collect text from column headers
+					values.append(div.text)
+				else:
+					key = values[divIndex]
+					if key.lower() == 'actions':
+						actions = []
+						buttons = row.find_elements_by_tag_name('button')
+						actions.append(buttons[0])
+						actions.append(buttons[1])
+						labResult[key] = actions
+					elif key != '':
+						labResult[key] = text
+			if labResult:
+				self.ngs_tests.append(labResult)
+
+	def load_highRisk_table(self):
+		highRiskTable = self.tables[3]
+		self.edit_high_risk_button = highRiskTable.find_element_by_tag_name('button')
+		rows = highRiskTable.find_elements_by_class_name('row')
+
+		values = []
+		self.highRisk_tests = []
+		for i, row in enumerate(rows):
+			labResult = {}
+			divs = row.find_elements_by_tag_name('div')
+			print('High risk: row ' + str(i) + ' has ' + str(len(divs)) + ' divs')
+			for divIndex, div in enumerate(divs):
+
+				text = div.text
+				if i == 0:
+					values.append(div.text)
+				else:
+					# Only grab 'test' and 'answer'
+					if divIndex < 2:
+						key = values[divIndex]
+						labResult[key] = text
+					# elif i == 1 and divIndex == 2:
+					# 	# Only 1st test row has action button
+					# 	self.edit_high_risk_button = row.find_element_by_tag_name('button')
+						
+				
+
+					
+				
+
+				# if i == 0:
+				# 	values.append(div.text)
+				# else:
+				# 	key = values[i]
+
+				# 	if key == 'actions':
+				# 		if i == 1:
+				# 			raw_input('heyo')
+				# 			self.high_risk_edit_button = row.find_element_by_tag_name('button')
+			if labResult:
+				self.highRisk_tests.append(labResult)
 
 	def validate(self):
 		failures = []
@@ -154,8 +277,29 @@ class MyelomaGeneticsView(view.View):
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
+	def edit_test(self, testType, testIndex, testValues):
+		test = ''
+		if testType == 'fish':
+			test = self.fish_tests[testIndex]
+			test['actions'][0].click()
+			# Load edit form
+			# call submit function of edit form and pass in testValues
+			# reload page and pass in testValues as expectedValues
+		elif testType == 'gep':
+			test = self.gep_tests[testIndex]
+			test['actions'][0].click()
+		elif testType == 'ngs':
+			test = self.ngs_tests[testIndex]
+			test['actions'][0].click()
+		else:
+			self.edit_high_risk_button.click()
+
+			
+
+
+
 	def edit_high_risk(self, riskInfo, action='save'):
-		self.edit_button.click()
+		self.edit_high_risk_button.click()
 		self.editHighRiskForm = editHighRiskForm.EditHighRiskForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.editHighRiskForm.load())
 		self.editHighRiskForm.submit(riskInfo, action)
