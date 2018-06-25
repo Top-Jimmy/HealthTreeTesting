@@ -6,7 +6,7 @@ from Components import menu
 from Components import header
 from Views import view
 
-class AboutMeView(view.View):
+class TreatmentsOutcomesView(view.View):
 	post_url = 'about-me'
 
 	def load(self, formInfo=None):
@@ -17,6 +17,7 @@ class AboutMeView(view.View):
 			if self.state == 'fresh':
 				# load new popup
 				# todo: need new account to get this state
+				pass
 
 			# self.validate()
 			return True
@@ -39,7 +40,7 @@ class AboutMeView(view.View):
 		failures = []
 
 		if state == 'normal':
-			if self.add_treatments_button && self.add_treatments_button.text != 'Add Treatments':
+			if self.add_treatments_button and self.add_treatments_button.text != 'Add Treatments':
 				failures.append('treatmentsOutcomesView: Unexpected text on add treatment button')
 		else:
 			# todo: Validate text on 'fresh' popup

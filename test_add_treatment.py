@@ -2,7 +2,7 @@ import unittest
 import main
 import initDriver
 import profiles
-import copy # copy.deepcopy(object)
+# import copy # copy.deepcopy(object)
 
 class TestAddTreatment(unittest.TestCase):
 
@@ -62,16 +62,16 @@ class TestAddTreatment(unittest.TestCase):
 		self.driver.quit()
 
 	def test_navigate(self):
-		'''CurrentHealth : CurrentHealth . test_navigate'''
+		'''AddTreatment : AddTreatment . test_navigate'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
-		currentHealthView = self.andrew.currentHealthView
+		toView = self.andrew.treatmentsOutcomesView
 		self.assertTrue(homeView.go())
 		self.assertTrue(homeView.login(self.andrew.credentials))
 		self.assertTrue(aboutMeView.on())
 
-		aboutMeView.menu.go_to('Current Health')
-		self.assertTrue(currentHealthView.on())
+		aboutMeView.menu.go_to('Treatments & Outcomes')
+		self.assertTrue(toView.on())
 
 	def test_non_recent_diagnosis(self):
 		'''CurrentHealth : CurrentHealth . test_non_recent_diagnosis'''

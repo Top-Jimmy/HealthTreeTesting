@@ -18,4 +18,5 @@ class Profile:
 		self.fitLvlView = fitLvlView.FitLvlView(driver)
 		self.fullHealthView = fullHealthView.FullHealthView(driver)
 		self.myelomaGeneticsView = myelomaGeneticsView.MyelomaGeneticsView(driver)
+		self.treatmentsOutcomesView = treatmentsOutcomesView.TreatmentsOutcomesView(driver)
 		self.myelomaLabsView = myelomaLabsView.MyelomaLabsView(driver)
