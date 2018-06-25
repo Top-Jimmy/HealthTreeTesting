@@ -11,23 +11,44 @@ class AboutMeView(view.View):
 
 	def load(self, formInfo=None):
 		try:
-			# Crap on left
-			self.aboutMeForm = aboutMeForm.AboutMeForm(self.driver, formInfo)
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
+			self.state = self.load_state()
+			if self.state == 'fresh':
+				# load new popup
+				# todo: need new account to get this state
+
 			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
 			return False
 
-	def validate(self):
+	def load_state(self):
+		# New user gets popup asking whether they have received treatments before (yes/no)
+		#
+		# class: custom1-add-treatment-btn (elliot's fresh form)
+		try:
+			self.add_treatments_button = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
+			return 'normal'
+		except NoSuchElementException:
+			self.add_treatments_button = None
+			return 'fresh'
+
+	def validate(self, expectedValues):
 		failures = []
-		# if self.createAccount_link.text != 'Create Account':
-		# 	failures.append('1. Create Account link. Expecting text "Create Account", got "' + self.createAccount_link.text + '"')
-		# if len(failures) > 0:
-		# 	print(failures)
-		# 	raise NoSuchElementException('Failed to load HomeView')
+
+		if state == 'normal':
+			if self.add_treatments_button && self.add_treatments_button.text != 'Add Treatments':
+				failures.append('treatmentsOutcomesView: Unexpected text on add treatment button')
+		else:
+			# todo: Validate text on 'fresh' popup
+			pass
+
+		if len(failures) > 0:
+			for failure in failures:
+				print(failure)
+				raise NoSuchElementException("Failed to load treatmentsOutcomesView")
 
 	# def createErrorObj(self, errorText):
 	# 	errorType = 'undefined';
@@ -46,18 +67,28 @@ class AboutMeView(view.View):
 	# 		'errorMsg': errorMsg,
 	# 	}
 
-	def submit(self, formInfo, expectedError=None, expectedWarnings=None):
+	def add_treatment(self, treatmentInfo, expectedError=None, expectedWarnings=None):
 		try:
-			if self.aboutMeForm.enter_info(formInfo):
-				# Should be on myeloma diagnosis page
-				url = self.driver.current_url
-				if '/about-me' not in url:
-					self.error = self.readErrors()
-					self.warnings = self.aboutMeForm.read_warnings()
-					if self.error:
-						raise MsgError('Login Error')
-					elif self.warnings:
-						raise WarningError('Submission warning')
+			if self.state == 'normal':
+				self.add_treatments_button.click()
+				self.addTreatmentForm = addTreatmentForm.AddTreatmentForm(self.driver)
+				WDW(self.driver, 10).until(lambda x: self.addTreatmentForm.load())
+				if self.addTreatmentsForm.add_treatment(treatmentInfo):
+					# what page? state?
+					pass
+			else:
+				# todo: handle fresh popup
+				pass
+			# if self.aboutMeForm.enter_info(formInfo):
+			# 	# Should be on myeloma diagnosis page
+			# 	url = self.driver.current_url
+			# 	if '/about-me' not in url:
+			# 		self.error = self.readErrors()
+			# 		self.warnings = self.aboutMeForm.read_warnings()
+			# 		if self.error:
+			# 			raise MsgError('Login Error')
+			# 		elif self.warnings:
+			# 			raise WarningError('Submission warning')
 			return True
 		except MsgError:
 			# Is login expected to fail?
