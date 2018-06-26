@@ -125,12 +125,10 @@ class TestCurrentHealth(unittest.TestCase):
 			'questions': self.currentQuestions + self.defaultQuestions,
 			'meta': [{'num_questions': 11}],
 		}
-		# Bug: Doesn't display 3 currentQuestions
 		self.assertTrue(currentHealthView.on(formInfo))
 		self.driver.refresh()
-		self.assertTrue(currentHealthView.on())
+		self.assertTrue(currentHealthView.on(formInfo))
 		self.assertNotEquals(currentHealthView.menu.selected_option(), 'Current Health')
-		raw_input('how many questions?')
 		self.assertTrue(currentHealthView.submit(formInfo))
 
 		# Delete Diagnosis

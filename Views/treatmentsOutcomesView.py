@@ -1,16 +1,20 @@
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError, WarningError
-from Components import aboutMeForm
+from Components import addTreatmentForm
 from Components import menu
 from Components import header
 from Views import view
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class TreatmentsOutcomesView(view.View):
 	post_url = 'about-me'
 
 	def load(self, formInfo=None):
 		try:
+			WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 			self.state = self.load_state()
@@ -18,11 +22,11 @@ class TreatmentsOutcomesView(view.View):
 				# load new popup
 				# todo: need new account to get this state
 				pass
-
-			# self.validate()
+			# self.validate(formInfo)
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
+			print('found error')
 			return False
 
 	def load_state(self):
@@ -30,13 +34,14 @@ class TreatmentsOutcomesView(view.View):
 		#
 		# class: custom1-add-treatment-btn (elliot's fresh form)
 		try:
-			self.add_treatments_button = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
+			buttonCont = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
+			self.add_treatments_button = buttonCont.find_elements_by_tag_name('button')[0]
 			return 'normal'
 		except NoSuchElementException:
 			self.add_treatments_button = None
 			return 'fresh'
 
-	def validate(self, expectedValues):
+	def validate(self, formInfo):
 		failures = []
 
 		if state == 'normal':
@@ -68,13 +73,14 @@ class TreatmentsOutcomesView(view.View):
 	# 		'errorMsg': errorMsg,
 	# 	}
 
-	def add_treatment(self, treatmentInfo, expectedError=None, expectedWarnings=None):
+	def add_treatment(self, treatmentInfo, action='submit', expectedError=None, expectedWarnings=None):
 		try:
+			# print(self.state)
 			if self.state == 'normal':
 				self.add_treatments_button.click()
 				self.addTreatmentForm = addTreatmentForm.AddTreatmentForm(self.driver)
 				WDW(self.driver, 10).until(lambda x: self.addTreatmentForm.load())
-				if self.addTreatmentsForm.add_treatment(treatmentInfo):
+				if self.addTreatmentForm.add_treatment(treatmentInfo):
 					# what page? state?
 					pass
 			else:
