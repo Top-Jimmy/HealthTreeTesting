@@ -4,6 +4,7 @@ import initDriver
 import profiles
 # import copy # copy.deepcopy(object)
 
+@unittest.skip("In progress")
 class TestAddTreatment(unittest.TestCase):
 
 	def setUp(self):

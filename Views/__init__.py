@@ -10,5 +10,7 @@ __all__ = [
 	'myelDiagView',
 	'myelomaGeneticsView',
 	'myelomaLabsView',
+	'settingsView',
+	'surveysView',
 	'treatmentsOutcomesView',
 ]

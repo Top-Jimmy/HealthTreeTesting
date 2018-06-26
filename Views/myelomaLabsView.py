@@ -5,6 +5,9 @@ from Components import addLabsForm
 from Components import menu
 from Components import header
 from Views import view
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class MyelomaLabsView(view.View):
 	post_url = 'myeloma-labs'
@@ -12,14 +15,21 @@ class MyelomaLabsView(view.View):
 	def load(self, formInfo=None):
 		try:
 			# Crap on left
+			WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+			
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
-			self.form = self.driver.find_element_by_class_name('page-content-wrapper')
-			buttons = self.form.find_element_by_tag_name('button')
+			self.form = self.driver.find_element_by_id('page-content-wrapper')
+			buttons = self.form.find_elements_by_tag_name('button')
+			inputs = self.form.find_elements_by_tag_name('input')
 
 			self.add_new_button = buttons[0]
 
-			# self.validate()
+			self.from_date_input = inputs[0]
+
+			self.to_date_input = inputs[1]
+
+			self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
@@ -103,11 +113,15 @@ class MyelomaLabsView(view.View):
 	# 	elif link == 'forgot password':
 	# 		self.signInForm.forgotPassword_link.click()
 
-	def add_new_lab(self, labInfo, action='save'):
+	def add_new_lab(self, labInfo, action='save'):	
 		self.add_new_button.click()
+		raw_input('button worked')
 		self.addLabsForm = addLabsForm.AddLabsForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.addLabsForm.load())
+		raw_input('form correctly loaded')
 		self.addLabsForm.submit(labInfo, 'save')
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 
 

@@ -153,65 +153,65 @@ class FishTestForm():
 						print('Failed to set date. Page probably reloaded')
 						time.sleep(.4)
 
-			if fishInfo['three_1q21'] != self.three_1q21_checkbox.is_selected():
+			if fishInfo['gene_additions']['3copies'] != self.three_1q21_checkbox.is_selected():
 				self.three_1q21_checkbox.click()
-			if fishInfo['four_1q21'] != self.four_1q21_checkbox.is_selected():
+			if fishInfo['gene_additions']['4copies'] != self.four_1q21_checkbox.is_selected():
 				self.four_1q21_checkbox.click()
 
-			if fishInfo['deletion_1p'] != self.deletion_1p_checkbox.is_selected():
+			if fishInfo['gene_deletions']['deletion_1p'] != self.deletion_1p_checkbox.is_selected():
 				self.deletion_1p_checkbox.click()
-			if fishInfo['deletion_17p'] != self.deletion_17p_checkbox.is_selected():
+			if fishInfo['gene_deletions']['deletion_17p'] != self.deletion_17p_checkbox.is_selected():
 				self.deletion_17p_checkbox.click()
-			if fishInfo['deletion_13q'] != self.deletion_13q_checkbox.is_selected():
+			if fishInfo['gene_deletions']['deletion_13q'] != self.deletion_13q_checkbox.is_selected():
 				self.deletion_13q_checkbox.click()
-			if fishInfo['deletion_16q'] != self.deletion_16q_checkbox.is_selected():
+			if fishInfo['gene_deletions']['deletion_16q'] != self.deletion_16q_checkbox.is_selected():
 				self.deletion_16q_checkbox.click()
 
-			if fishInfo['trans_FGFR3'] != self.trans_FGFR3_checkbox.is_selected():
+			if fishInfo['gene_translocations']['trans_FGFR3'] != self.trans_FGFR3_checkbox.is_selected():
 				self.trans_FGFR3_checkbox.click()
-			if fishInfo['trans_CCND3'] != self.trans_CCND3_checkbox.is_selected():
+			if fishInfo['gene_translocations']['trans_CCND3'] != self.trans_CCND3_checkbox.is_selected():
 				self.trans_CCND3_checkbox.click()
-			if fishInfo['trans_CCND1'] != self.trans_CCND1_checkbox.is_selected():
+			if fishInfo['gene_translocations']['trans_CCND1'] != self.trans_CCND1_checkbox.is_selected():
 				self.trans_CCND1_checkbox.click()
-			if fishInfo['trans_cMAF'] != self.trans_cMAF_checkbox.is_selected():
+			if fishInfo['gene_translocations']['trans_cMAF'] != self.trans_cMAF_checkbox.is_selected():
 				self.trans_cMAF_checkbox.click()
-			if fishInfo['trans_MAFB'] != self.trans_MAFB_checkbox.is_selected():
+			if fishInfo['gene_translocations']['trans_MAFB'] != self.trans_MAFB_checkbox.is_selected():
 				self.trans_MAFB_checkbox.click()
-			if fishInfo['trans_ETV6'] != self.trans_ETV6_checkbox.is_selected():
+			if fishInfo['gene_translocations']['trans_ETV6'] != self.trans_ETV6_checkbox.is_selected():
 				self.trans_ETV6_checkbox.click()
 
-			if fishInfo['tri_3'] != self.tri_3_checkbox.is_selected():
+			if fishInfo['trisomies']['tri_3'] != self.tri_3_checkbox.is_selected():
 				self.tri_3_checkbox.click()
-			if fishInfo['tri_5'] != self.tri_5_checkbox.is_selected():
+			if fishInfo['trisomies']['tri_5'] != self.tri_5_checkbox.is_selected():
 				self.tri_5_checkbox.click()
-			if fishInfo['tri_7'] != self.tri_7_checkbox.is_selected():
+			if fishInfo['trisomies']['tri_7'] != self.tri_7_checkbox.is_selected():
 				self.tri_7_checkbox.click()
-			if fishInfo['tri_9'] != self.tri_9_checkbox.is_selected():
+			if fishInfo['trisomies']['tri_9'] != self.tri_9_checkbox.is_selected():
 				self.tri_9_checkbox.click()
-			if fishInfo['tri_11'] != self.tri_11_checkbox.is_selected():
+			if fishInfo['trisomies']['tri_11'] != self.tri_11_checkbox.is_selected():
 				self.tri_11_checkbox.click()
-			if fishInfo['tri_15'] != self.tri_15_checkbox.is_selected():
+			if fishInfo['trisomies']['tri_15'] != self.tri_15_checkbox.is_selected():
 				self.tri_15_checkbox.click()
-			if fishInfo['tri_17'] != self.tri_17_checkbox.is_selected():
+			if fishInfo['trisomies']['tri_17'] != self.tri_17_checkbox.is_selected():
 				self.tri_17_checkbox.click()
-			if fishInfo['tri_17'] != self.tri_17_checkbox.is_selected():
+			if fishInfo['trisomies']['tri_17'] != self.tri_17_checkbox.is_selected():
 				self.tri_17_checkbox.click()
 
-			if fishInfo['tetra_3'] != self.tetra_3_checkbox.is_selected():
+			if fishInfo['tetrasomies']['tetra_3'] != self.tetra_3_checkbox.is_selected():
 				self.tetra_3_checkbox.click()
-			if fishInfo['tetra_5'] != self.tetra_5_checkbox.is_selected():
+			if fishInfo['tetrasomies']['tetra_5'] != self.tetra_5_checkbox.is_selected():
 				self.tetra_5_checkbox.click()
-			if fishInfo['tetra_7'] != self.tetra_7_checkbox.is_selected():
+			if fishInfo['tetrasomies']['tetra_7'] != self.tetra_7_checkbox.is_selected():
 				self.tetra_7_checkbox.click()
-			if fishInfo['tetra_9'] != self.tetra_9_checkbox.is_selected():
+			if fishInfo['tetrasomies']['tetra_9'] != self.tetra_9_checkbox.is_selected():
 				self.tetra_9_checkbox.click()
-			if fishInfo['tetra_11'] != self.tetra_11_checkbox.is_selected():
+			if fishInfo['tetrasomies']['tetra_11'] != self.tetra_11_checkbox.is_selected():
 				self.tetra_11_checkbox.click()
-			if fishInfo['tetra_15'] != self.tetra_15_checkbox.is_selected():
+			if fishInfo['tetrasomies']['tetra_15'] != self.tetra_15_checkbox.is_selected():
 				self.tetra_15_checkbox.click()
-			if fishInfo['tetra_17'] != self.tetra_17_checkbox.is_selected():
+			if fishInfo['tetrasomies']['tetra_17'] != self.tetra_17_checkbox.is_selected():
 				self.tetra_17_checkbox.click()
-			if fishInfo['tetra_17'] != self.tetra_17_checkbox.is_selected():
+			if fishInfo['tetrasomies']['tetra_17'] != self.tetra_17_checkbox.is_selected():
 				self.tetra_17_checkbox.click()
 
 			if action == 'save':

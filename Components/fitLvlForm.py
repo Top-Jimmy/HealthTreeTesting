@@ -5,11 +5,11 @@ from selenium.common.exceptions import (NoSuchElementException,
 
 class FitLvlForm():
 
-	def __init__(self, driver):
+	def __init__(self, driver, expectedValues=None):
 		self.driver = driver
-		self.load()
+		self.load(expectedValues)
 
-	def load(self):
+	def load(self, expectedValues=None):
 		self.form = self.driver.find_element_by_class_name('mui-form')
 		self.rows = self.form.find_elements_by_class_name('fitness-form-group')
 
@@ -27,35 +27,20 @@ class FitLvlForm():
 							value = False
 			self.questions.append(value)
 
-		# self.validate()
+		self.validate(expectedValues)
 		return True
 
-	# def validate(self):
-	# 	failures = []
-	# 	if expectedValues:
-	# 		if expectedValues['walk_sixhours'] == 'no' and not self.walk_sixhoursno_radio.get_attribute('checked'):
-	# 			failure.append('FitLvlForm: Expecting "no" to walking six or more hours a week')
-	# 		elif expectedValues['walk_sixhours'] == 'yes' and not self.walk_sixhoursyes_radio.get_attribute('checked'):
-	# 			failure.append('FitLvlForm: Expecting "yes" to walking six or more hours a week')
+	def validate(self, expectedValues):
+		failures = []
 
-	# 		if expectedValues['walk_fivehours'] == 'no' and not self.walk_fivehoursno_radio.get_attribute('checked'):
-	# 			failure.append('FitLvlForm: Expecting "no" to walking five hours or less a week')
-	# 		elif expectedValues['walk_fivehours'] == 'yes' and not self.walk_fivehoursyes_radio.get_attribute('checked'):
-	# 			failure.append('FitLvlForm: Expecting "yes" to walking five hours or less a week')
+		# Should be at least 1 question
+		if len(self.questions) == 0:
+			failures.append('FivLvlForm: No questions loaded')
 
-	# 		if expectedValues['walk_unassisted'] == 'no' and not self.walk_unassistedno_radio.get_attribute('checked'):
-	# 			failure.append('FitLvlForm: Expecting "no" to walking unassisted')
-	# 		elif expectedValues['walk_unassisted'] == 'yes' and not self.walk_unassistedyes_radio.get_attribute('checked'):
-	# 			failure.append('FitLvlForm: Expecting "yes" to walking unassisted')
-
-	# 		if expectedValues['shop'] == 'no' and not self.walk_shopno_radio.get_attribute('checked'):
-	# 			failure.append('FitLvlForm: Expecting "no" to shoppig unassisted')
-	# 		elif expectedValues['shop'] == 'yes' and not self.walk_shopyes_radio.get_attribute('checked'):
-	# 			failure.append('FitLvlForm: Expecting "yes" to shopping unassisted')
-
-	# 	if len(failures) > 0:
-	# 		print(failures)
-	# 		raise NoSuchElementException('Failed to load CreateAcctForm')
+		if len(failures) > 0:
+			for failure in failures:
+				print(failure)
+			raise NoSuchElementException('Failed to load FivLvlForm')
 
 	# def read_warning(self):
 	# 	inputs = ['username', 'email', 'password', 'confirm password']
@@ -88,23 +73,26 @@ class FitLvlForm():
 	# 	}
 
 	def set_question(self, questionIndex, value):
-		row = self.rows[questionIndex]
+		# row = self.rows[questionIndex]
+		if value != self.questions[questionIndex]:
 
-		labels = row.find_elements_by_tag_name('label')
-		if value == True:
-			labels[1].click()
-		else:
-			labels[2].click()
+			# last 2 labels are option selectors
+			labels = self.rows[questionIndex].find_elements_by_tag_name('label')
+			for i, row in enumerate(self.rows):
+				if i != 0:
+					if value:
+						labels[1].click()
+					else:
+						labels[2].click()
 
 	def submit(self, fitnessInfo):
 		for i, value in enumerate(fitnessInfo):
+			print(str(i))
 			self.set_question(i, value)
 			time.sleep(.4)
-			self.load()
-			# if i <= len(self.questions):
-			# 	self.set_question(i, value)
-			# 	time.sleep(.4)
-			# else:
-			# 	self.load()
-
+			# Validate on the last question
+			if (i + 1) < len(fitnessInfo):
+				self.load()
+			else:
+				self.load(fitnessInfo)
 		return True

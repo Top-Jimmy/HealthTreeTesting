@@ -24,7 +24,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		formInfo =  {
 			'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
-			'type': 'plasmacytoma',
+			'type': 'solitary plasmacytoma',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',
 			'lesions': 'no lesions',
@@ -68,7 +68,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		formInfo =  {
 			'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
-			'type': 'plasmacytoma',
+			'type': 'solitary plasmacytoma',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',
 			'lesions': 'no lesions',
@@ -135,7 +135,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		formInfo =  {
 			'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
-			'type': 'plasmacytoma',
+			'type': 'solitary Fplasmacytoma',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',
 			'lesions': 'no lesions',
@@ -233,7 +233,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 		self.assertTrue(myelDiagView.on('fresh'))
 
-		myelDiagView.myelomaDiagnosisFreshForm.add_physician_typeahead('David', 'David Avigan', physicianInfo)
+		myelDiagView.myelomaDiagnosisFreshForm.add_physician_typeahead('David', 'David Avigan', physicianInfo, physicianPosition)
 
 
 

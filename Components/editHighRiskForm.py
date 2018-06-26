@@ -13,17 +13,17 @@ class EditHighRiskForm():
 		buttons = self.form.find_elements_by_tag_name('button')
 
 		# self.close_button = buttons[5]
-		self.high_b2m_yes_radio = self.form.find_element_by_id('high_b2m_1')
-		self.high_b2m_no_radio = self.form.find_element_by_id('high_b2m_2')
-		self.high_b2m_idk_radio = self.form.find_element_by_id('high_b2m_3')
+		self.high_b2m_yes_radio = self.form.find_element_by_id('high_b2m_1_div')
+		self.high_b2m_no_radio = self.form.find_element_by_id('high_b2m_2_div')
+		self.high_b2m_idk_radio = self.form.find_element_by_id('high_b2m_3_div')
 
-		self.high_ldh_yes_radio = self.form.find_element_by_id('high_ldh_1')
-		self.high_ldh_no_radio = self.form.find_element_by_id('high_ldh_2')
-		self.high_ldh_idk_radio = self.form.find_element_by_id('high_ldh_3')
+		self.high_ldh_yes_radio = self.form.find_element_by_id('high_ldh_1_div')
+		self.high_ldh_no_radio = self.form.find_element_by_id('high_ldh_2_div')
+		self.high_ldh_idk_radio = self.form.find_element_by_id('high_ldh_3_div')
 
-		self.low_albumin_yes_radio = self.form.find_element_by_id('low_albumin_1')
-		self.low_albumin_no_radio = self.form.find_element_by_id('low_albumin_2')
-		self.low_albumin_idk_radio = self.form.find_element_by_id('low_albumin_3')
+		self.low_albumin_yes_radio = self.form.find_element_by_id('low_albumin_1_div')
+		self.low_albumin_no_radio = self.form.find_element_by_id('low_albumin_2_div')
+		self.low_albumin_idk_radio = self.form.find_element_by_id('low_albumin_3_div')
 
 		self.save_button = buttons[1]
 		self.cancel_button = buttons[0]

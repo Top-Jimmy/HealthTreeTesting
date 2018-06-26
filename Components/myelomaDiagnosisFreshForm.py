@@ -177,8 +177,6 @@ class MyelomaDiagnosisFreshForm():
 			dateInput = dateEl.find_element_by_tag_name('input')
 			date = dateInput.get_attribute('value')
 
-
-
 			additional_diagnoses.append({
 				'date': date,
 				'type': diagnosis_type

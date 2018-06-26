@@ -21,54 +21,23 @@ class FitLvlView(view.View):
 			IndexError) as e:
 			return False
 
-	def validate(self):
-		failures = []
-		if self.createAccount_link.text != 'Create Account':
-			failures.append('1. Create Account link. Expecting text "Create Account", got "' + self.createAccount_link.text + '"')
-		if len(failures) > 0:
-			print(failures)
-			raise NoSuchElementException('Failed to load HomeView')
-
-	def createErrorObj(self, errorText):
-		errorType = 'undefined';
-		errorMsg = '';
-
-		if 'confirm your email address' in errorText:
-			errorType = 'confirmation'
-			errorMsg = 'homeView.login: Confirmation error'
-		elif 'invalid username or password' in errorText:
-			errorType = 'invalid credentials'
-			errorMsg = 'homeView.login: Invalid Credentials error'
-
-		return {
-			'errorText': errorText,
-			'errorType': errorType,
-			'errorMsg': errorMsg,
-		}
-
-	def login(self, credentials, expectedErrorType=None):
+	
+	def submit(self, fitnessInfo, action='submit'):
 		try:
-			if self.signInForm.enter_credentials(credentials):
-				# Should be on home page
+			if self.fitLvlForm.submit(fitnessInfo, action):
+				# Should be on fitness level
 				url = self.driver.current_url
-				if '/about-me' not in url:
+				if '/myeloma-genetics' not in url:
 					self.error = self.readErrors()
 					if self.error:
-						raise MsgError('Login Error')
-			return True
-		except MsgError:
-			# Is login expected to fail?
-			errorType = self.error['errorType']
-			if expectedErrorType and errorType == expectedErrorType:
+						raise MsgError('Form Submission Error')
 				return True
-			print(self.error['errorMsg'])
-			if errorType == 'undefined':
-				print('Undefined error: ' + self.error['errorText'])
+		except MsgError:
+			print('FitLvlView submit: Need to handle MsgError!')
+		except WarningError:
+			print('FitLvlView submit: Need to handle WarningError!')
 		return False
 
-	def click_link(self, link):
-		if link == 'sign in':
-			self.createAccount_link.click()
 
 
 

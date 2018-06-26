@@ -4,98 +4,69 @@ from viewExceptions import MsgError, WarningError
 from Components import aboutMeForm
 from Components import menu
 from Components import header
+from Components import changeUsernameForm
+from Components import changePasswordForm
 from Views import view
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+import time
 
-class AboutMeView(view.View):
-	post_url = 'about-me'
+class SettingsView(view.View):
+	post_url = 'settings'
 
 	def load(self, formInfo=None):
 		try:
-			# Crap on left
-			self.aboutMeForm = aboutMeForm.AboutMeForm(self.driver, formInfo)
+			WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
+
+			form = self.driver.find_elements_by_tag_name('form')[-1]
+			buttons = form.find_elements_by_tag_name('button')
+
+			self.edit_username_button = buttons[0]
+			self.edit_password_button = buttons[1]
 			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
 			return False
 
-	def validate(self):
-		failures = []
-		# if self.createAccount_link.text != 'Create Account':
-		# 	failures.append('1. Create Account link. Expecting text "Create Account", got "' + self.createAccount_link.text + '"')
-		# if len(failures) > 0:
-		# 	print(failures)
-		# 	raise NoSuchElementException('Failed to load HomeView')
+	# def validate(self):
+	# 	failures = []
+	def change_username(self, usernameInfo, action='continue'):
+		self.edit_username_button.click()
+		self.changeUsernameForm = changeUsernameForm.ChangeUsernameForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.changeUsernameForm.load())
+		self.changeUsernameForm.submit(usernameInfo, action)
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
-	# def createErrorObj(self, errorText):
-	# 	errorType = 'undefined';
-	# 	errorMsg = '';
+	def change_password(self, passwordInfo, action='continue'):
+		self.edit_password_button.click()
+		self.changePasswordForm = changePasswordForm.ChangePasswordForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.changePasswordForm.load())
+		self.changePasswordForm.submit(passwordInfo, action)
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		self.header = header.AuthHeader(self.driver)
+		self.header.logout_button.click()
 
-	# 	if 'confirm your email address' in errorText:
-	# 		errorType = 'confirmation'
-	# 		errorMsg = 'homeView.login: Confirmation error'
-	# 	elif 'invalid username or password' in errorText:
-	# 		errorType = 'invalid credentials'
-	# 		errorMsg = 'homeView.login: Invalid Credentials error'
+	def change_back_username(self, otherusernameInfo, action='continue'):
+		self.edit_username_button.click()
+		self.changeUsernameForm = changeUsernameForm.ChangeUsernameForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.changeUsernameForm.load())
+		self.changeUsernameForm.submit(otherusernameInfo, action)
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
-	# 	return {
-	# 		'errorText': errorText,
-	# 		'errorType': errorType,
-	# 		'errorMsg': errorMsg,
-	# 	}
-
-	def submit(self, formInfo, expectedError=None, expectedWarnings=None):
-		try:
-			if self.aboutMeForm.enter_info(formInfo):
-				# Should be on myeloma diagnosis page
-				url = self.driver.current_url
-				if '/about-me' not in url:
-					self.error = self.readErrors()
-					self.warnings = self.aboutMeForm.read_warnings()
-					if self.error:
-						raise MsgError('Login Error')
-					elif self.warnings:
-						raise WarningError('Submission warning')
-			return True
-		except MsgError:
-			# Is login expected to fail?
-			errorType = self.error['errorType']
-			if expectedError and errorType.lower() == expectedError.lower():
-				return True
-			print(self.error['errorMsg'])
-			if errorType == 'undefined':
-				print('Undefined error: ' + self.error['errorText'])
-		except WarningError:
-			# Is form submission expected to have warning?
-			unexpectedWarnings = []
-			if expectedWarnings:
-				# Go through self.warnings and check each warningType matches an expectedWarning
-				# Append warnings that aren't expected to unexpectedWarnings
-				for i, warning in enumerate(self.warnings):
-					expected = False
-					warningType = warning['type']
-					for expectedWarning in expectedWarnings:
-						if expectedWarning == warningType:
-							expected = True
-					if not expected:
-						unexpectedWarnings.append(self.warnings[i])
-
-				if unexpectedWarnings:
-					for unexpected in unexpectedWarnings:
-							print(unexpected['msg'])
-							if warningType == 'undefined':
-								print('Undefined warning: ' + unexpected['text'])
-				else:
-					return True
-		return False
-
-	# def click_link(self, link):
-	# 	if link == 'create account':
-	# 		self.createAccount_link.click()
-	# 	elif link == 'forgot password':
-	# 		self.signInForm.forgotPassword_link.click()
-
-
-
+	def change_back_password(self, otherpasswordInfo, action='continue'):
+		self.edit_password_button.click()
+		self.changePasswordForm = changePasswordForm.ChangePasswordForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.changePasswordForm.load())
+		self.changePasswordForm.submit(otherpasswordInfo, action)
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		self.header = header.AuthHeader(self.driver)
+		self.header.logout_button.click()
+	

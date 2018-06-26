@@ -37,11 +37,6 @@ class MyelomaGeneticsView(view.View):
 			self.load_ngs_table()
 			self.load_highRisk_table()
 
-			# raw_input('fish: ' + str(self.fish_tests))
-			# raw_input('gep: ' + str(self.gep_tests))
-			# raw_input('ngs: ' + str(self.ngs_tests))
-			raw_input('high risk: ' + str(self.highRisk_tests))
-			raw_input(str(self.edit_high_risk_button))
 
 			# When user hasn't filled anything out
 				# todo
@@ -97,8 +92,8 @@ class MyelomaGeneticsView(view.View):
 			labResult = {}
 			divs = row.find_elements_by_tag_name('div')
 			# last 2 divs are containers for actions. Remove one of them
-			print('row ' + str(i))
-			print('# divs: ' + str(len(divs)))
+			# print('row ' + str(i))
+			# print('# divs: ' + str(len(divs)))
 			if i > 0:
 				del divs[-1]
 			for divIndex, div in enumerate(divs):
@@ -166,7 +161,7 @@ class MyelomaGeneticsView(view.View):
 		for i, row in enumerate(rows):
 			labResult = {}
 			divs = row.find_elements_by_tag_name('div')
-			print('High risk: row ' + str(i) + ' has ' + str(len(divs)) + ' divs')
+			# print('High risk: row ' + str(i) + ' has ' + str(len(divs)) + ' divs')
 			for divIndex, div in enumerate(divs):
 
 				text = div.text

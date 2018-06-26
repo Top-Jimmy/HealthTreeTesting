@@ -3,6 +3,9 @@ import main
 import initDriver
 import profiles
 import time
+from selenium.webdriver import ActionChains as AC
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.common.by import By
 
 class TestMyelomaGenetics(unittest.TestCase):
 
@@ -33,35 +36,44 @@ class TestMyelomaGenetics(unittest.TestCase):
 		myelomaGeneticsView = self.andrew.myelomaGeneticsView
 		fishInfo = {
 			'test_fish_date': '06/2018',
-			'gene_additions': [
-				{'3copies': False}, {'4copies': False}
-			],
-			'deletion_1p': False,
-			'deletion_17p': True,
-			'deletion_13q': False,
-			'deletion_16q': True,
-			'trans_FGFR3': True,
-			'trans_CCND3': True,
-			'trans_CCND1': False,
-			'trans_cMAF': True,
-			'trans_MAFB': False,
-			'trans_ETV6': True,
-			'tri_3': True,
-			'tri_5': False,
-			'tri_7': True,
-			'tri_9': True,
-			'tri_11': False,
-			'tri_15': True,
-			'tri_17': True,
-			'tri_19': True,
-			'tetra_3': True,
-			'tetra_5': False,
-			'tetra_7': False,
-			'tetra_9': False,
-			'tetra_11': True,
-			'tetra_15': True,
-			'tetra_17': False,
-			'tetra_19': True,
+			'gene_additions': {
+				'3copies': False, 
+				'4copies': False,
+			},
+			'gene_deletions': {
+				'deletion_1p': False, 
+				'deletion_17p': True, 
+				'deletion_13q': False, 
+				'deletion_16q': True
+			},
+			'gene_translocations': {
+				'trans_FGFR3': True, 
+				'trans_CCND3': True, 
+				'trans_CCND1': False, 
+				'trans_cMAF': True, 
+				'trans_MAFB': False, 
+				'trans_ETV6': True,
+			},
+			'trisomies': {
+				'tri_3': True, 
+				'tri_5': False, 
+				'tri_7': True, 
+				'tri_9': True, 
+				'tri_11': False, 
+				'tri_15': True, 
+				'tri_17': True, 
+				'tri_19': True,
+			},
+		'tetrasomies': {
+				'tetra_3': True, 
+				'tetra_5': False, 
+				'tetra_7': False, 
+				'tetra_9': False, 
+				'tetra_11': True, 
+				'tetra_15': True, 
+				'tetra_17': False, 
+				'tetra_19': True,
+			},
 		}
 
 		self.assertTrue(homeView.go())
@@ -137,11 +149,26 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		self.assertTrue(myelomaGeneticsView.on())
 
+	def test_riskInfo(self):
+
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelomaGeneticsView = self.andrew.myelomaGeneticsView
+
 		riskInfo = {
-			'high_b2m': 'Yes',
+			'high_b2m': 'yes',
 			'high_ldh': 'I dont know',
 			'low_albumin': 'I dont know',
 		}
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Myeloma Genetics')
+		self.assertTrue(myelomaGeneticsView.on())
+
+		# WDW(self.driver, 10).until(lambda x: self.myelomaGeneticsView.load())
 
 		myelomaGeneticsView.edit_high_risk(riskInfo)
 

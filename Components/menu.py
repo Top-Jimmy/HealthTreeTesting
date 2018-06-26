@@ -17,7 +17,10 @@ class Menu():
 		self.menu_type = self.calculate_menu_type()
 
 		for i, option in enumerate(self.list_items):
-			self.menu_options[option.text] = self.list_items[i]
+			if 'Surveys' in option.text:
+				self.menu_options['Surveys'] = self.list_items[i]
+			else:
+				self.menu_options[option.text] = self.list_items[i]
 		return True
 
 	def calculate_menu_type(self):

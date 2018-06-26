@@ -21,7 +21,7 @@ andrew = {
 	'myel_diag_data': {
 		'newly_diagnosed': 'no',
 		'diagnosis_date': '05/2018',
-		'type': 'plasmacytoma',
+		'type': 'solitary plasmacytoma',
 		'high_risk': 'no',
 		'transplant_eligible': 'no',
 		'lesions': 'no lesions',
@@ -190,7 +190,7 @@ andrew = {
 }
 
 elliot = {
-	'username': 'elliot',
+	'username': 'elliot1',
 	'password': 'celtics',
 	'about_me_data': {
 		'first_name': 'Elliot',
