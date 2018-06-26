@@ -143,6 +143,7 @@ class CurrentHealthForm():
 
 		results = []
 		for i, question in enumerate(questionInfo):
+			print('answering question: ' + str(i))
 			results.append(self.answer_question(i, question))
 
 		if action == 'submit':

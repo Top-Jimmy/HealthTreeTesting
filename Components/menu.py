@@ -8,8 +8,8 @@ class Menu():
 		self.load()
 
 	def load(self):
-		cont = self.driver.find_element_by_id('sidebar-wrapper')
-		self.form = cont.find_element_by_tag_name('form')
+		self.cont = self.driver.find_element_by_id('sidebar-wrapper')
+		self.form = self.cont.find_element_by_tag_name('form')
 		self.list_items = self.form.find_elements_by_tag_name('li')
 		self.menu_options = {}
 
@@ -43,3 +43,15 @@ class Menu():
 		else:
 			print('Menu: Unexpected destination: ' + destination)
 			return False
+
+	def selected_option(self):
+		self.menu_items = []
+		lists = self.cont.find_elements_by_tag_name('li')
+		for i, li in enumerate(lists):
+			classes = li.get_attribute('class')
+			if 'active' in classes:
+				self.menu_items.append(lists[i].text)
+
+		print(self.menu_items)
+				
+

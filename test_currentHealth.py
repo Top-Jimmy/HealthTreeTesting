@@ -52,7 +52,7 @@ class TestCurrentHealth(unittest.TestCase):
 		]
 
 		self.freshFormInfo = {
-			'newly_diagnosed': 'no',
+			'newly_diagnosed': 'No',
 			'diagnosis_date': '05/2016',
 			'type': 'solitary plasmacytoma',
 			'high_risk': 'no',
@@ -119,6 +119,7 @@ class TestCurrentHealth(unittest.TestCase):
 		self.assertTrue(myelDiagView.submitFreshForm(self.freshFormInfo))
 		myelDiagView.myelomaDiagnosisSavedForm.continue_button.click()
 
+
 		# Should have first 3 questions + 8 default questions
 		formInfo = {
 			'questions': self.currentQuestions + self.defaultQuestions,
@@ -126,6 +127,10 @@ class TestCurrentHealth(unittest.TestCase):
 		}
 		# Bug: Doesn't display 3 currentQuestions
 		self.assertTrue(currentHealthView.on(formInfo))
+		self.driver.refresh()
+		self.assertTrue(currentHealthView.on())
+		self.assertNotEquals(currentHealthView.menu.selected_option(), 'Current Health')
+		raw_input('how many questions?')
 		self.assertTrue(currentHealthView.submit(formInfo))
 
 		# Delete Diagnosis
@@ -231,5 +236,38 @@ class TestCurrentHealth(unittest.TestCase):
 
 		# Reset to default answers (I don't know)
 		self.assertTrue(currentHealthView.submit(defaultFormInfo))
+
+	def test_additional_questions(self):
+		'''CurrentHealth : CurrentHealth . test_navigate'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelDiagView = self.andrew.myelomaDiagnosisView
+		fitLvlView = self.andrew.fitLvlView
+		currentHealthView = self.andrew.currentHealthView
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Myeloma Diagnosis')
+		self.assertTrue(myelDiagView.on('fresh'))
+
+		freshFormInfo = copy.deepcopy(self.freshFormInfo)
+		freshFormInfo['type'] = 'smoldering myeloma'
+		self.assertTrue(myelDiagView.submitFreshForm(freshFormInfo))
+		myelDiagView.myelomaDiagnosisSavedForm.continue_button.click()
+
+		formInfo = {
+			'questions': self.defaultQuestions,
+			'meta': [{'num_questions': 8}],
+		}
+		self.assertTrue(currentHealthView.on(formInfo))
+		self.assertTrue(currentHealthView.submit(formInfo))
+
+		# Delete Diagnosis
+		self.assertTrue(fitLvlView.on())
+		fitLvlView.menu.go_to('Myeloma Diagnosis')
+		self.assertTrue(myelDiagView.on('saved'))
+		myelDiagView.delete('diagnosis', 0)
+
 
 

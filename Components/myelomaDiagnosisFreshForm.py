@@ -398,7 +398,7 @@ class MyelomaDiagnosisFreshForm():
 	def submit(self, formInfo, submit=True):
 		if formInfo:
 			if formInfo['newly_diagnosed'] is not None:
-				if formInfo['newly_diagnosed']:
+				if formInfo['newly_diagnosed'] == 'yes':
 					self.newlyDiagnosedYes_radio.click()
 				else:
 					self.newlyDiagnosedNo_radio.click()
@@ -490,6 +490,7 @@ class MyelomaDiagnosisFreshForm():
 
 			if submit:
 				self.continue_button.click()
+
 			return True
 		return False
 

@@ -21,7 +21,7 @@ class FitLvlView(view.View):
 			IndexError) as e:
 			return False
 
-	
+
 	def submit(self, fitnessInfo, action='submit'):
 		try:
 			if self.fitLvlForm.submit(fitnessInfo, action):
