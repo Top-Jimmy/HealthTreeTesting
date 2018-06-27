@@ -2,6 +2,7 @@ import unittest
 import main
 import initDriver
 import profiles
+import form_info
 # import copy # copy.deepcopy(object)
 
 # @unittest.skip("In progress")
@@ -86,38 +87,40 @@ class TestAddTreatment(unittest.TestCase):
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
 
-		treatmentInfo = [
-			{'type': 'single',
-				'options': {
-					'Radiation': {},
+		treatmentInfo = {
+			'questions': [
+				{'type': 'single',
+					'options': {
+						'Radiation': {},
+					},
 				},
-			},
-			{'type': 'single',
-				'options': {
-					'Other': {'comment': 'Bogus'},
+				{'type': 'single',
+					'options': {
+						'Other': {'comment': 'Bogus'},
+					},
+					'actions': 'continue',
 				},
-				'actions': 'continue',
-			},
-			{'type': 'date', 'text': '10/2017' },
-			{'type': 'date', 'text': '02/2018' },
-			{'type': 'single',
-				'options': {
-					'I discontinued this treatment': {
-						'type': 'select-all',
-						'options': {
-							'Cost of the treatment': {},
-							'Too much travel': {},
-							'Other': {'comment': 'Comment text'},
-						},
-						'actions': 'continue',
-					}
+				{'type': 'date', 'text': '10/2017' },
+				{'type': 'date', 'text': '02/2018' },
+				{'type': 'single',
+					'options': {
+						'I discontinued this treatment': {
+							'type': 'select-all',
+							'options': {
+								'Cost of the treatment': {},
+								'Too much travel': {},
+								'Other': {'comment': 'Comment text'},
+							},
+						}
+					},
+					'actions': 'continue',
 				},
-			},
-		]
+			],
+			'sideEffects': form_info.get_info('sideEffects'),
+		}
 		toView.add_treatment(treatmentInfo, 'wait')
 
 
-		raw_input('?')
 
 
 

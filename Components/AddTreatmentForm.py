@@ -1,4 +1,5 @@
 from Components import datePicker
+from Components import sideEffectsForm
 
 import time
 from selenium.webdriver.common.keys import Keys
@@ -128,7 +129,11 @@ class AddTreatmentForm():
 	# 	}
 
 	def add_treatment(self, treatmentInfo):
-		for i, question in enumerate(treatmentInfo):
+		questions = treatmentInfo['questions']
+		sideEffects = treatmentInfo.get('sideEffects', None)
+
+		# questions
+		for i, question in enumerate(questions):
 			loadedIndex = -(i+1) # Questions are loaded in opposite order
 			# loadedQuestion = self.questions[loadedIndex]
 			qType = question['type']
@@ -152,57 +157,54 @@ class AddTreatmentForm():
 
 				# Handle all options
 				for key in options:
-					print('answering question: ' + str(i))
 					self.answer_question(key, options[key], loadedIndex)
 
 				if actions and actions == 'continue':
-					self.questionConts[loadedIndex].find_element_by_class_name('float-button-continue').click()
+					self.questionConts[loadedIndex].find_element_by_class_name('green-hvr-bounce-to-top').click()
 
 			self.load()
+
+		# side effects
+		if sideEffects:
+			# load sideEffectForm
+			effectsForm = sideEffectsForm.SideEffectsForm(self.driver)
+			WDW(self.driver, 10).until(lambda x: effectsForm.load())
+			effectsForm.set(sideEffects)
+			raw_input('?')
+
 
 	def answer_question(self, optionName, optionInfo, loadedIndex, subOptionName=None):
 		comment = optionInfo.get('comment', None)
 		secondaryOptions = optionInfo.get('options', None)
-		# if optionName == 'I discontinued this treatment':
-		# 	raw_input('optionInfo: ' + str(optionInfo))
-		# 	loadedOptionInfo = self.questions[loadedIndex][optionName]
-		# 	raw_input('loadedOptionInfo: ' + str(loadedOptionInfo))
 
 		# Get loaded info for given option/subOption
 		loadedQuestion = self.questions[loadedIndex][optionName]
 		if subOptionName:
-			loadedQuestion = loadedQuestion['options']
+			loadedQuestion = loadedQuestion['subquestions'][subOptionName]
 
 		# Grab input element out of loadedQuestion for option/subOption
 		inputEl = loadedQuestion
 		optionTextarea = None
-		# loadedSecondaryOptions = None # Don't think we care about these until we're actually selecting subOptions
 		if type(loadedQuestion) is dict:
 			inputEl = loadedQuestion.get('element', None)
 			optionTextarea = loadedQuestion.get('textareaEl', None)
-			# loadedSubQuestions = loadedQuestion.get('subquestions', None)
-			print('loadedSubQuestions: ' + str(loadedSubQuestions))
 
 		# Make sure option is selected
 		if not inputEl.is_selected():
 			inputEl.click()
-			if optionName == 'I discontinued this treatment':
+			if comment or secondaryOptions:
 				self.load()
-				raw_input(self.questions[loadedIndex])
 
 		# handle comment (optional)
 		if comment:
 			if not optionTextarea:
-				self.load()
 				optionTextarea = self.questions[loadedIndex][optionName]['textareaEl']
 			optionTextarea.clear()
 			optionTextarea.send_keys(optionInfo['comment'])
 
 		# handle secondaryQuestions
 		if secondaryOptions:
-			self.load()
-			raw_input('secondaryQuestions loaded?: ' + str(self.questions[loadedIndex]))
 			for secondaryOption in secondaryOptions:
-				self.answer_question(optionName, secondaryOption, loadedIndex, secondaryOption)
+				self.answer_question(optionName, secondaryOptions[secondaryOption], loadedIndex, secondaryOption)
 
 

@@ -149,6 +149,8 @@ class MyelomaDiagnosisFreshForm():
 		if len(failures) > 0:
 			print(failures)
 			raise NoSuchElementException('Failed to load MyelomaDiagnosisFreshForm')
+		else:
+			return True
 
 	def load_physicians(self):
 		self.physician_cont = self.driver.find_element_by_id('physician_container')
@@ -393,52 +395,10 @@ class MyelomaDiagnosisFreshForm():
 		except NoSuchElementException:
 			self.state = 'old_diagnosis'
 
-
-
-
-
-############################## Error handling #################################
-
-	# def read_warning(self):
-	# 	inputs = ['username', 'email', 'password', 'confirm password']
-	# 	warnings = []
-	# 	warning_els = [
-	# 		self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
-	# 	]
-	# 	for i, warning_el in enumerate(warning_els):
-	# 		text = warning_el.text
-	# 		if len(text) > 0:
-	# 			warnings.append({
-	# 				'inputName': inputs[i],
-	# 				'text': text,
-	# 			})
-	# 	if len(warnings) > 0:
-	# 		return warnings
-	# 	return None
-
-	# def interpret_warning(self, warningText):
-	# 	warningType = 'undefined'
-	# 	warningMsg = ''
-	# 	if warningText == 'Please enter a valid email address.':
-	# 		warningType = 'Invalid credentials'
-	# 		warningMsg = 'forgotPwForm: Submit form warning'
-
-	# 	return {
-	# 		'msg', warningMsg,
-	# 		'text', warningText,
-	# 		'type', warningType,
-	# 	}
-
 ############################## Test functions ##################################
 
 	def submit(self, formInfo, submit=True):
 		if formInfo:
-			# if formInfo['newly_diagnosed'] is not None:
-			# 	if formInfo['newly_diagnosed'] == 'yes':
-			# 		self.newlyDiagnosedYes_radio.click()
-			# 	else:
-			# 		self.newlyDiagnosedNo_radio.click()
-
 			if formInfo['diagnosis_date'] is not None:
 				picker = datePicker.DatePicker(self.driver)
 				dateSet = False
@@ -451,16 +411,12 @@ class MyelomaDiagnosisFreshForm():
 						print('Failed to set date. Page probably reloaded')
 						time.sleep(.4)
 				self.load()
-				raw_input('done reloading after setting the date')
 
-			raw_input('setting type')
 			if formInfo['type'] is not None:
 				self.set_first_diagnosis(formInfo['type'])
 
-			raw_input('setting new diagnosis')
 			if formInfo['stable'] is not None and self.state == 'new_diagnosis':
 				stable_myeloma = formInfo['stable']
-				raw_input('submit problem?')
 				if stable_myeloma == 'no':
 					self.stable_no_input.click()
 				elif stable_myeloma == 'yes':
@@ -468,7 +424,6 @@ class MyelomaDiagnosisFreshForm():
 				else:
 					self.stable_idk_input.click()
 
-			raw_input('setting protein')
 			if formInfo['m_protein'] is not None and self.state == 'new_diagnosis':
 				stable_myeloma = formInfo['m_protein']
 				if stable_myeloma == 'no':
