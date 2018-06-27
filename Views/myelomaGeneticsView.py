@@ -272,26 +272,32 @@ class MyelomaGeneticsView(view.View):
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
-	def edit_test(self, testType, testIndex, testValues):
+	def edit_test(self, testType, testIndex, testValues, action='delete'):
 		test = ''
 		if testType == 'fish':
 			test = self.fish_tests[testIndex]
-			test['actions'][0].click()
+			if action == 'edit':
+				test['actions'][0].click()
+			else:
+				test['actions'][1].click()
 			# Load edit form
 			# call submit function of edit form and pass in testValues
 			# reload page and pass in testValues as expectedValues
 		elif testType == 'gep':
 			test = self.gep_tests[testIndex]
-			test['actions'][0].click()
+			if action == 'edit':
+				test['actions'][0].click()
+			else:
+				test['actions'][1].click()
+
 		elif testType == 'ngs':
 			test = self.ngs_tests[testIndex]
-			test['actions'][0].click()
+			if action == 'edit':	
+				test['actions'][0].click()
+			else:
+				test['actions'][1].click()
 		else:
 			self.edit_high_risk_button.click()
-
-			
-
-
 
 	def edit_high_risk(self, riskInfo, action='save'):
 		self.edit_high_risk_button.click()

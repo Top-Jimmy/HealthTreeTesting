@@ -41,7 +41,7 @@ class MyelDiagView(view.View):
 	def get_view_state(self):
 		# Is myelomaDiagnosisForm fresh or already saved?
 		try:
-			el = self.driver.find_element_by_id('newly_diagnosedYes')
+			el = self.driver.find_element_by_id('undefined_id')
 			return 'fresh'
 		except NoSuchElementException:
 			return 'saved'

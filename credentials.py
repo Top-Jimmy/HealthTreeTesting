@@ -19,12 +19,15 @@ andrew = {
 		'sparkCures': True,
 	},
 	'myel_diag_data': {
-		'newly_diagnosed': 'no',
+		# 'newly_diagnosed': 'no',
 		'diagnosis_date': '05/2018',
 		'type': 'solitary plasmacytoma',
+		'stable': 'no',
+		'm_protein': 'no',
+		'recent_pain': 'yes',
+		'lesions': 'no lesions',
 		'high_risk': 'no',
 		'transplant_eligible': 'no',
-		'lesions': 'no lesions',
 		'diagnosis_location': {
 			'facility': 'Huntsman Cancer',
 			'city': 'Salt Lake City',
@@ -212,9 +215,9 @@ elliot = {
 		'newly_diagnosed': 'yes',
 		'diagnosis_date': '01/2018',
 		'type': 'smoldering myeloma',
+		'lesions': 'no lesions',
 		'high_risk': 'no',
 		'transplant_eligible': 'no',
-		'lesions': 'no lesions',
 		'diagnosis_location': {
 			'facility': 'Huntsman Cancer',
 			'city': 'Salt Lake City',

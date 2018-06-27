@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import datePicker
 
+
 # Form on 'Myeloma Diagnosis' when user has not saved diagnosis info.
 
 class MyelomaDiagnosisFreshForm():
@@ -18,14 +19,30 @@ class MyelomaDiagnosisFreshForm():
 
 	def load(self, expectedValues=None):
 		self.form = self.driver.find_element_by_id('diagnosis_form')
-		# self.placeholders = self.form.find_elements_by_class_name('Select-placeholder')
-
-		self.newlyDiagnosedNo_radio = self.form.find_element_by_id('newly_diagnosedNo')
-		self.newlyDiagnosedYes_radio = self.form.find_element_by_id('newly_diagnosedYes')
+		self.load_state()
 
 		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
 		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
 		self.load_first_diagnosis_dropdown()
+
+		if self.state == 'new_diagnosis':
+			self.stable_no_input = self.form.find_element_by_id('stablehighRisk1')
+			self.stable_yes_input = self.form.find_element_by_id('stablehighRisk2')
+			self.stable_idk_input = self.form.find_element_by_id('stablehighRisk3')
+
+			self.mprotein_no_input = self.form.find_element_by_id('relapsing_highRisk1')
+			self.mprotein_yes_input = self.form.find_element_by_id('relapsing_highRisk2')
+			self.mprotein_idk_input = self.form.find_element_by_id('relapsing_highRisk3')
+
+			self.recent_pain_no_input = self.form.find_element_by_id('relapsing_issue_highRisk1')
+			self.recent_pain_yes_input = self.form.find_element_by_id('relapsing_issue_highRisk2')
+			self.recent_pain_idk_input = self.form.find_element_by_id('relapsing_issue_highRisk3')
+
+		self.boneLesion0_radio = self.form.find_element_by_id('0')
+		self.boneLesion1_radio = self.form.find_element_by_id('1')
+		self.boneLesion2_radio = self.form.find_element_by_id('2')
+		self.boneLesion3_radio = self.form.find_element_by_id('3')
+
 		self.highRisk1_radio = self.form.find_element_by_id('highRisk1')
 		self.highRisk2_radio = self.form.find_element_by_id('highRisk2')
 		self.highRisk3_radio = self.form.find_element_by_id('highRisk3')
@@ -34,24 +51,14 @@ class MyelomaDiagnosisFreshForm():
 		self.stemCell2_radio = self.form.find_element_by_id('stemCell2')
 		self.stemCell3_radio = self.form.find_element_by_id('stemCell3')
 
-		self.boneLesion0_radio = self.form.find_element_by_id('0')
-		self.boneLesion1_radio = self.form.find_element_by_id('1')
-		self.boneLesion2_radio = self.form.find_element_by_id('2')
-		self.boneLesion3_radio = self.form.find_element_by_id('3')
-
 		self.facility_input = self.form.find_element_by_id('facility_name')
 		self.facility_city_input = self.form.find_element_by_id('Last')
 		self.load_facility_state()
 
 		self.add_diagNo_radio = self.form.find_element_by_id('yesno0')
 		self.add_diagYes_radio = self.form.find_element_by_id('yesno1')
-		# todo handle loading multiple diagnosis inputs, delete diagnosis button, add diagnosis action
 
-		self.load_physicians()
-		button_cont = self.form.find_element_by_class_name('submit_button')
-		self.continue_button = button_cont.find_element_by_tag_name('button')
-		self.validate(expectedValues)
-		return True
+		return self.validate(expectedValues)
 
 	def validate(self, expectedValues):
 		failures = []
@@ -64,13 +71,43 @@ class MyelomaDiagnosisFreshForm():
 				failures.append('MyelDiagForm: Expected ' + str(len(expectedPhysicians)) + ' physicians. Form has ' + str(len(self.physicians)))
 
 
-			if expectedValues['newly_diagnosed'] == 'no' and not self.newly_diagnosedNo_radio.get_attribute('checked'):
-				failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
-			elif expectedValues['newly_diagnosed'] == 'yes' and not self.newly_diagnosedYes_radio.get_attribute('checked'):
-				failure.append('MyelDiagForm: Expecting "yes" to being newly diagnosed')
+			# if expectedValues['newly_diagnosed'] == 'no' and not self.newly_diagnosedNo_radio.get_attribute('checked'):
+			# 	failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
+			# elif expectedValues['newly_diagnosed'] == 'yes' and not self.newly_diagnosedYes_radio.get_attribute('checked'):
+			# 	failure.append('MyelDiagForm: Expecting "yes" to being newly diagnosed')
 
 			if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['date']:
 				failures.append('MyelDiagForm: Expecting date of diagnosis "' + expectedValues['date'] + '", got "' + self.dateDiagnosis_form-control.get_attribute('value') + '"')
+
+			if expectedValues['stable'] == 'no' and not self.stable_no_input.get_attribute('checked'):
+				failures.append('MyelDiagForm: Expecting "no" to having stable myeloma')
+			if expectedValues['stable'] == 'yes' and not self.stable_yes_input.get_attribute('checked'):
+				failures.append('MyelDiagForm: Expecting "yes" to having stable myeloma')
+			if expectedValues['stable'] == 'I dont know' and not self.stable_idk_input.get_attribute('checked'):
+				failures.append('MyelDiagForm: Expecting "I dont know" to having stable myeloma')
+
+			if expectedValues['m_protein'] == 'no' and not self.mprotein_no_input.get_attribute('checked'):
+				failures.append('MyelDiagForm: Expecting "no" to relapsing')
+			if expectedValues['m_protein'] == 'yes' and not self.mprotein_yes_input.get_attribute('checked'):
+				failures.append('MyelDiagForm: Expecting "yes" to relapsing')
+			if expectedValues['m_protein'] == 'I dont know' and not self.mprotein_idk_input.get_attribute('checked'):
+				failures.append('MyelDiagForm: Expecting "I dont know" to relapsing')
+
+			if expectedValues['recent_pain'] == 'no' and not self.recent_pain_no_input.get_attribute('checked'):
+				failures.append('MyelDiagForm: Expecting "no" to having recent pain')
+			if expectedValues['recent_pain'] == 'yes' and not self.recent_pain_yes_input.get_attribute('checked'):
+				failures.append('MyelDiagForm: Expecting "yes" to having recent pain')
+			if expectedValues['recent_pain'] == 'I dont know' and not self.recent_pain_idk_input.get_attribute('checked'):
+				failures.append('MyelDiagForm: Expecting "I dont know" to having recent pain')
+
+			if expectedValues['lesions'] == 'no lesions' and not self.boneLesion0_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "no lesions" to # of bone lesions')
+			elif expectedValues['lesions'] == '5 or less' and not self.boneLesion1_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "5 or less" to # of bone lesions')
+			elif expectedValues['lesions'] == '6 or more' and not self.boneLesion2_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "6 or more" to # of bone lesions')
+			elif expectedValues['lesions'] == 'I dont know' and not self.boneLesion3_radio.get_attribute('checked'):
+				failure.append('MyelDiagForm: Expecting "I dont know" to # of bone lesions')
 
 			if expectedValues['high_risk'] == 'no' and not self.highRisk1_radio.get_attribute('checked'):
 				failure.append('MyelDiagForm: High Risk, Expecting "no"')
@@ -85,15 +122,6 @@ class MyelomaDiagnosisFreshForm():
 				failure.append('MyelDiagForm: Expecting "yes" to being eligible for stem cell')
 			elif expectedValues['stem_cell'] == 'I dont know' and not self.stemCell3_radio.get_attribute('checked'):
 				failure.append('MyelDiagForm: Expecting "I dont know" to being eligible for stem cell')
-
-			if expectedValues['lesions'] == 'no lesions' and not self.boneLesion0_radio.get_attribute('checked'):
-				failure.append('MyelDiagForm: Expecting "no lesions" to # of bone lesions')
-			elif expectedValues['lesions'] == '5 or less' and not self.boneLesion1_radio.get_attribute('checked'):
-				failure.append('MyelDiagForm: Expecting "5 or less" to # of bone lesions')
-			elif expectedValues['lesions'] == '6 or more' and not self.boneLesion2_radio.get_attribute('checked'):
-				failure.append('MyelDiagForm: Expecting "6 or more" to # of bone lesions')
-			elif expectedValues['lesions'] == 'I dont know' and not self.boneLesion3_radio.get_attribute('checked'):
-				failure.append('MyelDiagForm: Expecting "I dont know" to # of bone lesions')
 
 			if self.facility_input.get_attribute('value') != expectedValues['facility']:
 				failure.append('MyelDiagForm: Expecting facility "' + expectedValues['facility'] + '", got "' + self.facility_input.get_attribute('value') + '"')
@@ -187,7 +215,7 @@ class MyelomaDiagnosisFreshForm():
 ############################### Dropdown functions #####################################
 
 	def load_first_diagnosis_dropdown(self):
-		self.first_diagnosis_cont = self.driver.find_elements_by_class_name('frst-diag-name')[1]
+		self.first_diagnosis_cont = self.driver.find_elements_by_class_name('frst-diag-name')[0]
 
 		# Is value already set? Should have either value or placeholder element
 		self.first_diagnosis_preSet = False
@@ -358,6 +386,14 @@ class MyelomaDiagnosisFreshForm():
 		clear_physician_info_button = cont.find_element_by_class_name('rbt-close')
 		clear_phy
 
+	def load_state(self, expectedState=None):
+		try:
+			el = self.driver.find_element_by_id('stablehighRisk1')
+			self.state = 'new_diagnosis'
+		except NoSuchElementException:
+			self.state = 'old_diagnosis'
+
+
 
 
 
@@ -397,11 +433,11 @@ class MyelomaDiagnosisFreshForm():
 
 	def submit(self, formInfo, submit=True):
 		if formInfo:
-			if formInfo['newly_diagnosed'] is not None:
-				if formInfo['newly_diagnosed'] == 'yes':
-					self.newlyDiagnosedYes_radio.click()
-				else:
-					self.newlyDiagnosedNo_radio.click()
+			# if formInfo['newly_diagnosed'] is not None:
+			# 	if formInfo['newly_diagnosed'] == 'yes':
+			# 		self.newlyDiagnosedYes_radio.click()
+			# 	else:
+			# 		self.newlyDiagnosedNo_radio.click()
 
 			if formInfo['diagnosis_date'] is not None:
 				picker = datePicker.DatePicker(self.driver)
@@ -416,9 +452,53 @@ class MyelomaDiagnosisFreshForm():
 					except (ElementNotVisibleException, StaleElementReferenceException, ValueError, KeyError) as e:
 						print('Failed to set date. Page probably reloaded')
 						time.sleep(.4)
+				self.load()
+				raw_input('done reloading after setting the date')
 
+			raw_input('setting type')
 			if formInfo['type'] is not None:
 				self.set_first_diagnosis(formInfo['type'])
+
+			raw_input('setting new diagnosis')
+			if formInfo['stable'] is not None and self.state == 'new_diagnosis':
+				stable_myeloma = formInfo['stable']
+				raw_input('submit problem?')
+				if stable_myeloma == 'no':
+					self.stable_no_input.click()
+				elif stable_myeloma == 'yes':
+					self.stable_yes_input.click()
+				else:
+					self.stable_idk_input.click()
+
+			raw_input('setting protein')
+			if formInfo['m_protein'] is not None and self.state == 'new_diagnosis':
+				stable_myeloma = formInfo['m_protein']
+				if stable_myeloma == 'no':
+					self.mprotein_no_input.click()
+				elif stable_myeloma == 'yes':
+					self.mprotein_yes_input.click()
+				else:
+					self.mprotein__idk_input.click()
+
+			if formInfo['recent_pain'] is not None and self.state == 'new_diagnosis':
+				stable_myeloma = formInfo['recent_pain']
+				if stable_myeloma == 'no':
+					self.recent_pain_no_input.click()
+				elif stable_myeloma == 'yes':
+					self.recent_pain_yes_input.click()
+				else:
+					self.recent_pain__idk_input.click()
+
+			if formInfo['lesions'] is not None:
+				bone_lesions = formInfo['lesions']
+				if bone_lesions == 'no lesions':
+					self.boneLesion0_radio.click()
+				elif bone_lesions == '5 or less':
+					self.boneLesion1_radio.click()
+				elif bone_lesions == '6 or more':
+					self.boneLesion2_radio.click()
+				else:
+					self.boneLesion3_radio.click()
 
 			if formInfo['high_risk'] is not None:
 				high_risk = formInfo['high_risk']
@@ -437,17 +517,6 @@ class MyelomaDiagnosisFreshForm():
 					self.stemCell2_radio.click()
 				else:
 					self.stemCell3_radio.click()
-
-			if formInfo['lesions'] is not None:
-				bone_lesions = formInfo['lesions']
-				if bone_lesions == 'no lesions':
-					self.boneLesion0_radio.click()
-				elif bone_lesions == '5 or less':
-					self.boneLesion1_radio.click()
-				elif bone_lesions == '6 or more':
-					self.boneLesion2_radio.click()
-				else:
-					self.boneLesion3_radio.click()
 
 			if formInfo['diagnosis_location']: # Empty dict should evaluate to False
 				location = formInfo['diagnosis_location']

@@ -22,12 +22,15 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView
 		formInfo =  {
-			'newly_diagnosed': 'no',
+			# 'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
 			'type': 'solitary plasmacytoma',
+			'stable': 'no',
+			'm_protein': 'no',
+			'recent_pain': 'yes',
+			'lesions': 'no lesions',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',
-			'lesions': 'no lesions',
 			'diagnosis_location': {
 				'facility': 'Huntsman Cancer',
 				'city': 'Salt Lake City',
@@ -52,7 +55,6 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 
 		self.assertTrue(aboutMeView.on())
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
-
 		self.assertTrue(myelDiagView.on('fresh'))
 		self.assertTrue(myelDiagView.myelomaDiagnosisFreshForm.submit(formInfo, False))
 
@@ -66,12 +68,12 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView
 		formInfo =  {
-			'newly_diagnosed': 'no',
+			# 'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
 			'type': 'solitary plasmacytoma',
+			'lesions': 'no lesions',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',
-			'lesions': 'no lesions',
 			'diagnosis_location': {
 				'facility': 'Huntsman Cancer',
 				'city': 'Salt Lake City',
@@ -133,12 +135,12 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		}
 
 		formInfo =  {
-			'newly_diagnosed': 'no',
+			# 'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
 			'type': 'solitary plasmacytoma',
+			'lesions': 'no lesions',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',
-			'lesions': 'no lesions',
 			'diagnosis_location': {
 				'facility': 'Huntsman Cancer',
 				'city': 'Salt Lake City',

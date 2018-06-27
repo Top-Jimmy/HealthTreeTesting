@@ -52,12 +52,12 @@ class TestCurrentHealth(unittest.TestCase):
 		]
 
 		self.freshFormInfo = {
-			'newly_diagnosed': 'No',
+			# 'newly_diagnosed': 'No',
 			'diagnosis_date': '05/2016',
 			'type': 'solitary plasmacytoma',
+			'lesions': 'no lesions',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',
-			'lesions': 'no lesions',
 			'diagnosis_location': {
 				'facility': 'Huntsman Cancer',
 				'city': 'Salt Lake City',
@@ -107,7 +107,7 @@ class TestCurrentHealth(unittest.TestCase):
 		aboutMeView.menu.go_to('Current Health')
 		expectedValues = {
 			'meta': [
-				{'num_questions': 11},
+				{'num_questions': 8},
 			],
 		}
 		self.assertTrue(currentHealthView.on(expectedValues))
@@ -123,7 +123,7 @@ class TestCurrentHealth(unittest.TestCase):
 		# Should have first 3 questions + 8 default questions
 		formInfo = {
 			'questions': self.currentQuestions + self.defaultQuestions,
-			'meta': [{'num_questions': 11}],
+			'meta': [{'num_questions': 8}],
 		}
 		# Bug: Doesn't display 3 currentQuestions
 		self.assertTrue(currentHealthView.on(formInfo))
@@ -157,7 +157,7 @@ class TestCurrentHealth(unittest.TestCase):
 		# Submit recent Diagnosis
 		self.assertTrue(myelDiagView.on('fresh'))
 		freshFormInfo = copy.deepcopy(self.freshFormInfo)
-		freshFormInfo['newly_diagnosed'] = 'yes'
+		# freshFormInfo['newly_diagnosed'] = 'yes'
 		self.assertTrue(myelDiagView.submitFreshForm(freshFormInfo))
 		myelDiagView.myelomaDiagnosisSavedForm.continue_button.click()
 
@@ -191,7 +191,7 @@ class TestCurrentHealth(unittest.TestCase):
 		# Should not have a diagnosis saved. Therefore should get all questions
 		defaultFormInfo = {
 			'questions': self.currentQuestions + self.defaultQuestions,
-			'meta': [{'num_questions': 11}],
+			'meta': [{'num_questions': 8}],
 		}
 		self.assertTrue(currentHealthView.on(defaultFormInfo))
 
@@ -227,7 +227,7 @@ class TestCurrentHealth(unittest.TestCase):
 		updatedQuestions[2] = kidneyConditions
 		updatedFormInfo = {
 			'questions': self.currentQuestions + updatedQuestions,
-			'meta': [{'num_questions': 11}],
+			'meta': [{'num_questions': 8}],
 		}
 		currentHealthView.currentHealthForm.answer_question(3, heartConditions)
 		currentHealthView.currentHealthForm.answer_question(4, lungConditions)

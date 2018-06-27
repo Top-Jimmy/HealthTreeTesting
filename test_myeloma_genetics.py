@@ -119,6 +119,8 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		self.assertTrue(myelomaGeneticsView.on())
 
+		myelomaGeneticsView.edit_test(testType, testIndex, testValues, 'delete')
+
 	def test_add_ngs(self):
 
 		homeView = self.andrew.homeView
