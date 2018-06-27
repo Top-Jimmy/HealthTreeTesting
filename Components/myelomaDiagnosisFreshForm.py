@@ -441,8 +441,6 @@ class MyelomaDiagnosisFreshForm():
 
 			if formInfo['diagnosis_date'] is not None:
 				picker = datePicker.DatePicker(self.driver)
-				# self.dateDiagnosis_input.click()
-				# picker.set_date(formInfo['diagnosis_date'], self.dateDiagnosis_input)
 				dateSet = False
 				while not dateSet:
 					try:

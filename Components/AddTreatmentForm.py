@@ -1,7 +1,12 @@
+from Components import datePicker
+
 import time
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 # Form for adding a treatment from 'Treatments & Outcomes' page
 
@@ -11,6 +16,7 @@ class AddTreatmentForm():
 		self.driver = driver
 
 	def load(self, expectedValues=None):
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.form = self.driver.find_element_by_class_name('editroll')
 		self.questionConts = self.form.find_elements_by_class_name('new-ques-div')
 		self.load_questions()
@@ -19,19 +25,65 @@ class AddTreatmentForm():
 		return True
 
 	def load_questions(self):
-		# Loop through questions. Capture key (option text) and value (is selected) and store in self.questions
 		self.questions = []
 		for container in self.questionConts:
-			question = []
-			radios = container.find_elements_by_class_name('radio') # Div containing input and span (text)
-			for radio in radios:
-				value = radio.find_element_by_tag_name('input').is_selected()
-				key = radio.text
-				question.append({
-					key: value,
-				})
-			self.questions.append(question)
+			self.questions.append(self.load_question(container))
 
+	def load_question(self, container):
+			question = {}
+			radioContainers = container.find_elements_by_class_name('radio') # Div containing input and span (text)
+			datepickerContainers = container.find_elements_by_class_name('new-datepicker')
+			if len(radioContainers) > 0: # Radio button question
+
+				# Load question info. Make sure radio option isn't a subquestion
+				subquestion_filter = [] # Add index of any subquestion radio buttons to this list
+				for i in xrange(len(radioContainers)):
+					# print('loading question: ' + str(i))
+					if i not in subquestion_filter:
+						radioCont = radioContainers[i]
+						inputs = radioCont.find_elements_by_tag_name('input')
+						spans = radioCont.find_elements_by_tag_name('span')
+
+						# Test Validation
+						if len(inputs) == 0:
+							print('AddTreatmentForm: radio option has no inputElements?')
+						elif len(spans) == 0:
+							print('AddTreatmentForm: radio option has no spanElements?')
+
+						# Get option name.
+						optionName = spans[0].text
+						# Check for textarea
+						try:
+							textareaEl = radioCont.find_element_by_tag_name('textarea')
+						except NoSuchElementException:
+							textareaEl = None
+
+						# handle any subquestions
+						subquestions = None
+						if len(inputs) > 1: # All inputs after 1st should be secondary questions
+							for inputIndex, inputEl in enumerate(inputs):
+								if inputIndex > 0:
+
+									# Add subquestion to filter list
+									subquestion_filter.append(i + inputIndex)
+
+									# Load subquestion info
+									subquestions = self.load_question(radioContainers[i])
+
+						# Pass back dict if loaded anything besides inputElement
+						# todo: handle passing back secondary questions
+						if textareaEl or subquestions:
+							question[optionName] = {
+								'element': inputs[0],
+								'textareaEl': textareaEl,
+								'subquestions': subquestions,
+							}
+						else:
+							question[optionName] = inputs[0]
+			elif len(datepickerContainers) > 0: # Datepicker
+				question['datepicker'] = datepickerContainers[0].find_element_by_tag_name('input')
+
+			return question
 
 	# def validate(self, expectedValues):
 	# 	failures = []
@@ -76,23 +128,81 @@ class AddTreatmentForm():
 	# 	}
 
 	def add_treatment(self, treatmentInfo):
-		questionInfo = treatmentInfo['questions']
-		for question in questionInfo:
-			# Set values from question for each radio button
+		for i, question in enumerate(treatmentInfo):
+			loadedIndex = -(i+1) # Questions are loaded in opposite order
+			# loadedQuestion = self.questions[loadedIndex]
+			qType = question['type']
+			if qType == 'date':
+				# Assuming datepicker already selected and visible
+				picker = datePicker.DatePicker(self.driver)
+				dateSet = False
+				while not dateSet:
+					try:
+						picker.set_date(question['text'])
+						dateSet = True
+					except (ElementNotVisibleException, StaleElementReferenceException, ValueError, KeyError) as e:
+						print('Failed to set date. Page probably reloaded')
+						time.sleep(.4)
+			elif qType == 'single' or qType == 'select-all':
+				options = question['options']
+				actions = question.get('actions', None)
+				if qType == 'single' and len(options) > 1:
+					print('Single type question:  should not pass in more than 1 option')
+					return False
 
-	# def set_question(self, questionIndex, value):
-	# 	row = self.rows[questionIndex]
+				# Handle all options
+				for key in options:
+					print('answering question: ' + str(i))
+					self.answer_question(key, options[key], loadedIndex)
 
-	# 	labels = row.find_elements_by_tag_name('label')
-	# 	if value == True:
-	# 		labels[1].click()
-	# 	else:
-	# 		labels[2].click()
+				if actions and actions == 'continue':
+					self.questionConts[loadedIndex].find_element_by_class_name('float-button-continue').click()
 
-	# def submit(self, fitnessInfo):
-	# 	for i, value in enumerate(fitnessInfo):
-	# 		self.set_question(i, value)
-	# 		time.sleep(.4)
-	# 		self.load()
+			self.load()
 
-	# 	return True
+	def answer_question(self, optionName, optionInfo, loadedIndex, subOptionName=None):
+		comment = optionInfo.get('comment', None)
+		secondaryOptions = optionInfo.get('options', None)
+		# if optionName == 'I discontinued this treatment':
+		# 	raw_input('optionInfo: ' + str(optionInfo))
+		# 	loadedOptionInfo = self.questions[loadedIndex][optionName]
+		# 	raw_input('loadedOptionInfo: ' + str(loadedOptionInfo))
+
+		# Get loaded info for given option/subOption
+		loadedQuestion = self.questions[loadedIndex][optionName]
+		if subOptionName:
+			loadedQuestion = loadedQuestion['options']
+
+		# Grab input element out of loadedQuestion for option/subOption
+		inputEl = loadedQuestion
+		optionTextarea = None
+		# loadedSecondaryOptions = None # Don't think we care about these until we're actually selecting subOptions
+		if type(loadedQuestion) is dict:
+			inputEl = loadedQuestion.get('element', None)
+			optionTextarea = loadedQuestion.get('textareaEl', None)
+			# loadedSubQuestions = loadedQuestion.get('subquestions', None)
+			print('loadedSubQuestions: ' + str(loadedSubQuestions))
+
+		# Make sure option is selected
+		if not inputEl.is_selected():
+			inputEl.click()
+			if optionName == 'I discontinued this treatment':
+				self.load()
+				raw_input(self.questions[loadedIndex])
+
+		# handle comment (optional)
+		if comment:
+			if not optionTextarea:
+				self.load()
+				optionTextarea = self.questions[loadedIndex][optionName]['textareaEl']
+			optionTextarea.clear()
+			optionTextarea.send_keys(optionInfo['comment'])
+
+		# handle secondaryQuestions
+		if secondaryOptions:
+			self.load()
+			raw_input('secondaryQuestions loaded?: ' + str(self.questions[loadedIndex]))
+			for secondaryOption in secondaryOptions:
+				self.answer_question(optionName, secondaryOption, loadedIndex, secondaryOption)
+
+
