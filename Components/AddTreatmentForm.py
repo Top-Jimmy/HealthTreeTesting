@@ -128,7 +128,7 @@ class AddTreatmentForm():
 	# 		'type', warningType,
 	# 	}
 
-	def add_treatment(self, treatmentInfo):
+	def add_treatment(self, treatmentInfo, action='save'):
 		questions = treatmentInfo['questions']
 		sideEffects = treatmentInfo.get('sideEffects', None)
 
@@ -161,17 +161,22 @@ class AddTreatmentForm():
 
 				if actions and actions == 'continue':
 					self.questionConts[loadedIndex].find_element_by_class_name('green-hvr-bounce-to-top').click()
-
+			if i == len(questions) - 1:
+				print('loading after answering last question')
 			self.load()
 
-		# side effects
 		if sideEffects:
-			# load sideEffectForm
+			# side effects & action
 			effectsForm = sideEffectsForm.SideEffectsForm(self.driver)
 			WDW(self.driver, 10).until(lambda x: effectsForm.load())
 			effectsForm.set(sideEffects)
-			raw_input('?')
 
+			raw_input('good?')
+			if action == 'save':
+				effectsForm.save_treatment_button_top.click()
+			elif action == 'cancel':
+				effectsForm.cancel_button.click()
+		return True
 
 	def answer_question(self, optionName, optionInfo, loadedIndex, subOptionName=None):
 		comment = optionInfo.get('comment', None)

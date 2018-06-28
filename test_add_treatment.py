@@ -116,9 +116,14 @@ class TestAddTreatment(unittest.TestCase):
 					'actions': 'continue',
 				},
 			],
-			'sideEffects': form_info.get_info('sideEffects'),
+			# 'sideEffects': form_info.get_info('sideEffects'),
+			'sideEffects': {
+				'cardiovascular/circulatory system': {            # 11 sub options
+    			'blood clots': 9,
+    		}
+    	}
 		}
-		toView.add_treatment(treatmentInfo, 'wait')
+		self.assertTrue(toView.add_treatment(treatmentInfo, 'save'))
 
 
 

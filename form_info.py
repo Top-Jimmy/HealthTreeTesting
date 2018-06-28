@@ -31,6 +31,7 @@ sideEffects = {                                     # 11 sections, 66 sub option
     'hair loss': 1,
   },
   'lymphatic/immune system': {
+    'fatigue/tired': 1,
     'fever/chills': 1,
     'hand-foot syndrome': 1,
     'mouth sores': 1,
@@ -80,7 +81,7 @@ sideEffects = {                                     # 11 sections, 66 sub option
   'other': {
     'infusion related reactions': 1,
     'insomnia': 1,
-    'catarcats': 1,
+    'cataracts': 1,
     'pounding in the ears': 1,
     'tremors': 1,
   }

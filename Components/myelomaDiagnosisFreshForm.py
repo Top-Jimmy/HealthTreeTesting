@@ -8,7 +8,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import datePicker
 
-
 # Form on 'Myeloma Diagnosis' when user has not saved diagnosis info.
 
 class MyelomaDiagnosisFreshForm():

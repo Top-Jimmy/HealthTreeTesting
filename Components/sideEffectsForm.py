@@ -1,6 +1,8 @@
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
+from selenium.webdriver import ActionChains as AC
+import time
 
 # Component for specifying side effects when adding/editing a treatment
 
@@ -10,6 +12,7 @@ class SideEffectsForm():
 		self.driver = driver
 
 	def load(self, expectedValues=None):
+		print('loading sideEffectsForm')
 		self.container = self.driver.find_element_by_id('sideEffectsScroll')
 		self.sectionContainers = self.container.find_elements_by_class_name('new-treatment-dynamic')
 		# Should be 10 sections
@@ -19,6 +22,11 @@ class SideEffectsForm():
 		self.sections = {}
 		for section in self.sectionContainers:
 			self.load_section(section)
+
+		buttons = self.container.find_elements_by_tag_name('button')
+		self.save_treatment_button_top = buttons[1]
+		self.cancel_button = buttons[0]
+		self.save_treatment_button_bottom = buttons[2]
 
 		self.validate(expectedValues)
 		return True
@@ -56,22 +64,22 @@ class SideEffectsForm():
 				scaleVal = None
 
 			# Save option name (key) and inputEl (value) in options dict
+			# radioCont will contain treatment scale (when visible)
 			optionName = label.text.lower()
 			optionInput = label.find_element_by_tag_name('input')
-			options[optionName] = optionInput
+			options[optionName] = {
+				'inputEl': optionInput,
+				'container': radioCont,
+			}
+
 
 		if key:
 			self.sections[key] = options
 		else:
 			print('SideEffectsForm: Failed to find header for side effects section')
 
-	# def get_section_index(self, sectionName):
-	# 	# Given name of section (i.e. 'Digestive System'), return index in loaded info (self.sections)
-	# 	for i, section in enumerate(self.sections):
-	# 		for key, value in section.iteritems(): # (i.e. 'digestive system', {'constipation': inputEl, 'decreased appetite': inputEl, etc...} )
-	# 			if key == sectionName.lower():
-	# 				return i
 
+################## Test functions #################
 
 	def set(self, formInfo):
 		# formInfo should be follow format in form_info.py (sideEffects)
@@ -83,13 +91,50 @@ class SideEffectsForm():
 
 	def set_section(self, sectionInfo, loadedSectionInfo):
 		# Set values in sectionInfo
-		raw_input('sectionInfo: ' + str(sectionInfo))
-		raw_input('loadedSectionInfo: ' + str(loadedSectionInfo))
 		for suboption, value in sectionInfo.iteritems():
-			raw_input('suboption: ' + str(suboption))
-			raw_input('value: ' + str(value))
+			# Grab inputEl and make sure it's selected
+			try:
+				inputEl = loadedSectionInfo[suboption]['inputEl']
+			except KeyError:
+				print('failed to load sideEffect named: ' + str(suboption))
+			if not inputEl.is_selected():
+				inputEl.click()
+
+			# Set intensity
+			self.set_intensity(loadedSectionInfo[suboption]['container'], value)
 
 
+	def set_intensity(self, container, value):
+		try:
+			sliderEl = container.find_element_by_class_name('rc-slider-handle')
+		except NoSuchElementException:
+			print('failed to load ')
+		curValue = sliderEl.get_attribute('aria-valuenow')
+
+		# Need to change intensity value?
+		if value != curValue:
+			xOffset = None # Every time offset doesn't work, increase by 5 and try again
+			additionalOffset = 0
+			while str(curValue) != str(value) and additionalOffset < 50:
+				print('additionalOffset: ' + str(additionalOffset))
+				if curValue != 1: # reset to base position
+					AC(self.driver).drag_and_drop_by_offset(sliderEl, -200, 0).perform()
+
+				# Calculate offset
+				# Note: monitor and window sizes affect this.
+				if xOffset != None:
+					# First offset wasn't correct. Increment amount of offset
+					additionalOffset += 5
+				xOffset = 11*(value - 1) + additionalOffset
+				AC(self.driver).drag_and_drop_by_offset(sliderEl, xOffset, 0).perform()
+				curValue = sliderEl.get_attribute('aria-valuenow')
+
+
+# todo: reconfigure,
+
+# 1. load should only grab section containers.
+# 2. Validate should check right # of inputs per form/section?
+# 3. validate should only check in-detail section headers if expectedValues dictates
 
 
 
