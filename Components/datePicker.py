@@ -6,8 +6,9 @@ import time
 class DatePicker():
 	"""Date picker for MonthYear input"""
 
-	def __init__(self, driver):
+	def __init__(self, driver, container):
 		self.driver = driver
+		self.container = container # Will have datepicker elements for each datepicker on page
 
 	def load(self, expectedState=None):
 		try:
@@ -22,13 +23,13 @@ class DatePicker():
 				time.sleep(.4)
 				if self.picker_state == 'month':
 					# Header should display current year. # Picker table should have months
-					self.cont = self.driver.find_element_by_class_name('rdtMonths')
+					self.cont = self.container.find_element_by_class_name('rdtMonths')
 					self.tables = self.cont.find_elements_by_tag_name('table')
 
 					self.picker_table = self.tables[1]
 					self.months = self.load_picker_table_items('month')
 				else: # Header should display range of years, picker table should display those years
-					self.cont = self.driver.find_element_by_class_name('rdtYears')
+					self.cont = self.container.find_element_by_class_name('rdtYears')
 					self.tables = self.cont.find_elements_by_tag_name('table')
 
 					self.picker_table = self.tables[1]
@@ -50,14 +51,14 @@ class DatePicker():
 		# Currently selecting years or months? Default should be months
 		state = 'undefined'
 		try:
-			el = self.driver.find_element_by_class_name('rdtYears')
+			el = self.container.find_element_by_class_name('rdtYears')
 			state = 'year'
 		except NoSuchElementException:
 			pass
 
 		if state == 'undefined':
 			try:
-				el = self.driver.find_element_by_class_name('rdtMonths')
+				el = self.container.find_element_by_class_name('rdtMonths')
 				state = 'month'
 			except NoSuchElementException:
 				pass
@@ -79,8 +80,6 @@ class DatePicker():
 	def set_date(self, date):
 		month = self.parse_date(date, 'month')
 		year = self.parse_date(date, 'year')
-		if year == '':
-			raw_input('wtf')
 		self.load()
 
 		if self.current_year != year:

@@ -17,7 +17,10 @@ class MyelomaDiagnosisFreshForm():
 		self.load(expectedValues)
 
 	def load(self, expectedValues=None):
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.form = self.driver.find_element_by_id('diagnosis_form')
+		self.rows = self.form.find_elements_by_class_name('form-group')
+		# raw_input('# rows: ' + str(len(self.rows)))
 		self.load_state()
 
 		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
@@ -56,6 +59,10 @@ class MyelomaDiagnosisFreshForm():
 
 		self.add_diagNo_radio = self.form.find_element_by_id('yesno0')
 		self.add_diagYes_radio = self.form.find_element_by_id('yesno1')
+
+		self.load_additional_diagnoses()
+		self.load_physicians()
+		button_cont = self.form.find_element_by_class_name('submit_button')
 
 		return self.validate(expectedValues)
 
@@ -200,20 +207,82 @@ class MyelomaDiagnosisFreshForm():
 
 	def load_additional_diagnoses(self):
 		additional_diagnoses = []
-		conts = self.driver.find_element_by_tag_name('diagnose-thrd-sec')
-		for i, cont in enumerate(conts):
-			dateEl = cont.find_element_by_id('diagnosisDate_' + str(i))
-			dateInput = dateEl.find_element_by_tag_name('input')
+		conts = self.driver.find_elements_by_class_name('diagnose-thrd-sec')
+		for containerIndex, cont in enumerate(conts):
+			dateInput = cont.find_element_by_id('diagnosisDate_' + str(containerIndex + 1))
 			date = dateInput.get_attribute('value')
+			diagnosisBox = cont.find_element_by_id('next_diag_type_' + str(containerIndex + 1))
+			diagnosisInput = diagnosisBox.find_element_by_tag_name('input')
+			diagnosis_type = diagnosisInput.get_attribute('value')
+
+			boneRadios = []
+			try:
+				boneRadios.append(cont.find_element_by_id(str(containerIndex+1) + 'add_bone0'))
+				boneRadios.append(cont.find_element_by_id(str(containerIndex+1) + 'add_bone1'))
+				boneRadios.append(cont.find_element_by_id(str(containerIndex+1) + 'add_bone2'))
+				boneRadios.append(cont.find_element_by_id(str(containerIndex+1) + 'add_bone3'))
+			except NoSuchElementException:
+				print('Failed to find additional diagnosis bone lesion radio buttons')
+
+			# which is selected?
+			values = ['no lesions', '5 or more lesions', '6 or more lesions', 'I  dont know']
+			bone_lesions = None
+			for i, radio in enumerate(boneRadios):
+				if radio.is_selected():
+					bone_lesions = values[i]
 
 			additional_diagnoses.append({
 				'date': date,
-				'type': diagnosis_type
+				# 'dateInput': dateInput,
+				'type': diagnosis_type,
+				# 'typeEl': typeEl,
+				'bone_lesions': bone_lesions,
+				# 'bone_lesions_cont': bone_lesions_cont,
+				'index': containerIndex,
 			})
 
-		return additional_diagnoses
+		self.additional_diagnoses = additional_diagnoses
 
 ############################### Dropdown functions #####################################
+
+	def set_dropdown(self, dropdownIndex, value):
+		# find right container given index (class='Select-control')
+		conts = self.driver.find_elements_by_class_name('Select-control')
+		cont = conts[dropdownIndex]
+
+		# Figure out if you need to click 'Select-value-label' or 'Select-placeholder' element
+		dropdown_preSet = False
+		try:
+			dropdown_value = cont.find_element_by_class_name('Select-value-label')
+			dropdown_placeholder = None
+			dropdown_preSet = True
+		except NoSuchElementException:
+			dropdown_value = None
+			dropdown_placeholder = cont.find_element_by_class_name('Select-placeholder')
+
+		# click it
+		if dropdown_preSet:
+			dropdown_value.click()
+		else:
+			dropdown_placeholder.click()
+		# load options in dropdown
+		options = {}
+		try:
+			menu = self.form.find_element_by_class_name('Select-menu-outer')
+			divs = menu.find_elements_by_tag_name('div')
+			for i, div in enumerate(divs):
+				if i != 0: 
+					options[div.text.lower()] = divs[i]
+		except NoSuchElementException:
+			print('Unable to find dropdown items for first diagnosis')
+
+		# click option
+		try:
+			option = options[value.lower()]
+			option.click()
+		
+		except IndexError:
+			print('invalid index: ' + value)
 
 	def load_first_diagnosis_dropdown(self):
 		self.first_diagnosis_cont = self.driver.find_elements_by_class_name('frst-diag-name')[0]
@@ -228,31 +297,6 @@ class MyelomaDiagnosisFreshForm():
 			self.firstDiagnosis_value = None
 			# 'Select diagnosis' placeholder
 			self.firstDiagnosis_placeholder = self.first_diagnosis_cont.find_element_by_class_name('Select-placeholder')
-
-	def set_first_diagnosis(self, value):
-		# Click value div if already set. Placeholder if not set
-		if self.first_diagnosis_preSet:
-			self.firstDiagnosis_value.click()
-		else:
-			self.firstDiagnosis_placeholder.click()
-
-		# Load dropdown options
-		options = {}
-		try:
-			menu = self.form.find_element_by_class_name('Select-menu-outer')
-			divs = menu.find_elements_by_tag_name('div')
-			for i, div in enumerate(divs):
-				if i != 0: # First div is container
-					options[div.text.lower()] = divs[i]
-		except NoSuchElementException:
-			print('Unable to find dropdown items for first diagnosis')
-
-		try: # click one that matches value
-			option = options[value.lower()]
-			option.click()
-		except IndexError:
-			print('invalid index: ' + value)
-		WDW(self.driver, 5).until(lambda x: self.load())
 
 	def load_facility_state(self):
 		# Each state dropdown should have this class. Facility state should always be 1st
@@ -441,27 +485,23 @@ class MyelomaDiagnosisFreshForm():
 			# 		self.newlyDiagnosedNo_radio.click()
 
 			if formInfo['diagnosis_date'] is not None:
-				picker = datePicker.DatePicker(self.driver)
+				picker = datePicker.DatePicker(self.driver, self.rows[0])
 				dateSet = False
 				while not dateSet:
 					try:
 						self.dateDiagnosis_input.click()
 						picker.set_date(formInfo['diagnosis_date'])
 						dateSet = True
-					except (ElementNotVisibleException, StaleElementReferenceException, ValueError, KeyError) as e:
+					except (ElementNotVisibleException, StaleElementReferenceException, ValueError, KeyError, AttributeError) as e:
 						print('Failed to set date. Page probably reloaded')
 						time.sleep(.4)
 				self.load()
-				raw_input('done reloading after setting the date')
 
-			raw_input('setting type')
 			if formInfo['type'] is not None:
-				self.set_first_diagnosis(formInfo['type'])
+				self.set_dropdown(0, formInfo['type'])
 
-			raw_input('setting new diagnosis')
 			if formInfo['stable'] is not None and self.state == 'new_diagnosis':
 				stable_myeloma = formInfo['stable']
-				raw_input('submit problem?')
 				if stable_myeloma == 'no':
 					self.stable_no_input.click()
 				elif stable_myeloma == 'yes':
@@ -469,7 +509,6 @@ class MyelomaDiagnosisFreshForm():
 				else:
 					self.stable_idk_input.click()
 
-			raw_input('setting protein')
 			if formInfo['m_protein'] is not None and self.state == 'new_diagnosis':
 				stable_myeloma = formInfo['m_protein']
 				if stable_myeloma == 'no':
@@ -527,17 +566,64 @@ class MyelomaDiagnosisFreshForm():
 					self.facility_city_input.send_keys(location['city'])
 				if location['state']:
 					self.set_facility_state(location['state'])
-			raw_input('additional diagnosis?')
+
 			if formInfo['additional_diagnosis'] is not None:
 				add_diag = formInfo['additional_diagnosis']
 				if not add_diag:
 					self.add_diagNo_radio.click()
 				else:
 					self.add_diagYes_radio.click()
-					# todo: function to load
-					self.load_additional_diagnoses()
-					if formInfo['additional_diagnoses']:
-						pass
+					self.load()
+					additional_diagnoses = formInfo['additional_diagnoses']
+					
+					rowIndex = 7
+					divs = self.rows[6].find_elements_by_tag_name('div')
+					raw_input('# divs: ' + str(len(divs)))
+					for i, div in enumerate(divs):
+						print(div.get_attribute('class'))
+					raw_input('?')
+
+					divs = self.rows[7].find_elements_by_tag_name('div')
+					raw_input('# divs: ' + str(len(divs)))
+					for i, div in enumerate(divs):
+						print(div.get_attribute('class'))
+					raw_input('?')
+
+					divs = self.rows[8].find_elements_by_tag_name('div')
+					raw_input('# divs: ' + str(len(divs)))
+					for i, div in enumerate(divs):
+						print(div.get_attribute('class'))
+					raw_input('?')
+
+					for i, diagnosis in enumerate(additional_diagnoses):
+						conts = self.driver.find_elements_by_class_name('diagnose-thrd-sec')
+						cont = conts[i]
+
+						# set date
+						dateInput = cont.find_element_by_id('diagnosisDate_' + str(i + 1))
+						picker = datePicker.DatePicker(self.driver, self.rows[rowIndex])
+						dateSet = False
+						while not dateSet:
+							try:
+								dateInput.click()
+								picker.set_date(diagnosis['date'])
+								raw_input('date set?')
+								dateSet = True
+							except (ElementNotVisibleException, StaleElementReferenceException, ValueError, KeyError, AttributeError) as e:
+								print('Failed to set date. Page probably reloaded')
+								time.sleep(.4)
+						rowIndex += 3
+
+						# set type
+
+						# set lesions
+
+
+					# if additional_diagnosis['date']:
+					# 	self.dateInput.click()
+						# picker.set_date(additional_diagnosis['date'])
+					if additional_diagnosis['type']:
+						self.set_dropdown(3, additional_diagnosis['type'])
 						# todo: recursive function: check for errors, load new inputs, check for additional_diagnoses, enter data
 			raw_input('physicians?')
 			if formInfo['physicians']:

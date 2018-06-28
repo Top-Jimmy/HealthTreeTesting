@@ -38,8 +38,8 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 			},
 			'additional_diagnosis': True,
 			'additional_diagnoses': [
-				{'date': '01/2000', 'type': 'Smoldering Myeloma'},
-				{'date': '12/2004', 'type': 'Multiple myeloma and amyloidosis'},
+				{'date': '01/2000', 'type': 'Smoldering Myeloma', 'bone_lesions': 'no lesions'},
+				{'date': '12/2004', 'type': 'Multiple myeloma and amyloidosis', 'bone_lesions': 'I dont know'},
 			], # i.e. [{'date': '01/2000', 'diagnosis': 'Smoldering Myeloma'},]
 			'physicians': [
 				{'name': 'David Avigan',
