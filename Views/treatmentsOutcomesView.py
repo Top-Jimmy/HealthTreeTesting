@@ -12,6 +12,11 @@ from selenium.webdriver.common.by import By
 class TreatmentsOutcomesView(view.View):
 	post_url = 'about-me'
 
+	# self.treatment_questions = {
+	# 	'radiation': ['treatment', 'treatmentType', 'startDate', 'endDate', 'outcome'],
+	# 	'bogus': 'bogus',
+	# }
+
 	def load(self, expectedValues=None, expectedState=None):
 		try:
 			WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
@@ -20,6 +25,7 @@ class TreatmentsOutcomesView(view.View):
 			self.state = self.load_state()
 			if expectedState and expectedState != self.state:
 				print('Wrong state! Expected ' + str(expectedState) + ', got ' + str(self.state))
+
 			if self.state == 'fresh':
 				# load new popup
 				# todo: need new account to get this state
@@ -27,6 +33,8 @@ class TreatmentsOutcomesView(view.View):
 			else:
 				buttonCont = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
 				self.add_treatments_button = buttonCont.find_elements_by_tag_name('button')[0]
+				if self.state == 'saved':
+					self.saved_test_containers = self.driver.find_elements_by_class_name('custom-seperator')
 			return self.validate(expectedValues)
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
@@ -60,10 +68,35 @@ class TreatmentsOutcomesView(view.View):
 			if self.add_treatments_button and self.add_treatments_button.text != 'Add Treatments':
 				failures.append('treatmentsOutcomesView: Unexpected text on add treatment button')
 			if self.state == 'saved':
-				# todo: load saved treatments
-				pass
-			elif self.state == 'normal':
-				pass
+				if expectedValues:
+					# Verify tests have expected data
+					expectedTests = expectedValues.get('test', expectedValues)
+					for testIndex, test in enumerate(expectedTests):
+
+						# pull data out of test container
+						savedData = self.read_test(testIndex)
+						expectedQuestions = expectedTests['questions']
+						expectedSideEffects = expectedTests['sideEffects']
+
+
+						for i, question in enumerate(expectedQuestions):
+							expectedValue = ''
+							try:
+								savedValue = savedData[radiation_questions[i]]
+							except KeyError:
+								print('KeyError: ' + str(radiation_questions[i]))
+
+				# 'startDate': startDate,
+				# 'endDate': endDate,
+				# 'type': therapyType,
+				# 'treatments': treatments,
+				# 'sideEffects': sideEffects,
+				# 'outcome': outcomeStr,
+				# 'testIndex': index,
+
+					pass
+				elif self.state == 'normal':
+					pass
 
 		if len(failures) > 0:
 			for failure in failures:
@@ -71,6 +104,41 @@ class TreatmentsOutcomesView(view.View):
 				raise NoSuchElementException("Failed to load treatmentsOutcomesView")
 		else:
 			return True
+
+	def read_test(self, index):
+		cont = self.saved_test_containers[testIndex]
+		rows = cont.find_elements_by_class_name('data-row')
+		divs = rows[0].find_elements_by_tag_name('div')
+		uls = rows[0].find_elements_by_tag_name('ul')
+
+		startDate = divs[0].text
+		endDate = divs[1].text
+		treatment = divs[2].text # i.e. radiation, stem cell, etc
+
+		# Not sure this should be a list. Possible to have multiple treatmentTypes?
+		treatmentTypes = [] # treatment type
+		treatmentItems = uls[0].find_element_by_tag_name('li')
+		for li in treatmentItems:
+			treatmentTypes.append(li.text)
+
+		sideEffects = {}
+		sideEffectItems = uls[1].find_elements_by_tag_name('li')
+		for li in sideEffectItems:
+			sideEffect = li.find_element_by_class_name('side_effect_li').text
+			intensity = li.find_element_by_class_name('side_effect_severity').text
+			sideEffects[sideEffect] = intensity
+
+		outcomeStr = rows[1].find_elements_by_tag_name('div')[1].text
+
+		return {
+			'startDate': startDate, # 'Oct 2017'
+			'endDate': endDate,
+			'treatment': treatment, # 'radiation'
+			'treatmentType': treatmentTypes, # 'total body radiation'
+			'sideEffects': sideEffects, # {'blood clots': 9, 'irregular/rapid heartbeat': 4}
+			'outcome': outcomeStr, # 'I discontinued this treatment because: Cost of the treatment, Too much travel.'
+			'testIndex': index,
+		}
 
 	# def createErrorObj(self, errorText):
 	# 	errorType = 'undefined';

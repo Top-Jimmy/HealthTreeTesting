@@ -225,7 +225,7 @@ class MyelomaDiagnosisFreshForm():
 				print('Failed to find additional diagnosis bone lesion radio buttons')
 
 			# which is selected?
-			values = ['no lesions', '5 or more lesions', '6 or more lesions', 'I  dont know']
+			options = ['no lesions', '5 or more lesions', '6 or more lesions', 'I dont know']
 			bone_lesions = None
 			for i, radio in enumerate(boneRadios):
 				if radio.is_selected():
@@ -242,6 +242,12 @@ class MyelomaDiagnosisFreshForm():
 			})
 
 		self.additional_diagnoses = additional_diagnoses
+
+		# Add button
+		buttons = self.driver.find_elements_by_class_name('addDiagnoisisButton')
+		if len(buttons) > 1:
+			# Always get add physician, only get add diagnosis when question is answered yes
+			self.add_diagnosis_button = buttons[0]
 
 ############################### Dropdown functions #####################################
 
@@ -271,7 +277,7 @@ class MyelomaDiagnosisFreshForm():
 			menu = self.form.find_element_by_class_name('Select-menu-outer')
 			divs = menu.find_elements_by_tag_name('div')
 			for i, div in enumerate(divs):
-				if i != 0: 
+				if i != 0:
 					options[div.text.lower()] = divs[i]
 		except NoSuchElementException:
 			print('Unable to find dropdown items for first diagnosis')
@@ -280,7 +286,7 @@ class MyelomaDiagnosisFreshForm():
 		try:
 			option = options[value.lower()]
 			option.click()
-		
+
 		except IndexError:
 			print('invalid index: ' + value)
 
@@ -575,25 +581,25 @@ class MyelomaDiagnosisFreshForm():
 					self.add_diagYes_radio.click()
 					self.load()
 					additional_diagnoses = formInfo['additional_diagnoses']
-					
-					rowIndex = 7
-					divs = self.rows[6].find_elements_by_tag_name('div')
-					raw_input('# divs: ' + str(len(divs)))
-					for i, div in enumerate(divs):
-						print(div.get_attribute('class'))
-					raw_input('?')
 
-					divs = self.rows[7].find_elements_by_tag_name('div')
-					raw_input('# divs: ' + str(len(divs)))
-					for i, div in enumerate(divs):
-						print(div.get_attribute('class'))
-					raw_input('?')
+					# rowIndex = 7
+					# divs = self.rows[6].find_elements_by_tag_name('div')
+					# raw_input('# divs: ' + str(len(divs)))
+					# for i, div in enumerate(divs):
+					# 	print(div.get_attribute('class'))
+					# raw_input('?')
 
-					divs = self.rows[8].find_elements_by_tag_name('div')
-					raw_input('# divs: ' + str(len(divs)))
-					for i, div in enumerate(divs):
-						print(div.get_attribute('class'))
-					raw_input('?')
+					# divs = self.rows[7].find_elements_by_tag_name('div')
+					# raw_input('# divs: ' + str(len(divs)))
+					# for i, div in enumerate(divs):
+					# 	print(div.get_attribute('class'))
+					# raw_input('?')
+
+					# divs = self.rows[8].find_elements_by_tag_name('div')
+					# raw_input('# divs: ' + str(len(divs)))
+					# for i, div in enumerate(divs):
+					# 	print(div.get_attribute('class'))
+					# raw_input('?')
 
 					for i, diagnosis in enumerate(additional_diagnoses):
 						conts = self.driver.find_elements_by_class_name('diagnose-thrd-sec')
@@ -612,19 +618,34 @@ class MyelomaDiagnosisFreshForm():
 							except (ElementNotVisibleException, StaleElementReferenceException, ValueError, KeyError, AttributeError) as e:
 								print('Failed to set date. Page probably reloaded')
 								time.sleep(.4)
-						rowIndex += 3
 
 						# set type
+						if diagnosis['type']:
+							self.set_dropdown((3+i), diagnosis['type'])
 
 						# set lesions
+						if diagnosis['bone_lesions']:
+							# get index of radio button given value
+							options = ['no lesions', '5 or more lesions', '6 or more lesions', 'i dont know']
+							bone_lesions = diagnosis['bone_lesions'].lower()
+							try:
+								optionIndex = options[bone_lesions]
+							except KeyError:
+								raw_input('Setting additional diagnosis lesions: bad key! ' + str(bone_lesions))
 
+							# Get radio input
+							try:
+								radioId = str(i) + 'add_bone' + str(optionIndex)
+								radioInput = cont.find_element_by_id(radioId)
+								radioInput.click()
+							except NoSuchElementException:
+								raw_input('Setting additional diagnosis lesions: bad radio id! ' + str(radioId))
 
-					# if additional_diagnosis['date']:
-					# 	self.dateInput.click()
-						# picker.set_date(additional_diagnosis['date'])
-					if additional_diagnosis['type']:
-						self.set_dropdown(3, additional_diagnosis['type'])
-						# todo: recursive function: check for errors, load new inputs, check for additional_diagnoses, enter data
+						# update row index and click add diagnosis button
+						rowIndex += 3
+						if i + 1 < len(additional_diagnoses):
+							self.add_diagnosis_button.click()
+
 			raw_input('physicians?')
 			if formInfo['physicians']:
 				# todo: handle multiple physician inputs. load into list

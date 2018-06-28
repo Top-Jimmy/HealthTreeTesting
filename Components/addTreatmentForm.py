@@ -171,7 +171,6 @@ class AddTreatmentForm():
 			WDW(self.driver, 10).until(lambda x: effectsForm.load())
 			effectsForm.set(sideEffects)
 
-			raw_input('good?')
 			if action == 'save':
 				effectsForm.save_treatment_button_top.click()
 			elif action == 'cancel':

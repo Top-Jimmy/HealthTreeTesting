@@ -33,6 +33,12 @@ class SideEffectsForm():
 
 	def validate(self, expectedValues):
 		failures = []
+
+		# Check for sections called 'Test Label'
+		for section in self.sections:
+			if section == 'test label':
+				pass
+
 		if expectedValues:
 			# if self.firstname_input.get_attribute('value') != expectedValues['first_name']:
 			# 	failures.append('SideEffectsForm: Expecting first name "' + expectedValues['first_name'] + '", got "' + self.firstname_input.get_attribute('value') + '"')
@@ -108,7 +114,7 @@ class SideEffectsForm():
 		try:
 			sliderEl = container.find_element_by_class_name('rc-slider-handle')
 		except NoSuchElementException:
-			print('failed to load ')
+			print('SideEffectsForm: failed to load sliderEl')
 		curValue = sliderEl.get_attribute('aria-valuenow')
 
 		# Need to change intensity value?

@@ -87,7 +87,7 @@ class TestAddTreatment(unittest.TestCase):
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
 
-		treatmentInfo = {
+		treatment1 = {
 			'questions': [
 				{'type': 'single',
 					'options': {
@@ -96,7 +96,7 @@ class TestAddTreatment(unittest.TestCase):
 				},
 				{'type': 'single',
 					'options': {
-						'Other': {'comment': 'Bogus'},
+						'Other': {'comment': 'Type of Radiation: Treatment1'},
 					},
 					'actions': 'continue',
 				},
@@ -118,12 +118,67 @@ class TestAddTreatment(unittest.TestCase):
 			],
 			# 'sideEffects': form_info.get_info('sideEffects'),
 			'sideEffects': {
-				'cardiovascular/circulatory system': {            # 11 sub options
+				'cardiovascular/circulatory system': {
     			'blood clots': 9,
+    			'irregular/rapid heartbeat': 2,
     		}
     	}
 		}
-		self.assertTrue(toView.add_treatment(treatmentInfo, 'save'))
+		self.assertTrue(toView.add_treatment(treatment1, 'save'))
+
+		treatment2 = {
+			'questions': [
+				{'name': 'Radiation'
+
+				}
+			]
+		}
+
+		treatment2 = {
+			'questions': [
+				{'type': 'single',
+					'name': 'What was the type of myeloma treatment you received?',
+					'options': {
+						'Radiation': {},
+					},
+				},
+				{'type': 'single',
+					'name': 'What type of Radiation treatment did you receive?',
+					'options': {
+						'Local Radiation': {},
+					},
+					'actions': 'continue',
+				},
+				{'type': 'date', 'text': '10/2015' },
+				{'type': 'date', 'text': '02/2016' },
+				{'type': 'single',
+					'options': {
+						'I discontinued this treatment': {
+							'type': 'select-all',
+							'options': {
+								'Too much travel': {},
+								'Other': {'comment': 'Discontinued comment: Treatment2'},
+							},
+						}
+					},
+					'actions': 'continue',
+				},
+			],
+			'sideEffects': {
+				'cardiovascular/circulatory system': {
+    			'low potassium': 2,
+    			'low blood pressure': 5,
+    		}
+    	}
+		}
+		self.assertTrue(toView.add_treatment(treatment2, 'save'))
+
+		raw_input('what order?')
+
+		# expectedValues = {
+		# 	'tests': [treatment1, treatment2],
+		# }
+		# self.assertTrue(toView.on())
 
 
 
