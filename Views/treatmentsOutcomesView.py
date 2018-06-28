@@ -1,7 +1,7 @@
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError, WarningError
-from Components import addTreatmentForm
+from Components import AddTreatmentForm
 from Components import menu
 from Components import header
 from Views import view
