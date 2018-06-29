@@ -13,6 +13,8 @@ class FishTestForm():
 	def load(self):
 		self.form = self.driver.find_elements_by_tag_name('form')[1]
 		buttons = self.form.find_elements_by_tag_name('button')
+		self.rows = self.form.find_elements_by_class_name('form-group')
+
 
 		# self.close_button = buttons[5]
 
@@ -139,7 +141,7 @@ class FishTestForm():
 	def submit(self, fishInfo, action='save'):
 		if fishInfo:
 			if fishInfo['test_fish_date'] is not None:
-				picker = datePicker.DatePicker(self.driver)
+				picker = datePicker.DatePicker(self.driver, self.rows[0])
 			# self.dateDiagnosis_input.click()
 			# picker.set_date(formInfo['diagnosis_date'], self.dateDiagnosis_input)
 				dateSet = False

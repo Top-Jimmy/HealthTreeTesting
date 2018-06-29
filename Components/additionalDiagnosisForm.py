@@ -119,7 +119,7 @@ class AdditionalDiagnosisForm():
 		if formInfo:
 
 			if formInfo['date'] is not None:
-				picker = datePicker.DatePicker(self.driver)
+				picker = datePicker.DatePicker(self.driver, self.rows[0])
 				dateSet = False
 				while not dateSet:
 					try:

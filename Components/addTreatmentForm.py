@@ -139,7 +139,7 @@ class AddTreatmentForm():
 			qType = question['type']
 			if qType == 'date':
 				# Assuming datepicker already selected and visible
-				picker = datePicker.DatePicker(self.driver)
+				picker = datePicker.DatePicker(self.driver, self.rows[0])
 				dateSet = False
 				while not dateSet:
 					try:

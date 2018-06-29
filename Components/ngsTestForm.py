@@ -40,7 +40,7 @@ class NgsTestForm():
 	def submit(self, ngsInfo, action='save'):
 		if ngsInfo:
 			if ngsInfo['test_ngs_date'] is not None:
-				picker = datePicker.DatePicker(self.driver)
+				picker = datePicker.DatePicker(self.driver, self.rows[0])
 			# self.dateDiagnosis_input.click()
 			# picker.set_date(formInfo['diagnosis_date'], self.dateDiagnosis_input)
 				dateSet = False

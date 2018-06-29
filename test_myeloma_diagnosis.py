@@ -15,6 +15,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 	def tearDown(self):
 		self.driver.quit()
 
+	# @unittest.skip("in progress")
 	def test_additional_diagnoses(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_diagnoses'''
 		# Fresh and Saved form: Test adding, editing and deleting multiple diagnoses
@@ -71,6 +72,9 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 			# 'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
 			'type': 'solitary plasmacytoma',
+			'stable': 'no',
+			'm_protein': 'no',
+			'recent_pain': 'yes',
 			'lesions': 'no lesions',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',
@@ -138,6 +142,9 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 			# 'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
 			'type': 'solitary plasmacytoma',
+			'stable': 'no',
+			'm_protein': 'no',
+			'recent_pain': 'yes',
 			'lesions': 'no lesions',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',

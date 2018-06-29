@@ -197,7 +197,7 @@ class EditDiagnosisForm():
 	def submit(self, formInfo, action='submit'):
 		if formInfo:
 			if formInfo['diagnosis_date'] is not None:
-				picker = datePicker.DatePicker(self.driver)
+				picker = datePicker.DatePicker(self.driver, self.rows[0])
 				dateSet = False
 				while not dateSet:
 					try:
