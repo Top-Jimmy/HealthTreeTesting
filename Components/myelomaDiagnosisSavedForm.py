@@ -20,6 +20,7 @@ class MyelomaDiagnosisSavedForm():
 		self.load(expectedValues)
 
 	def load(self, expectedValues):
+		raw_input('loading saved form')
 		self.form = self.driver.find_element_by_id('diagnosis_form')
 		add_buttons = self.form.find_elements_by_class_name('custom_addDiagnoisisButton')
 
@@ -55,11 +56,13 @@ class MyelomaDiagnosisSavedForm():
 
 			# Only perform form validation if 'whole' formData dictionary is passed in
 			try:
+				raw_input('validating saved form')
 				# Should only have 'diagnosis_date' if whole dictionary passed in
 				test = expectedValues['diagnosis_date']
 
 				expectedDiagnoses = self.convert_expected_diagnoses(expectedValues)
 				expectedPhysicians = expectedValues['physicians']
+				print('loaded values')
 
 				# Right # of diagnoses and physicians?
 				if len(expectedDiagnoses) != len(self.diagnoses):
@@ -67,11 +70,13 @@ class MyelomaDiagnosisSavedForm():
 				if len(expectedValues['physicians']) != len(self.physicians):
 					failures.append('MyelDiagSavedForm: Expected ' + str(len(expectedPhysicians)) + ' physicians. Form has ' + str(len(self.physicians)))
 
+				print('# physicians/diagnoses')
 				# Diagnoses match expected values?
 				keys = ['date', 'type', 'lesions', 'facility', 'city', 'state']
 				for i, diagnosis in enumerate(self.diagnoses):
+					print(i)
 					for key in keys:
-
+						print(key)
 						if key in expectedDiagnoses and diagnosis[key] != expectedDiagnoses[key]:
 							failures.append('MyelDiagForm: Diagnosis ' + str(i) + ' expected "' + key + '" ' + expectedDiagnoses[key]
 								+ '", got ' + diagnoses[key])
@@ -79,8 +84,9 @@ class MyelomaDiagnosisSavedForm():
 				# Physicians match expected values?
 				physician_keys = ['name', 'facility', 'city', 'state']
 				for i, physician in enumerate(self.physicians):
+					print(i)
 					for p_key in physician_keys:
-
+						print(p_key)
 						if p_key in expectedPhysicians and physician[p_key] != expectedPhysicians[p_key]:
 							failures.append('MyelDiagForm: Physican ' + str(i) + ' expected "' + p_key + '" ' + expectedPhysicians[key]
 								+ '", got ' + physician[key])
@@ -102,7 +108,7 @@ class MyelomaDiagnosisSavedForm():
 				divs = row.find_elements_by_tag_name('div')
 				for divIndex, div in enumerate(divs):
 					if divIndex != 3: # div 3 is container div for state and city
-						values.append(div.text)
+						values.append(div.text.replace("'", '')) # Get rid of ' in "I don't know"
 					if divIndex == 6: # Actions div
 						buttons = div.find_elements_by_tag_name('button')
 						diagnosis['edit'] = buttons[0]
@@ -145,58 +151,47 @@ class MyelomaDiagnosisSavedForm():
 				physicians.append(physician)
 		return physicians
 
-	# def read_warning(self):
-	# 	inputs = ['username', 'email', 'password', 'confirm password']
-	# 	warnings = []
-	# 	warning_els = [
-	# 		self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
-	# 	]
-	# 	for i, warning_el in enumerate(warning_els):
-	# 		text = warning_el.text
-	# 		if len(text) > 0:
-	# 			warnings.append({
-	# 				'inputName': inputs[i],
-	# 				'text': text,
-	# 			})
-	# 	if len(warnings) > 0:
-	# 		return warnings
-	# 	return None
-
-	# def interpret_warning(self, warningText):
-	# 	warningType = 'undefined'
-	# 	warningMsg = ''
-	# 	if warningText == 'Please enter a valid email address.':
-	# 		warningType = 'Invalid credentials'
-	# 		warningMsg = 'forgotPwForm: Submit form warning'
-
-	# 	return {
-	# 		'msg', warningMsg,
-	# 		'text', warningText,
-	# 		'type', warningType,
-	# 	}
-
-
 ########################### Utility Functions #############################
 
-	# def equivalent_dates(self, date1, date2):
-	# 	# Convert dates to 'jan 2011' format and evaluate equivalency
-	# 	if date1.index('/') != -1:
-	# 		date1 = self.parse_date(date1)
-	# 	if date2.index('/') != -1:
-	# 		date2 = self.parse_date(date2)
+	def parse_date(self, dateStr, formatType='mm/yyyy'):
+		if dateStr:
+			months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-	# 	return date1 == date2
+			if formatType == 'mm/yyyy': # Concert from 'mmm yyyy' to 'mm/yyyy'
+				# Get index of space
 
-	def parse_date(self, dateStr):
-		# Given dateStr "mm/yyyy", parse and return 'mmm yyyy'
-		divider = dateStr.index('/')
+				# Get month
 
-		months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-		month = months[int(dateStr[:divider])]
+				# Get year
 
-		year = dateStr[divider + 1:]
+				return month + '/' + year
+			else: # Concert from 'mm/yyyy' to 'mmm yyyy'
+				# Get index of /
 
-		return month + ' ' + year
+				# Get month
+
+				# Get year
+
+				return month + ' ' + year
+
+
+
+
+			# divider = dateStr.find('/')
+			# if divider != -1: # Going from 'mmm/yyyy' to 'mmm yyyy'
+
+			# 	month = months[int(dateStr[:divider])]
+
+			# 	year = dateStr[divider + 1:]
+			# 	return month + ' ' + year
+
+			# else: # Going from 'mmm yyyy' to 'mm/yyyy'
+			# 	divider = dateStr.find(' ')
+			# 	month = dateStr[:divider]
+			# 	formattedMonth = months.index(month).zfill(2)
+			# 	year = dateStr[divider + 1:]
+
+			# 	return formattedMonth + '/' + year
 
 	def convert_expected_diagnoses(self, expectedValues):
 		# Combine 'initialDiagnosis' and 'additional_diagnoses' from expectedValues.
@@ -212,16 +207,20 @@ class MyelomaDiagnosisSavedForm():
 			'state': expectedValues['diagnosis_location']['state'],
 		}
 		diagnoses.append(initialDiagnosis)
-
 		# Additional diagnoses only have date and type.
 		for diagnosis in expectedValues['additional_diagnoses']:
+			diagType = diagnosis.get('type', None)
+			date = self.parse_date(diagnosis.get('date' None) , 'mm/yyyy')
+			lesions = diagnosis.get('lesions')
 			additional_diagnosis = {
-				'date': self.parse_date(diagnosis['date']),
-				'type': diagnosis['type'],
+				'date': date,
+				'type': diagType,
+				'lesions': lesions,
 			}
+			raw_input(additional_diagnosis)
 			diagnoses.append(additional_diagnosis)
-
 		return diagnoses
+
 
 ########################### User Functions #############################
 

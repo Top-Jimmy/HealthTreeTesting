@@ -583,7 +583,6 @@ class MyelomaDiagnosisFreshForm():
 				else:
 					self.add_diagYes_radio.click()
 					expectedRows = self.expectedNumRows() + 4 # expected + 4 for new diagnosis
-					print('adding 1st extra diagnosis: ' + str(expectedRows))
 					expectedValues = {
 						'meta': {
 							'numAddDiagnoses': 1,
@@ -631,7 +630,6 @@ class MyelomaDiagnosisFreshForm():
 			while not dateSet:
 				try:
 					dateInput.click()
-					print('clicking date')
 					picker.set_date(diagnosis['date'])
 					dateSet = True
 				except ElementNotVisibleException:
