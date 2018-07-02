@@ -182,6 +182,23 @@ class MyelomaDiagnosisFreshForm():
 			print(failures)
 			raise NoSuchElementException('Failed to load MyelomaDiagnosisFreshForm')
 
+	def expectedNumRows(self):
+		# default
+		expectedRows = 9
+
+		# 3 extra questions for old diagnosis (> 1 year ago)
+		if ('M-protein' in self.driver.page_source):
+			print('adding 3')
+			expectedRows += 3
+
+		# any additional diagnoses? 4 rows each
+		if len(self.additional_diagnoses) > 0:
+			expectedRows += (4*len(self.additional_diagnoses))
+			print(str(len(self.additional_diagnoses)) + ' # additional diag')
+
+		raw_input('# expected rows: ' + str(expectedRows))
+		return expectedRows
+
 	def load_physicians(self):
 		self.physician_cont = self.driver.find_element_by_id('physician_container')
 		self.physician_rows = self.physician_cont.find_elements_by_class_name('form-group')
@@ -471,51 +488,10 @@ class MyelomaDiagnosisFreshForm():
 			self.state = 'old_diagnosis'
 
 
-
-
-
-############################## Error handling #################################
-
-	# def read_warning(self):
-	# 	inputs = ['username', 'email', 'password', 'confirm password']
-	# 	warnings = []
-	# 	warning_els = [
-	# 		self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
-	# 	]
-	# 	for i, warning_el in enumerate(warning_els):
-	# 		text = warning_el.text
-	# 		if len(text) > 0:
-	# 			warnings.append({
-	# 				'inputName': inputs[i],
-	# 				'text': text,
-	# 			})
-	# 	if len(warnings) > 0:
-	# 		return warnings
-	# 	return None
-
-	# def interpret_warning(self, warningText):
-	# 	warningType = 'undefined'
-	# 	warningMsg = ''
-	# 	if warningText == 'Please enter a valid email address.':
-	# 		warningType = 'Invalid credentials'
-	# 		warningMsg = 'forgotPwForm: Submit form warning'
-
-	# 	return {
-	# 		'msg', warningMsg,
-	# 		'text', warningText,
-	# 		'type', warningType,
-	# 	}
-
 ############################## Test functions ##################################
 
 	def submit(self, formInfo, submit=True):
 		if formInfo:
-			# if formInfo['newly_diagnosed'] is not None:
-			# 	if formInfo['newly_diagnosed'] == 'yes':
-			# 		self.newlyDiagnosedYes_radio.click()
-			# 	else:
-			# 		self.newlyDiagnosedNo_radio.click()
-
 			if formInfo['diagnosis_date'] is not None:
 				picker = datePicker.DatePicker(self.driver, self.rows[0])
 				dateSet = False
@@ -605,11 +581,11 @@ class MyelomaDiagnosisFreshForm():
 					self.add_diagNo_radio.click()
 				else:
 					self.add_diagYes_radio.click()
-					# Wait until first additional diagnosis has loaded (make sure right # of rows is added)
+					expectedRows = self.expectedNumRows() + 4 # expected + 4 for new diagnosis
 					expectedValues = {
 						'meta': {
 								'numAddDiagnoses': 1,
-								'numRows': 16,
+								'numRows': expectedRows,
 							}
 						}
 					WDW(self.driver, 5).until(lambda x: self.load(expectedValues))
@@ -673,12 +649,11 @@ class MyelomaDiagnosisFreshForm():
 						if i + 1 < len(additional_diagnoses):
 							self.add_diagnosis_button.click()
 							# Wait until first additional diagnosis has loaded (make sure right # of rows is added)
-							numRows = 16+(4*(i+1))
-							print('numRows: ' + str(numRows))
+							expectedRows = self.expectedNumRows() + 4 # expected + 4 for new diagnosis
 							expectedValues = {
 								'meta': {
 									'numAddDiagnoses': 1,
-									'numRows': numRows,
+									'numRows': expectedRows,
 								}
 							}
 							WDW(self.driver, 5).until(lambda x: self.load(expectedValues))
