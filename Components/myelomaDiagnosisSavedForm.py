@@ -100,7 +100,6 @@ class MyelomaDiagnosisSavedForm():
 				diagnosis = {}
 				values = [] # Store text in each div
 				divs = row.find_elements_by_tag_name('div')
-				print(str(len(divs)))
 				for divIndex, div in enumerate(divs):
 					if divIndex != 3: # div 3 is container div for state and city
 						values.append(div.text)
@@ -108,8 +107,6 @@ class MyelomaDiagnosisSavedForm():
 						buttons = div.find_elements_by_tag_name('button')
 						diagnosis['edit'] = buttons[0]
 						diagnosis['delete'] = buttons[1]
-						print('added actions')
-
 
 				# Grab text out of list
 				diagnosis['date'] = values[0]
@@ -118,11 +115,13 @@ class MyelomaDiagnosisSavedForm():
 				diagnosis['facility'] = values[3]
 
 				cityState_text = values[4] # Sandy, Utah
-				index = cityState_text.index(',')
-				diagnosis['city'] = cityState_text[:index]
-				diagnosis['state'] = cityState_text[index+2:]
-				print(cityState_text[:index])
-				print(cityState_text[index+2:])
+				index = cityState_text.find(',')
+				if index != -1:
+					diagnosis['city'] = cityState_text[:index]
+					diagnosis['state'] = cityState_text[index+2:]
+				else: # Assume it's an additional diagnosis (no facility)
+					diagnosis['city'] = ''
+					diagnosis['state'] = ''
 
 				diagnoses.append(diagnosis)
 
@@ -247,7 +246,7 @@ class MyelomaDiagnosisSavedForm():
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		return True
 
-	def delete(self, del_type='diagnosis', index=0, popUpAction='submit'):
+	def delete(self, del_type='diagnosis', index=0, popUpAction='confirm'):
 		# Deleting physicians or diagnoses?
 		dataList = self.physicians
 		if del_type == 'diagnosis':
