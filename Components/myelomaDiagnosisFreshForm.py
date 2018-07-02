@@ -26,7 +26,7 @@ class MyelomaDiagnosisFreshForm():
 		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
 		self.load_first_diagnosis_dropdown()
 
-		if self.state == 'new_diagnosis':
+		if self.state == 'extra_questions':
 			self.stable_no_input = self.form.find_element_by_id('stablehighRisk1')
 			self.stable_yes_input = self.form.find_element_by_id('stablehighRisk2')
 			self.stable_idk_input = self.form.find_element_by_id('stablehighRisk3')
@@ -62,6 +62,7 @@ class MyelomaDiagnosisFreshForm():
 		self.load_additional_diagnoses()
 		self.load_physicians()
 		button_cont = self.form.find_element_by_class_name('submit_button')
+		self.continue_button = button_cont.find_element_by_tag_name('button')
 
 		return self.validate(expectedValues)
 
@@ -73,12 +74,10 @@ class MyelomaDiagnosisFreshForm():
 			try:
 				meta = expectedValues['meta']
 				numAddDiagnoses = meta.get('numAddDiagnoses', None)
-				raw_input(str(numAddDiagnoses))
 				if numAddDiagnoses and numAddDiagnoses != len(self.additional_diagnoses):
 					failures.append('MyelDiagFreshForm Meta: Expected ' + str(numAddDiagnoses) + ' additional Diagnoses. Form loaded ' + str(len(self.additional_diagnoses)))
 
-				numRows = meta.get('numAddDiagnoses', None)
-				raw_input(str(numRows))
+				numRows = meta.get('numRows', None)
 				if numRows and numRows != len(self.rows):
 					failures.append('MyelDiagFreshForm Meta: Expected ' + str(numRows) + ' additional Diagnoses. Form loaded ' + str(len(self.rows)))
 				# for key, value in meta_validators:
@@ -188,15 +187,13 @@ class MyelomaDiagnosisFreshForm():
 
 		# 3 extra questions for old diagnosis (> 1 year ago)
 		if ('M-protein' in self.driver.page_source):
-			print('adding 3')
 			expectedRows += 3
 
 		# any additional diagnoses? 4 rows each
 		if len(self.additional_diagnoses) > 0:
-			expectedRows += (4*len(self.additional_diagnoses))
-			print(str(len(self.additional_diagnoses)) + ' # additional diag')
+			adding = 4*len(self.additional_diagnoses)
+			expectedRows += adding
 
-		raw_input('# expected rows: ' + str(expectedRows))
 		return expectedRows
 
 	def load_physicians(self):
@@ -481,11 +478,14 @@ class MyelomaDiagnosisFreshForm():
 		clear_phy
 
 	def load_state(self, expectedState=None):
+		# Should have 3 extra questions when...
+		# 1. Diagnosis date is > 1 year ago
+		# 2. AND correct diagnosis type is selected (i.e. not first 2 options, MGUS or smoldering)
 		try:
 			el = self.driver.find_element_by_id('stablehighRisk1')
-			self.state = 'new_diagnosis'
+			self.state = 'extra_questions'
 		except NoSuchElementException:
-			self.state = 'old_diagnosis'
+			self.state = 'default'
 
 
 ############################## Test functions ##################################
@@ -582,83 +582,17 @@ class MyelomaDiagnosisFreshForm():
 				else:
 					self.add_diagYes_radio.click()
 					expectedRows = self.expectedNumRows() + 4 # expected + 4 for new diagnosis
+					print('adding 1st extra diagnosis: ' + str(expectedRows))
 					expectedValues = {
 						'meta': {
-								'numAddDiagnoses': 1,
-								'numRows': expectedRows,
-							}
+							'numAddDiagnoses': 1,
+							'numRows': expectedRows,
 						}
+					}
 					WDW(self.driver, 5).until(lambda x: self.load(expectedValues))
-					additional_diagnoses = formInfo['additional_diagnoses']
+					print('1. Has # rows: ' + str(expectedRows))
+					self.add_diagnoses(formInfo['additional_diagnoses'])
 
-					rowIndex = 7
-					for i, diagnosis in enumerate(additional_diagnoses):
-						conts = self.driver.find_elements_by_class_name('diagnose-thrd-sec')
-						cont = conts[i]
-
-						# set date
-						dateInput = cont.find_element_by_id('diagnosisDate_' + str(i + 1))
-						# print('# of rows: ' + str(len(self.rows)))
-						# print('row: ' + str(rowIndex))
-						picker = datePicker.DatePicker(self.driver, self.rows[rowIndex])
-						dateSet = False
-						while not dateSet:
-							try:
-								dateInput.click()
-								print('clicking date')
-								picker.set_date(diagnosis['date'])
-								dateSet = True
-							except ElementNotVisibleException:
-								print('notVisible')
-							except StaleElementReferenceException:
-								print('stale')
-							except ValueError:
-								print('value')
-							except KeyError:
-								print('key')
-							except(AttributeError):
-								print('attribute')
-							except WebDriverException:
-								print('Failed to set date. Page probably reloaded')
-							time.sleep(.4)
-
-						# set diagnosis type
-						if diagnosis['type']:
-							# 0: first diagnosis, 1: state, 2: first add. diagnosis
-							self.set_dropdown((2 + i), diagnosis['type'])
-
-						# set lesions
-						if diagnosis['bone_lesions']:
-							# get index of radio button given value
-							options = ['no lesions', '5 or more lesions', '6 or more lesions', 'i dont know']
-							try:
-								optionIndex = options.index(diagnosis['bone_lesions'].lower())
-							except KeyError:
-								raw_input('Setting additional diagnosis lesions: bad key! ' + str(diagnosis['bone_lesions'].lower()))
-
-							# Get radio input
-							try:
-								radioId = str(i+1) + 'add_bone' + str(optionIndex)
-								radioInput = cont.find_element_by_id(radioId)
-								radioInput.click()
-							except NoSuchElementException:
-								raw_input('Setting additional diagnosis lesions: bad radio id! ' + str(radioId))
-
-						# update row index and click add diagnosis button
-						rowIndex += 3
-						if i + 1 < len(additional_diagnoses):
-							self.add_diagnosis_button.click()
-							# Wait until first additional diagnosis has loaded (make sure right # of rows is added)
-							expectedRows = self.expectedNumRows() + 4 # expected + 4 for new diagnosis
-							expectedValues = {
-								'meta': {
-									'numAddDiagnoses': 1,
-									'numRows': expectedRows,
-								}
-							}
-							WDW(self.driver, 5).until(lambda x: self.load(expectedValues))
-
-			raw_input('physicians?')
 			if formInfo['physicians']:
 				# todo: handle multiple physician inputs. load into list
 				# todo: handle adding multiple physicians
@@ -667,11 +601,8 @@ class MyelomaDiagnosisFreshForm():
 					# print('# physician inputs: ' + str(len(self.physicians)))
 					if i >= len(self.physicians):
 						# Form doesn't have enough rows. Add physician row and reload page
-						# raw_input('adding physician')
 						self.add_physician_button.click()
 						WDW(self.driver, 5).until(lambda x: self.load())
-						# print(str(len(self.physicians)))
-						# raw_input('right # physicians?')
 					# enter formInfo into last row of physician inputs
 					self.set_physician(physician, i)
 
@@ -681,3 +612,77 @@ class MyelomaDiagnosisFreshForm():
 			return True
 		return False
 
+	def add_diagnoses(self, additional_diagnoses):
+		# Calculate row of 1st additional diagnosis diagnosis date (used as container for datePicker)
+		# Depends on if 3 'old' questions are showing
+		rowIndex = 7
+		if self.state == 'extra_questions':
+			rowIndex = 10
+
+		# For each diagnosis, (1) set date, (2) set type, (3) set lesions, (4) click add button (if adding more)
+		for i, diagnosis in enumerate(additional_diagnoses):
+			conts = self.driver.find_elements_by_class_name('diagnose-thrd-sec')
+			cont = conts[i]
+
+			# set date
+			dateInput = cont.find_element_by_id('diagnosisDate_' + str(i + 1))
+			picker = datePicker.DatePicker(self.driver, self.rows[rowIndex])
+			dateSet = False
+			while not dateSet:
+				try:
+					dateInput.click()
+					print('clicking date')
+					picker.set_date(diagnosis['date'])
+					dateSet = True
+				except ElementNotVisibleException:
+					print('notVisible')
+				except StaleElementReferenceException:
+					print('stale')
+				except ValueError:
+					print('value')
+				except KeyError:
+					print('key')
+				except(AttributeError):
+					print('attribute')
+				except WebDriverException:
+					print('Failed to set date. Page probably reloaded')
+				time.sleep(.4)
+
+			# set diagnosis type
+			if diagnosis['type']:
+				# 0: first diagnosis, 1: state, 2: first add. diagnosis
+				self.set_dropdown((2 + i), diagnosis['type'])
+
+			# set lesions
+			if diagnosis['bone_lesions']:
+				# get index of radio button given value
+				options = ['no lesions', '5 or more lesions', '6 or more lesions', 'i dont know']
+				try:
+					optionIndex = options.index(diagnosis['bone_lesions'].lower())
+				except KeyError:
+					raw_input('Setting additional diagnosis lesions: bad key! ' + str(diagnosis['bone_lesions'].lower()))
+
+				# Get radio input
+				try:
+					radioId = str(i+1) + 'add_bone' + str(optionIndex)
+					radioInput = cont.find_element_by_id(radioId)
+					radioInput.click()
+				except NoSuchElementException:
+					raw_input('Setting additional diagnosis lesions: bad radio id! ' + str(radioId))
+
+			# update row index
+			rowIndex += 4 # 3 rows for date, type and bone lesions. 1 for add button (even if it doesn't have add button)
+
+			# Click add diagnosis button (if necessary)
+			if i + 1 < len(additional_diagnoses):
+				self.add_diagnosis_button.click()
+				# Wait until first additional diagnosis has loaded (make sure right # of rows is added)
+				expectedRows = self.expectedNumRows() + 4 # expected + 4 for new diagnosis
+				expectedValues = {
+					'meta': {
+						'numAddDiagnoses': 1,
+						'numRows': expectedRows,
+					}
+				}
+				WDW(self.driver, 5).until(lambda x: self.load(expectedValues))
+				# print('2. has # rows: ' + str(expectedRows))

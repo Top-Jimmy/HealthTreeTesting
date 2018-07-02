@@ -13,8 +13,7 @@ class DatePicker():
   def load(self, expectedState=None):
     try:
       self.picker_state = self.get_picker_state()
-      if self.picker_state == 'undefined':
-        print('DatePicker: undefined state')
+      if self.picker_state == 'wrong container':
         return False
       elif expectedState and expectedState != self.picker_state:
         print('DatePicker: Expected state: "' + expectedState + '". Got state: "' + self.picker_state + '"')
@@ -48,21 +47,29 @@ class DatePicker():
       return False
 
   def get_picker_state(self):
-    # Currently selecting years or months? Default should be months
     state = 'undefined'
     try:
-      el = self.container.find_element_by_class_name('rdtYears')
-      state = 'year'
-    except NoSuchElementException:
-      pass
+      # Make sure container has datePicker in it
+      cont = self.container.find_element_by_class_name('mnth-datepicker')
 
-    if state == 'undefined':
+      # Currently selecting years or months? Default should be months
       try:
-        el = self.container.find_element_by_class_name('rdtMonths')
-        state = 'month'
+        el = self.container.find_element_by_class_name('rdtYears')
+        state = 'year'
       except NoSuchElementException:
-        print('no month')
         pass
+
+      if state == 'undefined':
+        try:
+          el = self.container.find_element_by_class_name('rdtMonths')
+          state = 'month'
+        except NoSuchElementException:
+          print('no month')
+          pass
+
+    except NoSuchElementException:
+      print('datePicker: Cont does not have datepicker component')
+      state = 'wrong container'
     return state
 
   def load_picker_table_items(self, expectedType):

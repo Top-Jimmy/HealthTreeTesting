@@ -235,18 +235,31 @@ class MyelomaDiagnosisSavedForm():
 		return True
 
 	def delete(self, del_type='diagnosis', index=0, action='submit'):
-		# Handles deleting diagnoses or physicians
-		if del_type == 'physician':
-			self.physicians[index]['delete'].click()
-		else:
-			self.diagnoses[index]['delete'].click()
+		# Deleting physicians or diagnoses?
+		dataList = self.physicians
+		if del_type == 'diagnosis':
+			dataList = self.diagnoses
 
-		self.popUpForm = popUpForm.PopUpForm(self.driver)
-		WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
-		self.popUpForm.confirm(action)
-		# Wait for confirm popup and loading overlay to disappear
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'react-confirm-alert')))
-		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		# deleting one or all?
+		length = 1
+		if index == 'all':
+			length = len(dataList)
+
+		for i, obj in xrange(length):
+			if index == 'all':
+				dataList[index]['delete'].click()
+			else:
+				# Delete from last position to first (don't have to reload)
+				delIndex = len(dataList) - (i + 1)
+				print('i: ' + str(i) + ', delIndex: ' + str(delIndex))
+				dataList[delIndex].click()
+
+			self.popUpForm = popUpForm.PopUpForm(self.driver)
+			WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+			self.popUpForm.confirm(action)
+			# Wait for confirm popup and loading overlay to disappear
+			WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'react-confirm-alert')))
+			WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		return True
 
 	def add_physician(self, physicianInfo, action='submit'):
