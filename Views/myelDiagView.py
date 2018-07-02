@@ -109,7 +109,7 @@ class MyelDiagView(view.View):
 		# Handles deleting physician or diagnosis
 		if self.myelomaDiagnosisSavedForm:
 			if self.myelomaDiagnosisSavedForm.delete(del_type, index, popUpAction):
-				if del_type == 'diagnosis' and index == 0:
+				if del_type == 'diagnosis' and (index == 0 or index == 'all'):
 					WDW(self.driver, 10).until(lambda x: self.load('fresh', expectedInfo))
 				else:
 					WDW(self.driver, 10).until(lambda x: self.load('saved', expectedInfo))

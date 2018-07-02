@@ -57,17 +57,12 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 
-		# Test code
-		self.assertTrue(myelDiagView.on('saved', formInfo))
+		self.assertTrue(myelDiagView.on('fresh'))
+		self.assertTrue(myelDiagView.submitFreshForm(formInfo))
 
-		# end test code
-
-
-		# self.assertTrue(myelDiagView.on('fresh'))
-		# self.assertTrue(myelDiagView.submitFreshForm(formInfo))
-
-		# # Delete diagnosis and reload fresh form
-		# myelDiagView.delete('diagnosis', 'all')
+		# Reset Test: Delete diagnosis and reload fresh form
+		myelDiagView.delete('diagnosis', 'all')
+		self.assertTrue(myelDiagView.on('fresh'))
 
 	def test_additional_physicians(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_physicians'''

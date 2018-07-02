@@ -274,7 +274,7 @@ class MyelomaDiagnosisFreshForm():
 				# 'dateInput': dateInput,
 				'type': diagnosis_type,
 				# 'typeEl': typeEl,
-				'bone_lesions': bone_lesions,
+				'lesions': bone_lesions,
 				# 'bone_lesions_cont': bone_lesions_cont,
 				'index': containerIndex,
 			})
@@ -652,13 +652,13 @@ class MyelomaDiagnosisFreshForm():
 				self.set_dropdown((2 + i), diagnosis['type'])
 
 			# set lesions
-			if diagnosis['bone_lesions']:
+			if diagnosis['lesions']:
 				# get index of radio button given value
 				options = ['no lesions', '5 or more lesions', '6 or more lesions', 'i dont know']
 				try:
-					optionIndex = options.index(diagnosis['bone_lesions'].lower())
+					optionIndex = options.index(diagnosis['lesions'].lower())
 				except KeyError:
-					raw_input('Setting additional diagnosis lesions: bad key! ' + str(diagnosis['bone_lesions'].lower()))
+					raw_input('Setting additional diagnosis lesions: bad key! ' + str(diagnosis['lesions'].lower()))
 
 				# Get radio input
 				try:

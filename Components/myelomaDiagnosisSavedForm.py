@@ -20,7 +20,6 @@ class MyelomaDiagnosisSavedForm():
 		self.load(expectedValues)
 
 	def load(self, expectedValues):
-		raw_input('loading saved form')
 		self.form = self.driver.find_element_by_id('diagnosis_form')
 		add_buttons = self.form.find_elements_by_class_name('custom_addDiagnoisisButton')
 
@@ -56,13 +55,11 @@ class MyelomaDiagnosisSavedForm():
 
 			# Only perform form validation if 'whole' formData dictionary is passed in
 			try:
-				raw_input('validating saved form')
 				# Should only have 'diagnosis_date' if whole dictionary passed in
 				test = expectedValues['diagnosis_date']
 
 				expectedDiagnoses = self.convert_expected_diagnoses(expectedValues)
 				expectedPhysicians = expectedValues['physicians']
-				print('loaded values')
 
 				# Right # of diagnoses and physicians?
 				if len(expectedDiagnoses) != len(self.diagnoses):
@@ -70,13 +67,10 @@ class MyelomaDiagnosisSavedForm():
 				if len(expectedValues['physicians']) != len(self.physicians):
 					failures.append('MyelDiagSavedForm: Expected ' + str(len(expectedPhysicians)) + ' physicians. Form has ' + str(len(self.physicians)))
 
-				print('# physicians/diagnoses')
 				# Diagnoses match expected values?
 				keys = ['date', 'type', 'lesions', 'facility', 'city', 'state']
 				for i, diagnosis in enumerate(self.diagnoses):
-					print(i)
 					for key in keys:
-						print(key)
 						if key in expectedDiagnoses and diagnosis[key] != expectedDiagnoses[key]:
 							failures.append('MyelDiagForm: Diagnosis ' + str(i) + ' expected "' + key + '" ' + expectedDiagnoses[key]
 								+ '", got ' + diagnoses[key])
@@ -115,7 +109,7 @@ class MyelomaDiagnosisSavedForm():
 						diagnosis['delete'] = buttons[1]
 
 				# Grab text out of list
-				diagnosis['date'] = values[0]
+				diagnosis['date'] = self.convertDate(values[0], 'mm/yyyy')
 				diagnosis['type'] = values[1]
 				diagnosis['lesions'] = values[2]
 				diagnosis['facility'] = values[3]
@@ -153,53 +147,54 @@ class MyelomaDiagnosisSavedForm():
 
 ########################### Utility Functions #############################
 
-	def parse_date(self, dateStr, formatType='mm/yyyy'):
+	def convertDate(self, dateStr, outputType='mm/yyyy'):
 		if dateStr:
 			months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-			if formatType == 'mm/yyyy': # Concert from 'mmm yyyy' to 'mm/yyyy'
-				# Get index of space
+			if outputType == 'mm/yyyy': # Concert from 'mmm yyyy' to 'mm/yyyy'
+				# dateStr = 'Jan 2000'
 
-				# Get month
+				index = dateStr.find(' ', None)
+				if index:
+					month = dateStr[:index] # 'Jan'
+					try:
+						monthIndex = months.index(month) + 1 # 1
+					except ValueError:
+						print(str(month) + ' Not in list of months')
 
-				# Get year
+					# add leading 0
+					month = str(monthIndex).zfill(2)
+					year = dateStr[index + 1:]
 
-				return month + '/' + year
+					return month + '/' + year
+				else:
+					print('mm/yyyy: Unable to convert date: ' + dateStr)
+					return dateStr
+
 			else: # Concert from 'mm/yyyy' to 'mmm yyyy'
-				# Get index of /
+				# dateStr = '01/2018'
 
-				# Get month
+				index = dateStr.find('/', None)
+				if index:
 
-				# Get year
+					# Get month
+					month = dateStr[:index] # '01'
+					monthIndex = int(month) -1 # 0
+					month = months[monthIndex] # 'Jan'
 
-				return month + ' ' + year
+					year = dateStr[index + 1:]
 
-
-
-
-			# divider = dateStr.find('/')
-			# if divider != -1: # Going from 'mmm/yyyy' to 'mmm yyyy'
-
-			# 	month = months[int(dateStr[:divider])]
-
-			# 	year = dateStr[divider + 1:]
-			# 	return month + ' ' + year
-
-			# else: # Going from 'mmm yyyy' to 'mm/yyyy'
-			# 	divider = dateStr.find(' ')
-			# 	month = dateStr[:divider]
-			# 	formattedMonth = months.index(month).zfill(2)
-			# 	year = dateStr[divider + 1:]
-
-			# 	return formattedMonth + '/' + year
+					return month + ' ' + year
+				else:
+					print('mmm yyyy: Unable to convert date: ' + dateStr)
+					return dateStr
 
 	def convert_expected_diagnoses(self, expectedValues):
 		# Combine 'initialDiagnosis' and 'additional_diagnoses' from expectedValues.
 		# Save into object equivalent to what this form loads.
 		diagnoses = []
-		# Convert date from 'mm/yyyy' to 'mmm yyyy'
 		initialDiagnosis = {
-			'date': self.parse_date(expectedValues['diagnosis_date']),
+			'date': expectedValues['diagnosis_date'],
 			'type': expectedValues['type'],
 			'lesions': expectedValues['lesions'],
 			'facility': expectedValues['diagnosis_location']['facility'],
@@ -210,14 +205,13 @@ class MyelomaDiagnosisSavedForm():
 		# Additional diagnoses only have date and type.
 		for diagnosis in expectedValues['additional_diagnoses']:
 			diagType = diagnosis.get('type', None)
-			date = self.parse_date(diagnosis.get('date' None) , 'mm/yyyy')
-			lesions = diagnosis.get('lesions')
+			date = diagnosis.get('date', None),
+			lesions = diagnosis.get('lesions', None)
 			additional_diagnosis = {
 				'date': date,
 				'type': diagType,
 				'lesions': lesions,
 			}
-			raw_input(additional_diagnosis)
 			diagnoses.append(additional_diagnosis)
 		return diagnoses
 
@@ -256,14 +250,13 @@ class MyelomaDiagnosisSavedForm():
 		if index == 'all':
 			length = len(dataList)
 
-		for i, obj in xrange(length):
+		for i in xrange(length):
 			if index != 'all':
 				dataList[index]['delete'].click()
 			else:
 				# Delete from last position to first (don't have to reload)
 				delIndex = len(dataList) - (i + 1)
-				print('i: ' + str(i) + ', delIndex: ' + str(delIndex))
-				dataList[delIndex].click()
+				dataList[delIndex]['delete'].click()
 
 			self.popUpForm = popUpForm.PopUpForm(self.driver)
 			WDW(self.driver, 10).until(lambda x: self.popUpForm.load())

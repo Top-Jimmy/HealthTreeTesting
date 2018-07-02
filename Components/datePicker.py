@@ -88,7 +88,6 @@ class DatePicker():
   def set_date(self, date):
     month = self.parse_date(date, 'month')
     year = self.parse_date(date, 'year')
-    print('loading date')
     self.load()
 
     if self.current_year != year:
