@@ -23,7 +23,7 @@ class TestFitnessLevel(unittest.TestCase):
 		self.assertTrue(fitLvlView.on())
 
 	def test_submit(self):
-
+		'''FitnessLevel : FitnessLevel . test_submit'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		fitLvlView = self.andrew.fitLvlView

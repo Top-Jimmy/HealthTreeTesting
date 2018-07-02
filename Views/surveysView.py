@@ -47,7 +47,6 @@ class SurveysView(view.View):
 
 	def molecular_survey(self, myelomaInfo, action='cancel'):
 		self.genetic_button.click()
-		raw_input('asdf')
 		self.multipleMyelomaSurveyForm = multipleMyelomaSurveyForm.MultipleMyelomaSurveyForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.multipleMyelomaSurveyForm.load())
 		self.multipleMyelomaSurveyForm.submit(myelomaInfo, action)

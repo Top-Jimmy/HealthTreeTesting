@@ -28,8 +28,8 @@ class PopUpForm():
 			# raise NoSuchElementException('Failed to load PopUpForm')
 		return True
 
-	def confirm(self, action='submit'):
-		if action == 'submit':
+	def confirm(self, popUpAction='confirm'):
+		if popUpAction == 'confirm':
 			self.confirm_button.click()
 		else:
 			self.cancel_button.click()

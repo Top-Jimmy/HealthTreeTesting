@@ -15,7 +15,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 	def tearDown(self):
 		self.driver.quit()
-
+		@unittest.skip("Needs modifications")
 	def test_navigate(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_navigate'''
 		homeView = self.andrew.homeView
@@ -29,16 +29,16 @@ class TestMyelomaGenetics(unittest.TestCase):
 		time.sleep(3)
 		self.assertTrue(myelomaGeneticsView.on())
 
+		@unittest.skip("Needs modifications")
 	def test_add_fish(self):
-
+		'''MyelomaGenetics : MyelomaGenetics . test_add_fish'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelomaGeneticsView = self.andrew.myelomaGeneticsView
 		fishInfo = {
 			'test_fish_date': '06/2018',
 			'gene_additions': {
-				'3copies': False, 
-				'4copies': False,
+				'1q21': False, 
 			},
 			'gene_deletions': {
 				'deletion_1p': False, 
@@ -97,12 +97,13 @@ class TestMyelomaGenetics(unittest.TestCase):
 		# myelomaGeneticsView.edit_high_risk(riskInfo, 'save')
 
 		# self.assertTrue(myelomaGeneticsView.on())
-
+		@unittest.skip("Needs modifications")
 	def test_add_gep(self):
-
+		'''MyelomaGenetics : MyelomaGenetics . test_add_gep'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelomaGeneticsView = self.andrew.myelomaGeneticsView
+
 		gepInfo = {
 			'test_gep_date': '04/2013',
 			'gep_comment': 'Doubts about validity',
@@ -115,14 +116,15 @@ class TestMyelomaGenetics(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Genetics')
 		self.assertTrue(myelomaGeneticsView.on())
 
-		myelomaGeneticsView.add_gep_test(gepInfo)
+		myelomaGeneticsView.add_gep_test(gepInfo, 'cancel')
 
 		self.assertTrue(myelomaGeneticsView.on())
 
-		myelomaGeneticsView.edit_test(testType, testIndex, testValues, 'delete')
+		myelomaGeneticsView.edit_test('gep', -1, gepInfo, 'delete', 'confirm')
 
+		@unittest.skip("Needs modifications")
 	def test_add_ngs(self):
-
+		'''MyelomaGenetics : MyelomaGenetics . test_add_ngs'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelomaGeneticsView = self.andrew.myelomaGeneticsView
@@ -151,8 +153,9 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		self.assertTrue(myelomaGeneticsView.on())
 
+		@unittest.skip("Needs modifications")
 	def test_riskInfo(self):
-
+		'''MyelomaGenetics : MyelomaGenetics . test_riskInfo'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelomaGeneticsView = self.andrew.myelomaGeneticsView

@@ -242,7 +242,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 		self.assertTrue(myelDiagView.on('fresh'))
 
-		myelDiagView.myelomaDiagnosisFreshForm.add_physician_typeahead('David', 'David Avigan', physicianInfo, physicianPosition)
+		myelDiagView.myelomaDiagnosisFreshForm.add_physician_typeahead('David', 'David Avigan', physicianInfo)
 
 
 

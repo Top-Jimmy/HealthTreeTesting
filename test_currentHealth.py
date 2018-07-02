@@ -53,8 +53,11 @@ class TestCurrentHealth(unittest.TestCase):
 
 		self.freshFormInfo = {
 			# 'newly_diagnosed': 'No',
-			'diagnosis_date': '05/2016',
+			'diagnosis_date': '05/2018',
 			'type': 'solitary plasmacytoma',
+			'stable': 'no',
+			'm_protein': 'no',
+			'recent_pain': 'yes',
 			'lesions': 'no lesions',
 			'high_risk': 'no',
 			'transplant_eligible': 'no',
@@ -119,7 +122,6 @@ class TestCurrentHealth(unittest.TestCase):
 		self.assertTrue(myelDiagView.submitFreshForm(self.freshFormInfo))
 		myelDiagView.myelomaDiagnosisSavedForm.continue_button.click()
 
-
 		# Should have first 3 questions + 8 default questions
 		formInfo = {
 			'questions': self.currentQuestions + self.defaultQuestions,
@@ -138,7 +140,7 @@ class TestCurrentHealth(unittest.TestCase):
 		myelDiagView.delete('diagnosis', 0)
 
 	def test_recent_diagnosis(self):
-		'''CurrentHealth : CurrentHealth . test_non_recent_diagnosis'''
+		'''CurrentHealth : CurrentHealth . test_recent_diagnosis'''
 		# Andrew: Go to 'Myeloma Diagnosis' and save diagnosis that is recent
 		# Continue on to 'Current Health' and verify form only has 8 questions
 
@@ -157,7 +159,7 @@ class TestCurrentHealth(unittest.TestCase):
 		freshFormInfo = copy.deepcopy(self.freshFormInfo)
 		# freshFormInfo['newly_diagnosed'] = 'yes'
 		self.assertTrue(myelDiagView.submitFreshForm(freshFormInfo))
-		myelDiagView.myelomaDiagnosisSavedForm.continue_button.click()
+
 
 		# Should have 8 default questions
 		formInfo = {
@@ -173,6 +175,7 @@ class TestCurrentHealth(unittest.TestCase):
 		self.assertTrue(myelDiagView.on('saved'))
 		myelDiagView.delete('diagnosis', 0)
 
+	@unittest.skip("in progress")
 	def test_secondary_questions(self):
 		'''CurrentHealth : CurrentHealth . test_secondary_questions'''
 		# CurrentHealth should be able to set and read correct values for secondary questions
@@ -236,7 +239,7 @@ class TestCurrentHealth(unittest.TestCase):
 		self.assertTrue(currentHealthView.submit(defaultFormInfo))
 
 	def test_additional_questions(self):
-		'''CurrentHealth : CurrentHealth . test_navigate'''
+		'''CurrentHealth : CurrentHealth . test_additional_questions'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView

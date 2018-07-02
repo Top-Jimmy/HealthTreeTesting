@@ -21,8 +21,7 @@ class FishTestForm():
 		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
 		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
 
-		self.three_1q21_checkbox = self.form.find_element_by_id('Addition_1q21_3copies')
-		self.four_1q21_checkbox = self.form.find_element_by_id('Addition_1q21_4copies')
+		self.add_1q21_checkbox = self.form.find_element_by_id('Addition_1q21')
 
 		self.deletion_1p_checkbox = self.form.find_element_by_id('Deletion_1p')
 		self.deletion_17p_checkbox = self.form.find_element_by_id('Deletion_17p')
@@ -155,10 +154,8 @@ class FishTestForm():
 						print('Failed to set date. Page probably reloaded')
 						time.sleep(.4)
 
-			if fishInfo['gene_additions']['3copies'] != self.three_1q21_checkbox.is_selected():
-				self.three_1q21_checkbox.click()
-			if fishInfo['gene_additions']['4copies'] != self.four_1q21_checkbox.is_selected():
-				self.four_1q21_checkbox.click()
+			if fishInfo['gene_additions']['1q21'] != self.add_1q21_checkbox.is_selected():
+				self.add_1q21_checkbox.click()
 
 			if fishInfo['gene_deletions']['deletion_1p'] != self.deletion_1p_checkbox.is_selected():
 				self.deletion_1p_checkbox.click()

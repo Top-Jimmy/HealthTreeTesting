@@ -98,18 +98,31 @@ class MyelomaDiagnosisSavedForm():
 			rows = self.diagnosis_table.find_elements_by_class_name('borderTableRow')
 			for i, row in enumerate(rows):
 				diagnosis = {}
-				# Data
-				diagnosis['date'] = rows[i].find_element_by_class_name('diagnosis-date-sec').text
-				diagnosis['type'] = rows[i].find_element_by_class_name('diagnosis-type-sec').text
-				diagnosis['lesions'] = rows[i].find_element_by_class_name('diagnosis-bone-sec').text
-				diagnosis['facility'] = rows[i].find_element_by_class_name('diagnosis-facility-sec').text
-				diagnosis['city'] = rows[i].find_element_by_class_name('diagnosis-city-sec').text
-				diagnosis['state'] = rows[i].find_element_by_class_name('diagnosis-state-sec').text
+				values = [] # Store text in each div
+				divs = row.find_elements_by_tag_name('div')
+				print(str(len(divs)))
+				for divIndex, div in enumerate(divs):
+					if divIndex != 3: # div 3 is container div for state and city
+						values.append(div.text)
+					if divIndex == 6: # Actions div
+						buttons = div.find_elements_by_tag_name('button')
+						diagnosis['edit'] = buttons[0]
+						diagnosis['delete'] = buttons[1]
+						print('added actions')
 
-				# Actions
-				buttons = rows[i].find_elements_by_tag_name('button')
-				diagnosis['edit'] = buttons[0]
-				diagnosis['delete'] = buttons[1]
+
+				# Grab text out of list
+				diagnosis['date'] = values[0]
+				diagnosis['type'] = values[1]
+				diagnosis['lesions'] = values[2]
+				diagnosis['facility'] = values[3]
+
+				cityState_text = values[4] # Sandy, Utah
+				index = cityState_text.index(',')
+				diagnosis['city'] = cityState_text[:index]
+				diagnosis['state'] = cityState_text[index+2:]
+				print(cityState_text[:index])
+				print(cityState_text[index+2:])
 
 				diagnoses.append(diagnosis)
 
@@ -234,7 +247,7 @@ class MyelomaDiagnosisSavedForm():
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		return True
 
-	def delete(self, del_type='diagnosis', index=0, action='submit'):
+	def delete(self, del_type='diagnosis', index=0, popUpAction='submit'):
 		# Deleting physicians or diagnoses?
 		dataList = self.physicians
 		if del_type == 'diagnosis':
@@ -246,7 +259,7 @@ class MyelomaDiagnosisSavedForm():
 			length = len(dataList)
 
 		for i, obj in xrange(length):
-			if index == 'all':
+			if index != 'all':
 				dataList[index]['delete'].click()
 			else:
 				# Delete from last position to first (don't have to reload)
@@ -256,7 +269,7 @@ class MyelomaDiagnosisSavedForm():
 
 			self.popUpForm = popUpForm.PopUpForm(self.driver)
 			WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
-			self.popUpForm.confirm(action)
+			self.popUpForm.confirm(popUpAction)
 			# Wait for confirm popup and loading overlay to disappear
 			WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'react-confirm-alert')))
 			WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))

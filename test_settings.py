@@ -30,6 +30,7 @@ class TestSettings(unittest.TestCase):
 		self.assertTrue(settingsView.on())
 
 	def test_change_username(self):
+		'''settings : settings . test_change_username'''
 		homeView = self.elliot.homeView
 		aboutMeView = self.elliot.aboutMeView
 		settingsView = self.elliot.settingsView

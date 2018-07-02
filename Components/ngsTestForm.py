@@ -13,6 +13,8 @@ class NgsTestForm():
 	def load(self):
 		self.form = self.driver.find_elements_by_tag_name('form')[1]
 		buttons = self.form.find_elements_by_tag_name('button')
+		self.rows = self.form.find_elements_by_class_name('form-group')
+
 
 		# self.close_button = buttons[5]
 

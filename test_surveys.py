@@ -27,6 +27,7 @@ class TestSurveys(unittest.TestCase):
 		self.assertTrue(surveysView.on())
 
 	def test_conditions_survey(self):
+		'''Surveys : Surveys . test_conditions_survey'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		surveysView = self.andrew.surveysView
@@ -45,6 +46,7 @@ class TestSurveys(unittest.TestCase):
 		surveysView.conditions_survey(conditionsInfo, 'cancel')
 
 	def test_molecular_survey(self):
+		'''Surveys : Surveys . test_molecular_survey'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		surveysView = self.andrew.surveysView

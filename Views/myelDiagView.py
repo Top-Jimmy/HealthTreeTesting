@@ -105,10 +105,10 @@ class MyelDiagView(view.View):
 			# todo: handle working on fresh form
 			pass
 
-	def delete(self, del_type='diagnosis', index=0, expectedInfo=None, action='submit'):
+	def delete(self, del_type='diagnosis', index=0, expectedInfo=None, popUpAction='confirm'):
 		# Handles deleting physician or diagnosis
 		if self.myelomaDiagnosisSavedForm:
-			if self.myelomaDiagnosisSavedForm.delete(del_type, index, action):
+			if self.myelomaDiagnosisSavedForm.delete(del_type, index, popUpAction):
 				if del_type == 'diagnosis' and index == 0:
 					WDW(self.driver, 10).until(lambda x: self.load('fresh', expectedInfo))
 				else:

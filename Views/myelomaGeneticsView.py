@@ -7,6 +7,7 @@ from Components import fishTestForm
 from Components import gepTestForm
 from Components import ngsTestForm
 from Components import editHighRiskForm
+from Components import popUpForm
 from Views import view
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
@@ -32,10 +33,15 @@ class MyelomaGeneticsView(view.View):
 			self.continue_button = cont.find_element_by_tag_name('button')
 
 			self.tables = self.driver.find_elements_by_class_name('marg-btm0')
+			raw_input('all but tables loaded')
 			self.load_fish_table()
+			raw_input('fish table loaded')
 			self.load_gep_table()
+			raw_input('gep table loaded')
 			self.load_ngs_table()
+			raw_input('ngs table loaded')
 			self.load_highRisk_table()
+			raw_input('high risk table loaded')
 
 
 			# When user hasn't filled anything out
@@ -104,11 +110,8 @@ class MyelomaGeneticsView(view.View):
 					# Collect column headers
 					values.append(div.text)
 				else:
-					try:
-						key = values[divIndex]
-					except IndexError:
+					key = values[divIndex]
 						# No div for 'actions' in header.
-						key = 'actions'
 					if key.lower() == 'actions':
 						actions = []
 						buttons = row.find_elements_by_tag_name('button')
@@ -256,7 +259,7 @@ class MyelomaGeneticsView(view.View):
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
-	def add_gep_test(self, gepInfo, action='save'):
+	def add_gep_test(self, gepInfo, action='cancel'):
 		self.add_gep_button.click()
 		self.gepTestForm = gepTestForm.GepTestForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.gepTestForm.load())
@@ -272,7 +275,7 @@ class MyelomaGeneticsView(view.View):
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
-	def edit_test(self, testType, testIndex, testValues, action='delete'):
+	def edit_test(self, testType, testIndex, testValues, action='delete', popUpAction='confirm'):
 		test = ''
 		if testType == 'fish':
 			test = self.fish_tests[testIndex]
@@ -280,6 +283,9 @@ class MyelomaGeneticsView(view.View):
 				test['actions'][0].click()
 			else:
 				test['actions'][1].click()
+				self.popUpForm = popUpForm.PopUpForm(self.driver)
+				WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+				self.popUpForm.confirm(popUpAction)
 			# Load edit form
 			# call submit function of edit form and pass in testValues
 			# reload page and pass in testValues as expectedValues
@@ -289,6 +295,9 @@ class MyelomaGeneticsView(view.View):
 				test['actions'][0].click()
 			else:
 				test['actions'][1].click()
+				self.popUpForm = popUpForm.PopUpForm(self.driver)
+				WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+				self.popUpForm.confirm(popUpAction)
 
 		elif testType == 'ngs':
 			test = self.ngs_tests[testIndex]
@@ -296,8 +305,14 @@ class MyelomaGeneticsView(view.View):
 				test['actions'][0].click()
 			else:
 				test['actions'][1].click()
+				self.popUpForm = popUpForm.PopUpForm(self.driver)
+				WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+				self.popUpForm.confirm(popUpAction)
 		else:
 			self.edit_high_risk_button.click()
+
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def edit_high_risk(self, riskInfo, action='save'):
 		self.edit_high_risk_button.click()

@@ -441,7 +441,8 @@ class MyelomaDiagnosisFreshForm():
 	# 	'delete_button': delete_button,
 	# }
 
-	def add_physician_typeahead(self, partial_name, full_name, physicianInfo, physicianPosition):
+	def add_physician_typeahead(self, partial_name, full_name, physicianInfo):
+		#physicianPosition
 
 		physician_elements = self.physicians[-1]['elements']
 
@@ -590,7 +591,6 @@ class MyelomaDiagnosisFreshForm():
 						}
 					}
 					WDW(self.driver, 5).until(lambda x: self.load(expectedValues))
-					print('1. Has # rows: ' + str(expectedRows))
 					self.add_diagnoses(formInfo['additional_diagnoses'])
 
 			if formInfo['physicians']:

@@ -13,6 +13,7 @@ class GepTestForm():
 	def load(self):
 		self.form = self.driver.find_elements_by_tag_name('form')[1]
 		buttons = self.form.find_elements_by_tag_name('button')
+		self.rows = self.form.find_elements_by_class_name('form-group')
 
 		# self.close_button = buttons[5]
 
@@ -27,7 +28,7 @@ class GepTestForm():
 		return True
 		# return self.validate(expectedValues)
 
-	def submit(self, gepInfo, action='save'):
+	def submit(self, gepInfo, action='cancel'):
 		if gepInfo:
 			if gepInfo['test_gep_date'] is not None:
 				picker = datePicker.DatePicker(self.driver, self.rows[0])
@@ -47,8 +48,6 @@ class GepTestForm():
 			if gepInfo['gep_comment']:
 				self.comment_textarea.clear()
 				self.comment_textarea.send_keys(gepInfo['gep_comment'])
-
-				raw_input('Is info entered')
 
 			if action == 'save':
 				self.save_button.click()

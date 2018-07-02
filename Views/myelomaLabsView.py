@@ -115,10 +115,8 @@ class MyelomaLabsView(view.View):
 
 	def add_new_lab(self, labInfo, action='save'):	
 		self.add_new_button.click()
-		raw_input('button worked')
 		self.addLabsForm = addLabsForm.AddLabsForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.addLabsForm.load())
-		raw_input('form correctly loaded')
 		self.addLabsForm.submit(labInfo, 'save')
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))

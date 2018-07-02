@@ -25,7 +25,7 @@ class TestMyelomaLabs(unittest.TestCase):
 		self.assertTrue(myelomaLabsView.on())
 
 	def test_add_lab(self):
-
+		'''MyelomaLabs : MyelomaLabs . test_add_lab'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelomaLabsView = self.andrew.myelomaLabsView
