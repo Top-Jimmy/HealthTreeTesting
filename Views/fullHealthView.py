@@ -1,10 +1,13 @@
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError
-from Components import fullHealthMyelomaForm
+from Components import fullHealthMyelomaForm, healthDemoForm, healthHistForm, famHistForm
 from Components import menu
 from Components import header
 from Views import view
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class FullHealthView(view.View):
 
@@ -16,6 +19,7 @@ class FullHealthView(view.View):
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 
+			self.load_tabs()
 			self.selectedTab = self.selected_tab()
 			if expectedTab and expectedTab != self.selectedTab:
 				print('Full Health Profile: Expected state: "' + expectedTab + '", got state: "' + self.selectedTab + '"')
@@ -47,15 +51,31 @@ class FullHealthView(view.View):
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
-			return False
+			pass
+		return False
+
+	def load_tabs(self):
+		self.tabs = {}
+		raw_input('loading tabs?')
+		# Find elements w/ class 'tab-name'
+		tabs = self.driver.find_elements_by_class_name('RRT__tab')
+		for tab in tabs:
+			name = tab.text.lower()
+			self.tabs[name] = tab
 
 	def selected_tab(self):
-		self.menu_items = []
-		tabs = self.menu_tabs.find_elements_by_class_name('RRT__tab')
-		for i, tab in enumerate(tabs):
-			classes = tab.get_attribute('class')
-			if 'RRT__tab--selected' in classes:
-				self.menu_items.append(tabs[i].text)
 
-		print(self.menu_items)
+		for tabName, element in self.tabs.iteritems():
+			classes = element.get_attribute('class')
+			if 'RRT__tab--selected' in classes:
+				return tabName
+
+	def select_tab(self, tabName):
+		try:
+			tab = self.tabs[tabName.lower()]
+			tab.click()
+
+			WDW(self.driver, 10).until(lambda x: self.load(tabName))
+		except KeyError:
+			print('fullHealthView: No tab named: ' + str(tabName))
 	

@@ -1,5 +1,4 @@
 import time
-import functions
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
@@ -145,9 +144,9 @@ class HealthHistForm():
 		self.rheumyes_radio = inputs[99]
 		self.rheumidk_radio = inputs[100]
 
-		self.sjögno_radio = inputs[101]
-		self.sjögyes_radio = inputs[102]
-		self.sjögidk_radio = inputs[103]
+		self.sjogno_radio = inputs[101]
+		self.sjogyes_radio = inputs[102]
+		self.sjogidk_radio = inputs[103]
 
 		self.hashino_radio = inputs[104]
 		self.hashiyes_radio = inputs[105]
@@ -355,7 +354,7 @@ class HealthHistForm():
 				failure.append('HealthHistForm: Expecting "no" for having anemia')
 			elif expectedValues['anemia'] == 'yes' and not self.anemiayes_radio.get_attribute('checked'):
 				failure.append('HealthHistForm: Expecting "yes" for having anemia')
-			elif expectedValues['anemia'] == and not self.anemiaidk_radio.get_attribute('checked'):
+			elif expectedValues['anemia'] == 'I dont know' and not self.anemiaidk_radio.get_attribute('checked'):
 				failure.append('HealthHistForm: Expecting "I dont know" for having anemia')
 
 			if expectedValues['celiac'] == 'no' and not self.celiacno_radio.get_attribute('checked'):
@@ -428,12 +427,12 @@ class HealthHistForm():
 			elif expectedValues['rheumatoid'] == 'I dont know' and not self.rheumidk_radio.get_attribute('checked'):
 				failure.append('HealthHistForm: Expecting "I dont know" for having rheumatoid arthritis')
 
-			if expectedValues['sjögren'] == 'no' and not self.sjögno_radio.get_attribute('checked'):
-				failure.append('HealthHistForm: Expecting "no" for having sjögren disease')
-			elif expectedValues['sjögren'] == 'yes' and not self.sjögyes_radio.get_attribute('checked'):
-				failure.append('HealthHistForm: Expecting "yes" for having sjögren disease')
-			elif expectedValues['sjögren'] == 'I dont know' and not self.sjögidk_radio.get_attribute('checked'):
-				failure.append('HealthHistForm: Expecting "I dont know" for having sjögren disease')
+			if expectedValues['sjogren'] == 'no' and not self.sjogno_radio.get_attribute('checked'):
+				failure.append('HealthHistForm: Expecting "no" for having sjogren disease')
+			elif expectedValues['sjogren'] == 'yes' and not self.sjogyes_radio.get_attribute('checked'):
+				failure.append('HealthHistForm: Expecting "yes" for having sjogren disease')
+			elif expectedValues['sjogren'] == 'I dont know' and not self.sjogidk_radio.get_attribute('checked'):
+				failure.append('HealthHistForm: Expecting "I dont know" for having sjogren disease')
 
 			if expectedValues['hasimoto'] == 'no' and not self.hashino_radio.get_attribute('checked'):
 				failure.append('HealthHistForm: Expecting "no" for having hasimoto disease')

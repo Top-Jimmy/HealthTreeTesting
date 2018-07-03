@@ -1,5 +1,4 @@
 import time
-import functions
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
@@ -66,7 +65,7 @@ class FamHistForm():
 
 			if expectedValues['mgus'] == 'no' and not self.mgusno_input.get_attribute('checked'):
 				failure.append('FamHistForm: Expecting "no" to having MGUS')
-			elif expectedValues['mgus'] == 'yes' and not self.mgusyes_input.get_attribute('checked')
+			elif expectedValues['mgus'] == 'yes' and not self.mgusyes_input.get_attribute('checked'):
 				failure.append('FamHistForm: Expecting "yes" to having MGUS')
 
 			if expectedValues['diabetes'] == 'no' and not self.diabetesno_input.get_attribute('checked'):

@@ -26,3 +26,14 @@ class TestFullHealth(unittest.TestCase):
 		
 		self.assertTrue(fullHealthView.on('My Myeloma'))
 
+		self.assertTrue(fullHealthView.select_tab('demographics'))
+
+		self.assertTrue(fullHealthView.select_tab('full health history'))
+
+		self.assertTrue(fullHealthView.select_tab('family history'))
+
+		self.assertTrue(fullHealthView.select_tab('lifestyle'))
+
+		self.assertTrue(fullHealthView.select_tab('quality of life'))
+
+		self.assertTrue(fullHealthView.select_tab('summary'))
