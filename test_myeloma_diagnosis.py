@@ -115,12 +115,6 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 
-		# Test Code
-		# self.assertTrue(myelDiagView.on())
-		# myelDiagView.delete('physician', 'all')
-		# raw_input('no physicians?')
-		# End test code
-
 		self.assertTrue(myelDiagView.on('fresh'))
 		self.assertTrue(myelDiagView.submitFreshForm(formInfo))
 
@@ -236,8 +230,8 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		# Add a few diagnoses, then delete them
 		edited_diagnosis = copy.deepcopy(default_diagnosis)
 		additional_diagnoses = [
-			{'date': '01/2000', 'type': 'Multiple Myeloma', 'bone_lesions': 'no_lesions'},
-			{'date': '06/2012', 'type': 'Primary Plasma Cell Leukemia (PCL)', 'bone_lesions': 'idk'},
+			{'date': '01/2000', 'type': 'Multiple Myeloma', 'lesions': 'no_lesions'},
+			{'date': '06/2012', 'type': 'Primary Plasma Cell Leukemia (PCL)', 'lesions': 'idk'},
 		]
 		edited_diagnosis['additional_diagnoses'] = additional_diagnoses
 
@@ -249,15 +243,14 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		myelDiagView.delete('diagnosis', 1, {'meta': [{'num_diagnoses': 1}]})
 		self.assertTrue(myelDiagView.on('saved', default_diagnosis))
 
-		# Add a few physicians, then delete them
-
 	def test_typeahead(self):
 		'''MyelomaDiagnosis : MyelomaDiagosis . test_typeahead'''
 		# Physician name field will suggest options as user types. Tab will autofill physician fields
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView
-		physicianInfo = {'name': 'David Avigan',
+		physicianInfo = {
+			'name': 'David Avigan',
 			'facility': 'Beth Israel Deaconess Medical Center',
 			'city': 'Boston',
 			'state': 'Massachusetts',
@@ -270,7 +263,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 		self.assertTrue(myelDiagView.on('fresh'))
 
-		myelDiagView.myelomaDiagnosisFreshForm.add_physician_typeahead('David', 'David Avigan', physicianInfo)
+		myelDiagView.myelomaDiagnosisFreshForm.add_physician_typeahead('Dav', 'David Avigan', physicianInfo)
 
 
 

@@ -442,10 +442,10 @@ class MyelomaDiagnosisFreshForm():
 	# }
 
 	def add_physician_typeahead(self, partial_name, full_name, physicianInfo):
-		#physicianPosition
+		# Enter partial_name, select option w/ full_name, verify info matches physicianInfo
 
+		# Enter partial_name
 		physician_elements = self.physicians[-1]['elements']
-
 		physician_elements['name_input'].click()
 		AC(self.driver).send_keys(partial_name).perform()
 
@@ -470,6 +470,28 @@ class MyelomaDiagnosisFreshForm():
 						loaded = True
 			except StaleElementReferenceException:
 				pass
+
+		# Reload to avoid staleElementException
+		WDW(self.driver, 10).until(lambda x: self.load())
+		physician_elements = self.physicians[-1]['elements']
+
+		# Validate physicianInfo
+		failures = []
+		if physicianInfo['name'] != physician_elements['name_input'].get_attribute('value'):
+			failures.append('Name does not match.')
+		if physicianInfo['facility'] != physician_elements['facility_input'].get_attribute('value'):
+			failures.append('Facility does not match')
+		if physicianInfo['city'] != physician_elements['city_input'].get_attribute('value'):
+			failures.append('City does not match')
+		if physicianInfo['state'] != physician_elements['state_selector'].text:
+			failures.append('State does not match')
+
+		if len(failures) > 0:
+			for failure in failures:
+				print(failure)
+			return False
+		else:
+			return True
 
 	def clear_physician(self, index):
 		cont = self.physician_rows[-1]
