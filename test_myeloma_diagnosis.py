@@ -6,6 +6,7 @@ import time
 import copy
 
 class TestMyelomaDiagnosis(unittest.TestCase):
+	# test_myeloma_diagnosis.py:TestMyelomaDiagnosis.
 
 	def setUp(self):
 		self.driver = initDriver.start(main.browser)
@@ -15,7 +16,6 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 	def tearDown(self):
 		self.driver.quit()
 
-	# @unittest.skip("in progress")
 	def test_additional_diagnoses(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_diagnoses'''
 		# Fresh and Saved form: Test adding, editing and deleting multiple diagnoses
@@ -23,7 +23,6 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView
 		formInfo =  {
-			# 'newly_diagnosed': 'no',
 			'diagnosis_date': '05/2018',
 			'type': 'solitary plasmacytoma',
 			'stable': 'no',
@@ -41,7 +40,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 			'additional_diagnoses': [
 				{'date': '01/2000', 'type': 'Smoldering Myeloma', 'lesions': 'no lesions'},
 				{'date': '12/2004', 'type': 'Multiple myeloma and amyloidosis', 'lesions': 'I dont know'},
-			], # i.e. [{'date': '01/2000', 'diagnosis': 'Smoldering Myeloma'},]
+			],
 			'physicians': [
 				{'name': 'David Avigan',
 					'facility': 'Beth Israel Deaconess Medical Center',
@@ -60,13 +59,17 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(myelDiagView.on('fresh'))
 		self.assertTrue(myelDiagView.submitFreshForm(formInfo))
 
+		# Saved Form: Add another diagnosis
+		new_diagnosis = {'date': '07/2012', 'type': 'Multiple myeloma and Secondary Plasma Cell Leukemia (PCL)', 'lesions': '6 or more'}
+		formInfo['additional_diagnoses'].append(new_diagnosis)
+		myelDiagView.add_diagnosis(new_diagnosis, formInfo)
+
 		# Reset Test: Delete diagnosis and reload fresh form
 		myelDiagView.delete('diagnosis', 'all')
-		self.assertTrue(myelDiagView.on('fresh'))
 
 	def test_additional_physicians(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_physicians'''
-		# Fresh and Saved form: Test adding, editing and deleting multiple physicians
+		# Fresh and Saved form: Test adding and deleting multiple physicians
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView
@@ -112,8 +115,31 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 
+		# Test Code
+		# self.assertTrue(myelDiagView.on())
+		# myelDiagView.delete('physician', 'all')
+		# raw_input('no physicians?')
+		# End test code
+
 		self.assertTrue(myelDiagView.on('fresh'))
-		self.assertTrue(myelDiagView.myelomaDiagnosisFreshForm.submit(formInfo, False))
+		self.assertTrue(myelDiagView.submitFreshForm(formInfo))
+
+		# Saved form: Add new physician
+		new_physician = {
+			'name': 'Jason Brayer',
+			'facility': 'Moffitt Cancer Center',
+			'city': 'Jacksonville',
+			'state': 'Florida',
+		}
+		formInfo['physicians'].append(new_physician)
+		myelDiagView.add_physician(new_physician, formInfo)
+
+		# Delete all physicians
+		formInfo['physicians'] = []
+		myelDiagView.delete('physician', 'all')
+
+		# Reset: Delete diagnosis, reload fresh form
+		myelDiagView.delete('diagnosis', 'all')
 
 	def test_fresh_form(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_fresh_form'''

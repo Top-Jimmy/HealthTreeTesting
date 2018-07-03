@@ -225,7 +225,7 @@ class MyelomaDiagnosisSavedForm():
 		WDW(self.driver, 10).until(lambda x: self.additionalDiagnosisForm.load())
 		self.additionalDiagnosisForm.submit(diagnosisInfo)
 		# Wait for modal and loading overlay to disappear
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		return True
 
@@ -235,7 +235,7 @@ class MyelomaDiagnosisSavedForm():
 		self.editDiagnosisForm = editDiagnosisForm.EditDiagnosisForm(self.driver)
 		self.editDiagnosisForm.submit(diagnosisInfo, action)
 		# Wait for modal and loading overlay to disappear
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		return True
 
@@ -251,12 +251,14 @@ class MyelomaDiagnosisSavedForm():
 			length = len(dataList)
 
 		for i in xrange(length):
+			# print('deleting: ' + str(i))
 			if index != 'all':
 				dataList[index]['delete'].click()
 			else:
 				# Delete from last position to first (don't have to reload)
 				delIndex = len(dataList) - (i + 1)
 				dataList[delIndex]['delete'].click()
+
 
 			self.popUpForm = popUpForm.PopUpForm(self.driver)
 			WDW(self.driver, 10).until(lambda x: self.popUpForm.load())

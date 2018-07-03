@@ -18,49 +18,26 @@ class MyelDiagView(view.View):
 			else:
 				if self.view_state == 'fresh':
 					self.myelomaDiagnosisFreshForm = myelomaDiagnosisFreshForm.MyelomaDiagnosisFreshForm(self.driver, expectedValues)
+					self.myelomaDiagnosisSavedForm = None
 				else:
 					self.myelomaDiagnosisSavedForm = myelomaDiagnosisSavedForm.MyelomaDiagnosisSavedForm(self.driver, expectedValues)
+					self.myelomaDiagnosisFreshForm = None
 				self.menu = menu.Menu(self.driver)
 				self.header = header.AuthHeader(self.driver)
-				# self.validate()
 				return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
 			pass
 		return False
 
-	# def validate(self):
-	# 	failures = []
-	# 	if self.createAccount_link.text != 'Create Account':
-	# 		failures.append('1. Create Account link. Expecting text "Create Account", got "' + self.createAccount_link.text + '"')
-	# 	if len(failures) > 0:
-	# 		print(failures)
-	# 		raise NoSuchElementException('Failed to load myelomaDiagnosisView')
-
 	def get_view_state(self):
 		# Is myelomaDiagnosisForm fresh or already saved?
 		try:
-			el = self.driver.find_element_by_id('undefined_id')
+			# Id of highRisk radio button (only on fresh form)
+			el = self.driver.find_element_by_id('highRisk1')
 			return 'fresh'
 		except NoSuchElementException:
 			return 'saved'
-
-	# def createErrorObj(self, errorText):
-	# 	errorType = 'undefined';
-	# 	errorMsg = '';
-
-	# 	if 'confirm your email address' in errorText:
-	# 		errorType = 'confirmation'
-	# 		errorMsg = 'homeView.login: Confirmation error'
-	# 	elif 'invalid username or password' in errorText:
-	# 		errorType = 'invalid credentials'
-	# 		errorMsg = 'homeView.login: Invalid Credentials error'
-
-	# 	return {
-	# 		'errorText': errorText,
-	# 		'errorType': errorType,
-	# 		'errorMsg': errorMsg,
-	# 	}
 
 	def submitFreshForm(self, formInfo, expectedErrorType=None):
 		try:

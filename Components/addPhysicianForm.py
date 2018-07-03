@@ -5,7 +5,7 @@ from selenium.common.exceptions import (NoSuchElementException,
 from selenium.webdriver import ActionChains as AC
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 
-# Form on 'Myeloma Diagnosis' when user has not saved diagnosis info.
+# Form on 'Myeloma Diagnosis' when user has saved diagnosis info, and adds a physician (cannot edit a physician)
 
 class AddPhysicianForm():
 
@@ -58,37 +58,6 @@ class AddPhysicianForm():
 			print('invalid state: ' + value)
 		WDW(self.driver, 5).until(lambda x: self.load())
 
-############################## Error handling ##################################
-
-	# def read_warning(self):
-	# 	inputs = ['username', 'email', 'password', 'confirm password']
-	# 	warnings = []
-	# 	warning_els = [
-	# 		self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
-	# 	]
-	# 	for i, warning_el in enumerate(warning_els):
-	# 		text = warning_el.text
-	# 		if len(text) > 0:
-	# 			warnings.append({
-	# 				'inputName': inputs[i],
-	# 				'text': text,
-	# 			})
-	# 	if len(warnings) > 0:
-	# 		return warnings
-	# 	return None
-
-	# def interpret_warning(self, warningText):
-	# 	warningType = 'undefined'
-	# 	warningMsg = ''
-	# 	if warningText == 'Please enter a valid email address.':
-	# 		warningType = 'Invalid credentials'
-	# 		warningMsg = 'forgotPwForm: Submit form warning'
-
-	# 	return {
-	# 		'msg', warningMsg,
-	# 		'text', warningText,
-	# 		'type', warningType,
-	# 	}
 
 ############################## Test functions ##################################
 

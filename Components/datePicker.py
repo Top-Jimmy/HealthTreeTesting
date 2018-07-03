@@ -49,8 +49,11 @@ class DatePicker():
   def get_picker_state(self):
     state = 'undefined'
     try:
-      # Make sure container has datePicker in it
-      cont = self.container.find_element_by_class_name('mnth-datepicker')
+      # Make sure container has datePicker in it (or has datepicker class itself)
+      classes = self.container.get_attribute('class')
+      if 'mnth-datepicker' not in classes:
+        # Try to find datepicker in container
+        cont = self.container.find_element_by_class_name('mnth-datepicker')
 
       # Currently selecting years or months? Default should be months
       try:
