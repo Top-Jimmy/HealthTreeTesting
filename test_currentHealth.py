@@ -10,20 +10,6 @@ class TestCurrentHealth(unittest.TestCase):
 		self.driver = initDriver.start(main.browser)
 		self.andrew = profiles.Profile(self.driver, 'andrew')
 
-		# Should get currentQuestions when either...
-		# 1. Have not saved a diagnosis
-		# 2. Diagnosis is not 'recently diagnosed'
-		self.currentQuestions = [
-			{'name': 'Is your myeloma currently stable?', 'value': 'dont know',
-				'secondaryQuestions': [],
-			},
-			{'name': 'Are your M-protein or light chains moving up (relapsing)?', 'value': 'dont know',
-				'secondaryQuestions': [],
-			},
-			{'name': 'Do you have recent issues with pain, anemia, elevated calcium or bone pain?', 'value': 'dont know',
-				'secondaryQuestions': [],
-			},
-		]
 		self.defaultQuestions =  [
 			{'name': 'Heart Conditions', 'value': 'dont know',
 				'secondaryQuestions': [],
@@ -94,10 +80,7 @@ class TestCurrentHealth(unittest.TestCase):
 
 	def test_non_recent_diagnosis(self):
 		'''CurrentHealth : CurrentHealth . test_non_recent_diagnosis'''
-		# Andrew: Go to 'Current Health'. Should have first 3 questions (no saved diagnosis)
-		# Go to 'Myeloma Diagnosis' and save diagnosis that is not recent
-		# Continue on to 'Current Health' and verify all questions are there
-
+		# Andrew: 'Current Health' should no longer have 3 extra questions for non-recent diagnoses (Not for MGUS or smoldering)
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView
@@ -107,6 +90,7 @@ class TestCurrentHealth(unittest.TestCase):
 		self.assertTrue(homeView.login(self.andrew.credentials))
 		self.assertTrue(aboutMeView.on())
 
+		# Should have 8 questions w/ no diagnosis saved
 		aboutMeView.menu.go_to('Current Health')
 		expectedValues = {
 			'meta': [
@@ -118,13 +102,12 @@ class TestCurrentHealth(unittest.TestCase):
 		# Submit non-recent Diagnosis
 		currentHealthView.menu.go_to('Myeloma Diagnosis')
 		self.assertTrue(myelDiagView.on('fresh'))
-
 		self.assertTrue(myelDiagView.submitFreshForm(self.freshFormInfo))
 		myelDiagView.myelomaDiagnosisSavedForm.continue_button.click()
 
-		# Should have first 3 questions + 8 default questions
+		# Should still have 8 questions
 		formInfo = {
-			'questions': self.currentQuestions + self.defaultQuestions,
+			'questions': self.defaultQuestions,
 			'meta': [{'num_questions': 8}],
 		}
 		self.assertTrue(currentHealthView.on(formInfo))
@@ -133,49 +116,12 @@ class TestCurrentHealth(unittest.TestCase):
 		self.assertNotEquals(currentHealthView.menu.selected_option(), 'Current Health')
 		self.assertTrue(currentHealthView.submit(formInfo))
 
-		# Delete Diagnosis
+		# Reset: Delete Diagnosis
 		self.assertTrue(fitLvlView.on())
 		fitLvlView.menu.go_to('Myeloma Diagnosis')
 		self.assertTrue(myelDiagView.on('saved'))
 		myelDiagView.delete('diagnosis', 0)
 
-	def test_recent_diagnosis(self):
-		'''CurrentHealth : CurrentHealth . test_recent_diagnosis'''
-		# Andrew: Go to 'Myeloma Diagnosis' and save diagnosis that is recent
-		# Continue on to 'Current Health' and verify form only has 8 questions
-
-		homeView = self.andrew.homeView
-		aboutMeView = self.andrew.aboutMeView
-		myelDiagView = self.andrew.myelomaDiagnosisView
-		currentHealthView = self.andrew.currentHealthView
-		fitLvlView = self.andrew.fitLvlView
-		self.assertTrue(homeView.go())
-		self.assertTrue(homeView.login(self.andrew.credentials))
-		self.assertTrue(aboutMeView.on())
-		aboutMeView.menu.go_to('Myeloma Diagnosis')
-
-		# Submit recent Diagnosis
-		self.assertTrue(myelDiagView.on('fresh'))
-		freshFormInfo = copy.deepcopy(self.freshFormInfo)
-		# freshFormInfo['newly_diagnosed'] = 'yes'
-		self.assertTrue(myelDiagView.submitFreshForm(freshFormInfo))
-
-
-		# Should have 8 default questions
-		formInfo = {
-			'questions': self.defaultQuestions,
-			'meta': [{'num_questions': 8}],
-		}
-		self.assertTrue(currentHealthView.on(formInfo))
-		self.assertTrue(currentHealthView.submit(formInfo))
-
-		# Delete Diagnosis
-		self.assertTrue(fitLvlView.on())
-		fitLvlView.menu.go_to('Myeloma Diagnosis')
-		self.assertTrue(myelDiagView.on('saved'))
-		myelDiagView.delete('diagnosis', 0)
-
-	@unittest.skip("in progress")
 	def test_secondary_questions(self):
 		'''CurrentHealth : CurrentHealth . test_secondary_questions'''
 		# CurrentHealth should be able to set and read correct values for secondary questions
@@ -191,7 +137,7 @@ class TestCurrentHealth(unittest.TestCase):
 
 		# Should not have a diagnosis saved. Therefore should get all questions
 		defaultFormInfo = {
-			'questions': self.currentQuestions + self.defaultQuestions,
+			'questions': self.defaultQuestions,
 			'meta': [{'num_questions': 8}],
 		}
 		self.assertTrue(currentHealthView.on(defaultFormInfo))
@@ -227,48 +173,14 @@ class TestCurrentHealth(unittest.TestCase):
 		updatedQuestions[1] = lungConditions
 		updatedQuestions[2] = kidneyConditions
 		updatedFormInfo = {
-			'questions': self.currentQuestions + updatedQuestions,
+			'questions': updatedQuestions,
 			'meta': [{'num_questions': 8}],
 		}
-		currentHealthView.currentHealthForm.answer_question(3, heartConditions)
-		currentHealthView.currentHealthForm.answer_question(4, lungConditions)
-		currentHealthView.currentHealthForm.answer_question(5, kidneyConditions)
+		currentHealthView.currentHealthForm.answer_question(0, heartConditions)
+		currentHealthView.currentHealthForm.answer_question(1, lungConditions)
+		currentHealthView.currentHealthForm.answer_question(2, kidneyConditions)
 		self.assertTrue(currentHealthView.on(updatedFormInfo))
 
-		# Reset to default answers (I don't know)
+		# Reset to default answers (I don't know for everything)
 		self.assertTrue(currentHealthView.submit(defaultFormInfo))
-
-	def test_additional_questions(self):
-		'''CurrentHealth : CurrentHealth . test_additional_questions'''
-		homeView = self.andrew.homeView
-		aboutMeView = self.andrew.aboutMeView
-		myelDiagView = self.andrew.myelomaDiagnosisView
-		fitLvlView = self.andrew.fitLvlView
-		currentHealthView = self.andrew.currentHealthView
-		self.assertTrue(homeView.go())
-		self.assertTrue(homeView.login(self.andrew.credentials))
-		self.assertTrue(aboutMeView.on())
-
-		aboutMeView.menu.go_to('Myeloma Diagnosis')
-		self.assertTrue(myelDiagView.on('fresh'))
-
-		freshFormInfo = copy.deepcopy(self.freshFormInfo)
-		freshFormInfo['type'] = 'smoldering myeloma'
-		self.assertTrue(myelDiagView.submitFreshForm(freshFormInfo))
-		myelDiagView.myelomaDiagnosisSavedForm.continue_button.click()
-
-		formInfo = {
-			'questions': self.defaultQuestions,
-			'meta': [{'num_questions': 8}],
-		}
-		self.assertTrue(currentHealthView.on(formInfo))
-		self.assertTrue(currentHealthView.submit(formInfo))
-
-		# Delete Diagnosis
-		self.assertTrue(fitLvlView.on())
-		fitLvlView.menu.go_to('Myeloma Diagnosis')
-		self.assertTrue(myelDiagView.on('saved'))
-		myelDiagView.delete('diagnosis', 0)
-
-
 
