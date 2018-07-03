@@ -210,8 +210,8 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		# Add a few diagnoses, then delete them
 		edited_diagnosis = copy.deepcopy(default_diagnosis)
 		additional_diagnoses = [
-			{'date': '01/2000', 'type': 'Multiple Myeloma'},
-			{'date': '06/2012', 'type': 'Primary Plasma Cell Leukemia (PCL)'},
+			{'date': '01/2000', 'type': 'Multiple Myeloma', 'bone_lesions': 'no_lesions'},
+			{'date': '06/2012', 'type': 'Primary Plasma Cell Leukemia (PCL)', 'bone_lesions': 'idk'},
 		]
 		edited_diagnosis['additional_diagnoses'] = additional_diagnoses
 

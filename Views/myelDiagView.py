@@ -9,7 +9,6 @@ from Components import header
 from Views import view
 
 class MyelDiagView(view.View):
-	postUrl = 'signup'
 
 	def load(self, expectedState=None, expectedValues=None):
 		try:

@@ -4,6 +4,8 @@ from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException, ElementNotVisibleException)
 from selenium.webdriver import ActionChains as AC
 from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 import datePicker
 
 # Form on 'Myeloma Diagnosis' when user has already saved diagnosis info but wants to add additional diagnoses
@@ -15,8 +17,11 @@ class AdditionalDiagnosisForm():
 		self.load(expectedValues)
 
 	def load(self, expectedValues=None):
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
 		self.cont = self.driver.find_element_by_class_name('modal-content')
 		buttons = self.cont.find_elements_by_tag_name('button')
+		self.rows = self.cont.find_element_by_class_name('form-group')
 		# self.placeholders = self.form.find_elements_by_class_name('Select-placeholder')
 		self.close_button = buttons[0]
 		self.submit_button = buttons[1]
@@ -26,6 +31,12 @@ class AdditionalDiagnosisForm():
 		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
 
 		self.load_first_diagnosis_dropdown()
+
+		self.lesions_no_radio = self.cont.find_element_by_id('0')
+		self.lesions_5_radio = self.cont.find_element_by_id('1')
+		self.lesions_6_radio = self.cont.find_element_by_id('2')
+		self.lesions_idk_radio = self.cont.find_element_by_id('3')
+
 		# self.validate(expectedValues)
 		return True
 
@@ -119,7 +130,7 @@ class AdditionalDiagnosisForm():
 		if formInfo:
 
 			if formInfo['date'] is not None:
-				picker = datePicker.DatePicker(self.driver, self.rows[0])
+				picker = datePicker.DatePicker(self.driver, self.rows)
 				dateSet = False
 				while not dateSet:
 					try:
@@ -132,6 +143,17 @@ class AdditionalDiagnosisForm():
 
 			if formInfo['type'] is not None:
 				self.set_first_diagnosis(formInfo['type'])
+
+			if formInfo['bone_lesions'] is not None:
+				bone_lesions = formInfo['bone_lesions']
+				if bone_lesions == 'no lesions':
+					self.lesions_no_radio.click()
+				elif bone_lesions == '5 or less':
+					self.lesions_5_radio.click()
+				elif bone_lesions == '6 or more':
+					self.lesions_6_radio.click()
+				else:
+					self.lesions_idk_radio.click()
 
 				self.submit_button.click()
 			return True

@@ -13,7 +13,6 @@ class AboutMeForm():
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		inputs = self.form.find_elements_by_tag_name('input')
 		anchors = self.form.find_elements_by_tag_name('a')
-		rows = self.form.find_elements_by_class_name('form-group')
 
 		self.firstname_input = self.form.find_element_by_id('about_first')
 		self.lastname_input = self.form.find_element_by_id('Last')

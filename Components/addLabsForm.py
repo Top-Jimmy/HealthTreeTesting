@@ -3,7 +3,9 @@ from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException, ElementNotVisibleException)
 import datePicker
 import time
-
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class AddLabsForm():
 
@@ -11,6 +13,7 @@ class AddLabsForm():
 		self.driver = driver
 
 	def load(self):
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		inputs = self.form.find_elements_by_tag_name('input')
 		self.footer = self.driver.find_element_by_class_name('modal-footer')
@@ -44,7 +47,7 @@ class AddLabsForm():
 	def submit(self, labInfo, action='save'):
 		if labInfo:
 			self.dobd_input.send_keys(labInfo['dobd'])
-
+			
 			self.monoclonal_input.send_keys(labInfo['monoclonal'])
 
 			self.kappa_free_input.send_keys(labInfo['kappa'])

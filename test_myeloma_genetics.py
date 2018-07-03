@@ -15,7 +15,8 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 	def tearDown(self):
 		self.driver.quit()
-		@unittest.skip("Needs modifications")
+
+	@unittest.skip("Needs modifications")
 	def test_navigate(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_navigate'''
 		homeView = self.andrew.homeView
@@ -29,7 +30,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		time.sleep(3)
 		self.assertTrue(myelomaGeneticsView.on())
 
-		@unittest.skip("Needs modifications")
+	@unittest.skip("Needs modifications")
 	def test_add_fish(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_add_fish'''
 		homeView = self.andrew.homeView
@@ -97,7 +98,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		# myelomaGeneticsView.edit_high_risk(riskInfo, 'save')
 
 		# self.assertTrue(myelomaGeneticsView.on())
-		@unittest.skip("Needs modifications")
+	@unittest.skip("Needs modifications")
 	def test_add_gep(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_add_gep'''
 		homeView = self.andrew.homeView
@@ -122,7 +123,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		myelomaGeneticsView.edit_test('gep', -1, gepInfo, 'delete', 'confirm')
 
-		@unittest.skip("Needs modifications")
+	@unittest.skip("Needs modifications")
 	def test_add_ngs(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_add_ngs'''
 		homeView = self.andrew.homeView
@@ -153,7 +154,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		self.assertTrue(myelomaGeneticsView.on())
 
-		@unittest.skip("Needs modifications")
+	@unittest.skip("Needs modifications")
 	def test_riskInfo(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_riskInfo'''
 		homeView = self.andrew.homeView
