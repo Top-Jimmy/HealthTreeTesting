@@ -23,13 +23,13 @@ class MyelomaDiagnosisSavedForm():
 		self.form = self.driver.find_element_by_id('diagnosis_form')
 		add_buttons = self.form.find_elements_by_class_name('custom_addDiagnoisisButton')
 
-		self.diagnosis_table = self.form.find_element_by_class_name('diagnosis-frst-table')
+		self.diagnosis_tables = self.form.find_elements_by_class_name('diagnosis-frst-table')
 		self.diagnoses = self.load_diagnoses()
-		self.add_diagnosis_button = add_buttons[0].find_element_by_tag_name('i')
+		self.add_diagnosis_button = add_buttons[0].find_element_by_tag_name('p')
 
-		self.physician_table = self.form.find_element_by_class_name('diagnosis-scnd-table')
+		self.physician_tables = self.form.find_elements_by_class_name('diagnosis-scnd-table')
 		self.physicians = self.load_physicians()
-		self.add_physician_button = add_buttons[1].find_element_by_tag_name('i')
+		self.add_physician_button = add_buttons[1].find_element_by_tag_name('div')
 
 		cont = self.form.find_element_by_class_name('submit_button')
 		self.continue_button = cont.find_element_by_tag_name('button')
@@ -94,19 +94,16 @@ class MyelomaDiagnosisSavedForm():
 
 	def load_diagnoses(self):
 		diagnoses = []
-		if self.diagnosis_table:
-			rows = self.diagnosis_table.find_elements_by_class_name('borderTableRow')
-			for i, row in enumerate(rows):
+		if self.diagnosis_tables:
+			for table in self.diagnosis_tables:
+				# Pull info out of diagnosis table
+				row = table.find_element_by_class_name('borderTableRow')
 				diagnosis = {}
 				values = [] # Store text in each div
 				divs = row.find_elements_by_tag_name('div')
 				for divIndex, div in enumerate(divs):
 					if divIndex != 3: # div 3 is container div for state and city
 						values.append(div.text.replace("'", '')) # Get rid of ' in "I don't know"
-					if divIndex == 6: # Actions div
-						buttons = div.find_elements_by_tag_name('button')
-						diagnosis['edit'] = buttons[0]
-						diagnosis['delete'] = buttons[1]
 
 				# Grab text out of list
 				diagnosis['date'] = self.convertDate(values[0], 'mm/yyyy')
@@ -123,24 +120,44 @@ class MyelomaDiagnosisSavedForm():
 					diagnosis['city'] = ''
 					diagnosis['state'] = ''
 
+				# Diagnosis actions
+				diagnosis['actions'] = self.load_actions(table)
+
 				diagnoses.append(diagnosis)
+
+				
+				
 
 		return diagnoses
 
+	def load_actions(self, table):
+		actions = {}
+		actionRows = self.driver.find_elements_by_class_name('bottom-last-row')
+		for i, actionRow in enumerate(actionRows):
+			cont1 = actionRows[i].find_element_by_class_name('edit-treatment-icon')
+			actions['edit'] = cont1.find_element_by_tag_name('a')
+			cont2 = actionRows[i].find_element_by_class_name('delete-treatment-icon')
+			actions['delete'] = cont2.find_element_by_tag_name('a')
+		return actions
+		
+
 	def load_physicians(self):
 		physicians = []
-		if self.physician_table:
-			rows = self.physician_table.find_elements_by_class_name('borderTableRow')
-			for i, row in enumerate(rows):
+		if self.physician_tables:
+			for table in self.physician_tables:
+				row = table.find_element_by_class_name('borderTableRow')
 				physician = {}
+				values = []
+				divs = row.find_elements_by_tag_name('div')
+				for i, div in enumerate(divs):
+					values.append(div.text)
 				# Data
-				physician['name'] = rows[i].find_element_by_class_name('phy_name').text
-				physician['facility'] = rows[i].find_element_by_class_name('phy_fac_name').text
-				physician['city'] = rows[i].find_element_by_class_name('physician-city').text
-				physician['state'] = rows[i].find_element_by_class_name('physician-state').text
-
-				# actions
-				physician['delete'] = rows[i].find_element_by_tag_name('button')
+				physician['name'] = values[0]
+				physician['facility'] = values[1]
+				physician['city'] = values[2]
+				physician['state'] = values[3]
+				
+				physician['actions'] = self.load_actions(table)
 
 				physicians.append(physician)
 		return physicians
@@ -253,11 +270,12 @@ class MyelomaDiagnosisSavedForm():
 		for i in xrange(length):
 			# print('deleting: ' + str(i))
 			if index != 'all':
-				dataList[index]['delete'].click()
+				dataList[index]['actions']['delete'].click()
 			else:
 				# Delete from last position to first (don't have to reload)
 				delIndex = len(dataList) - (i + 1)
-				dataList[delIndex]['delete'].click()
+				raw_input('i wake up in the morning and i step outside')
+				dataList[delIndex]['actions']['delete'].click()
 
 
 			self.popUpForm = popUpForm.PopUpForm(self.driver)
@@ -269,6 +287,7 @@ class MyelomaDiagnosisSavedForm():
 		return True
 
 	def add_physician(self, physicianInfo, action='submit'):
+		raw_input('i said hey, whats going on?')
 		self.add_physician_button.click()
 		self.addPhysicianForm = addPhysicianForm.AddPhysicianForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.addPhysicianForm.load())

@@ -20,11 +20,11 @@ class AddPhysicianForm():
 		self.cancel_button = buttons[2]
 
 		inputs = self.cont.find_elements_by_tag_name('input')
-		self.name_input = inputs[0]
+		self.name_input = self.cont.find_element_by_id('Physician_name')
 		self.facility_input = inputs[2]
 		self.city_input = inputs[3]
 
-		self.state_cont = self.cont.find_element_by_class_name('stateFont')
+		self.state_cont = self.cont.find_element_by_class_name('is-searchable')
 		try:
 			self.state_selector = self.state_cont.find_element_by_class_name('Select-placeholder')
 		except NoSuchElementException:
