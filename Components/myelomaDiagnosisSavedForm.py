@@ -125,8 +125,8 @@ class MyelomaDiagnosisSavedForm():
 
 				diagnoses.append(diagnosis)
 
-				
-				
+
+
 
 		return diagnoses
 
@@ -139,7 +139,7 @@ class MyelomaDiagnosisSavedForm():
 			cont2 = actionRows[i].find_element_by_class_name('delete-treatment-icon')
 			actions['delete'] = cont2.find_element_by_tag_name('a')
 		return actions
-		
+
 
 	def load_physicians(self):
 		physicians = []
@@ -156,7 +156,7 @@ class MyelomaDiagnosisSavedForm():
 				physician['facility'] = values[1]
 				physician['city'] = values[2]
 				physician['state'] = values[3]
-				
+
 				physician['actions'] = self.load_actions(table)
 
 				physicians.append(physician)
@@ -275,7 +275,20 @@ class MyelomaDiagnosisSavedForm():
 				# Delete from last position to first (don't have to reload)
 				delIndex = len(dataList) - (i + 1)
 				raw_input('i wake up in the morning and i step outside')
-				dataList[delIndex]['actions']['delete'].click()
+
+				deleted = False
+				count = 0
+				while not deleted or count < 5:
+					try:
+						dataList[delIndex]['actions']['delete'].click()
+					except StaleElementReferenceException:
+						print('Failed to click delete button. Reloading page')
+						self.load()
+					count += 1
+
+				if not deleted:
+					print('Failed to delete')
+					return False
 
 
 			self.popUpForm = popUpForm.PopUpForm(self.driver)

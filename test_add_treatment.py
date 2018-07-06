@@ -5,7 +5,6 @@ import profiles
 import form_info
 # import copy # copy.deepcopy(object)
 
-# @unittest.skip("In progress")
 class TestAddTreatment(unittest.TestCase):
 
 	def setUp(self):
@@ -47,11 +46,11 @@ class TestAddTreatment(unittest.TestCase):
 		# select-all question w/ no subquestions or comments
 		self.question_template = {
 			'type': 'select-all',
-			'options': [
-				{'Option X': {} },
-				{'Option Y': {} },
-				{'Option Z': {} },
-			],
+			'options': {
+				'Option X': {},
+				'Option Y': {},
+				'Option Z': {},
+			},
 		}
 
 		# date question
@@ -147,7 +146,7 @@ class TestAddTreatment(unittest.TestCase):
 					'options': {
 						'Local Radiation': {},
 					},
-					'actions': 'continue',
+					# 'actions': 'continue',
 				},
 				{'type': 'date', 'text': '10/2015' },
 				{'type': 'date', 'text': '02/2016' },
@@ -172,7 +171,7 @@ class TestAddTreatment(unittest.TestCase):
     	}
 		}
 		self.assertTrue(toView.add_treatment(treatment2, 'save'))
-
+		toView.edit(0, 'delete', 'confirm')
 		raw_input('what order?')
 
 		# expectedValues = {
@@ -180,11 +179,60 @@ class TestAddTreatment(unittest.TestCase):
 		# }
 		# self.assertTrue(toView.on())
 
+	def test_bone_strengthener(self):
+		'''AddTreatment : AddTreatment . test_bone_strengthener'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		toView = self.andrew.treatmentsOutcomesView
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Treatments & Outcomes')
+		self.assertTrue(toView.on())
+		# Not currently taking bone strengtheners
+		treatment1 = {
+			'questions': [
+				{'type': 'single',
+					# Treatment Type
+					'options': {
+						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
+					},
+				},
+				{'type': 'single',
+					# Supportive Care Type
+					'options': {
+						'Bone Strengthener': {},
+					},
+					'actions': 'continue',
+				},
+				{'type': 'single',
+					# Bone strengthener Type
+					'options': {
+						'Aredia': {},
+					},
+				},
+				{'type': 'date', 'text': '10/2017' }, # Start date
+				{'type': 'single',
+					# Bone Strengtheners: Same Frequency
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'date', 'text': '02/2018' }, # Stop date
+				{'type': 'single',
+					# Bone Strengtheners: Frequency
+					'options': {
+						'Yearly': {},
+					},
+				},
+			]
+		}
+		self.assertTrue(toView.add_treatment(treatment1, 'save'))
+		toView.edit(0, 'delete', 'confirm')
 
 
-
-
-
+		raw_input('no treatments?')
 
 
 

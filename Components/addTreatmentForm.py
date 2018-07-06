@@ -4,7 +4,7 @@ from Components import sideEffectsForm
 import time
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
-		StaleElementReferenceException)
+		StaleElementReferenceException, ElementNotVisibleException)
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -86,49 +86,9 @@ class AddTreatmentForm():
 
 			return question
 
-	# def validate(self, expectedValues):
-	# 	failures = []
-	# 	if expectedValues:
-	# 		if expectedValues['walk_sixhours'] == 'no' and not self.walk_sixhoursno_radio.get_attribute('checked'):
-	# 			failure.append('FitLvlForm: Expecting "no" to walking six or more hours a week')
-	#
+######################## Test Functions ###########################
 
-		# if len(failures) > 0:
-		# 	for failure in failures:
-		# 		print(failure)
-		# 	raise NoSuchElementException('Failed to load AddTreatmentForm')
-
-	# def read_warning(self):
-	# 	inputs = ['username', 'email', 'password', 'confirm password']
-	# 	warnings = []
-	# 	warning_els = [
-	# 		self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
-	# 	]
-	# 	for i, warning_el in enumerate(warning_els):
-	# 		text = warning_el.text
-	# 		if len(text) > 0:
-	# 			warnings.append({
-	# 				'inputName': inputs[i],
-	# 				'text': text,
-	# 			})
-	# 	if len(warnings) > 0:
-	# 		return warnings
-	# 	return None
-
-	# def interpret_warning(self, warningText):
-	# 	warningType = 'undefined'
-	# 	warningMsg = ''
-	# 	if warningText == 'Please enter a valid email address.':
-	# 		warningType = 'Invalid credentials'
-	# 		warningMsg = 'forgotPwForm: Submit form warning'
-
-	# 	return {
-	# 		'msg', warningMsg,
-	# 		'text', warningText,
-	# 		'type', warningType,
-	# 	}
-
-	def add_treatment(self, treatmentInfo, action='save'):
+	def add_treatment(self, treatmentInfo, formAction='save'):
 		questions = treatmentInfo['questions']
 		sideEffects = treatmentInfo.get('sideEffects', None)
 
@@ -138,8 +98,8 @@ class AddTreatmentForm():
 			# loadedQuestion = self.questions[loadedIndex]
 			qType = question['type']
 			if qType == 'date':
-				# Assuming datepicker already selected and visible
-				picker = datePicker.DatePicker(self.driver, self.rows[0])
+				# Container should always be 1st (latest questions are on top of page)
+				picker = datePicker.DatePicker(self.driver, self.questionConts[0])
 				dateSet = False
 				while not dateSet:
 					try:
@@ -150,7 +110,7 @@ class AddTreatmentForm():
 						time.sleep(.4)
 			elif qType == 'single' or qType == 'select-all':
 				options = question['options']
-				actions = question.get('actions', None)
+				questionActions = question.get('actions', None)
 				if qType == 'single' and len(options) > 1:
 					print('Single type question:  should not pass in more than 1 option')
 					return False
@@ -159,22 +119,33 @@ class AddTreatmentForm():
 				for key in options:
 					self.answer_question(key, options[key], loadedIndex)
 
-				if actions and actions == 'continue':
-					self.questionConts[loadedIndex].find_element_by_class_name('green-hvr-bounce-to-top').click()
+				if questionActions and questionActions == 'continue':
+					try:
+						self.questionConts[loadedIndex].find_element_by_class_name('green-hvr-bounce-to-top').click()
+					except NoSuchElementException:
+						print('question ' + str(i) + ' did not have continue button')
 			if i == len(questions) - 1:
 				print('loading after answering last question')
 			self.load()
 
 		if sideEffects:
-			# side effects & action
 			effectsForm = sideEffectsForm.SideEffectsForm(self.driver)
 			WDW(self.driver, 10).until(lambda x: effectsForm.load())
 			effectsForm.set(sideEffects)
 
-			if action == 'save':
+			if formAction == 'save':
 				effectsForm.save_treatment_button_top.click()
-			elif action == 'cancel':
+			elif formAction == 'cancel':
 				effectsForm.cancel_button.click()
+		else:
+			# Save treatment button different if no side effects component
+			# Should be only button in last question
+			if formAction == 'save':
+				button = self.questionConts[0].find_element_by_class_name('green-hvr-bounce-to-top')
+				button.click()
+			elif formAction == 'cancel':
+				button = self.driver.find_elements_by_class_name('button-intro')[0]
+				button.click()
 		return True
 
 	def answer_question(self, optionName, optionInfo, loadedIndex, subOptionName=None):

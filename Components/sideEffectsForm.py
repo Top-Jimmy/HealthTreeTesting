@@ -122,7 +122,7 @@ class SideEffectsForm():
 			xOffset = None # Every time offset doesn't work, increase by 5 and try again
 			additionalOffset = 0
 			while str(curValue) != str(value) and additionalOffset < 50:
-				print('additionalOffset: ' + str(additionalOffset))
+				# print('additionalOffset: ' + str(additionalOffset))
 				if curValue != 1: # reset to base position
 					AC(self.driver).drag_and_drop_by_offset(sliderEl, -200, 0).perform()
 

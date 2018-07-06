@@ -1,10 +1,12 @@
-from selenium.common.exceptions import (NoSuchElementException,
-		StaleElementReferenceException)
 from viewExceptions import MsgError, WarningError
 from Components import addTreatmentForm
 from Components import menu
 from Components import header
+from Components import popUpForm
 from Views import view
+
+from selenium.common.exceptions import (NoSuchElementException,
+		StaleElementReferenceException)
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -43,8 +45,7 @@ class TreatmentsOutcomesView(view.View):
 
 	def load_state(self):
 		# New user gets popup asking whether they have received treatments before (yes/no)
-		#
-		# class: custom1-add-treatment-btn (elliot's fresh form)
+		# Todo: figure out how to load popup
 
 		# Saved treatment?
 		try:
@@ -140,23 +141,6 @@ class TreatmentsOutcomesView(view.View):
 			'testIndex': index,
 		}
 
-	# def createErrorObj(self, errorText):
-	# 	errorType = 'undefined';
-	# 	errorMsg = '';
-
-	# 	if 'confirm your email address' in errorText:
-	# 		errorType = 'confirmation'
-	# 		errorMsg = 'homeView.login: Confirmation error'
-	# 	elif 'invalid username or password' in errorText:
-	# 		errorType = 'invalid credentials'
-	# 		errorMsg = 'homeView.login: Invalid Credentials error'
-
-	# 	return {
-	# 		'errorText': errorText,
-	# 		'errorType': errorType,
-	# 		'errorMsg': errorMsg,
-	# 	}
-
 	def add_treatment(self, treatmentInfo, action='submit', expectedError=None, expectedWarnings=None):
 		try:
 			# print(self.state)
@@ -166,13 +150,15 @@ class TreatmentsOutcomesView(view.View):
 				WDW(self.driver, 10).until(lambda x: self.addTreatmentForm.load())
 				if self.addTreatmentForm.add_treatment(treatmentInfo):
 					WDW(self.driver, 10).until(lambda x: self.load(expectedState='saved'))
+				else:
+					print('Failed to add treatment')
 
 			else:
 				# todo: handle fresh popup
 				pass
 			return True
 		except MsgError:
-			# Is login expected to fail?
+			# Is add treatment expected to fail?
 			errorType = self.error['errorType']
 			if expectedError and errorType.lower() == expectedError.lower():
 				return True
@@ -203,11 +189,42 @@ class TreatmentsOutcomesView(view.View):
 					return True
 		return True
 
-	# def click_link(self, link):
-	# 	if link == 'create account':
-	# 		self.createAccount_link.click()
-	# 	elif link == 'forgot password':
-	# 		self.signInForm.forgotPassword_link.click()
+	def edit(self, treatmentIndex, editType, newInfo):
+		if self.state == 'saved':
+			table = self.saved_test_containers[treatmentIndex]
+			actionRow = table.find_element_by_class_name('bottom-last-row')
+			actions = self.load_actions(actionRow)
+
+			try:
+				action = actions[editType]
+				action.click()
+			except KeyError:
+				print(str(editType) + ' Is not a valid treatment option')
+				raise KeyError('Not a valid treatment optino')
+
+			if editType == 'delete':
+				self.popUpForm = popUpForm.PopUpForm(self.driver)
+				WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+				self.popUpForm.confirm(newInfo)
+			# elif editType == 'treatments':
+				# pass
+
+			self.load()
+
+	def load_actions(self, actionRow):
+		links = actionRow.find_elements_by_tag_name('a')
+		if len(links) != 4:
+			print('Unexpected # links in treatment table: ' + str(len(links)))
+
+		return {
+			'treatments': links[0],
+			'outcomes': links[1],
+			'sideEffects': links[2],
+			'delete': links[3],
+		}
+
+
+
 
 
 
