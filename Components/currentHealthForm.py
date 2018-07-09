@@ -63,9 +63,9 @@ class CurrentHealthForm():
 			# meta validation
 			try:
 				meta_validators = expectedValues['meta']
-					for key, value in meta_validators.iteritems():
-						if key == 'num_questions' and value != len(self.questions):
-							failures.append('CurrentHealthForm Meta: Expected ' + str(value) + ' questions. Form has ' + str(len(self.questions)))
+				for key, value in meta_validators.iteritems():
+					if key == 'num_questions' and value != len(self.questions):
+						failures.append('CurrentHealthForm Meta: Expected ' + str(value) + ' questions. Form has ' + str(len(self.questions)))
 			except KeyError:
 				# No meta validation
 				pass
@@ -103,36 +103,6 @@ class CurrentHealthForm():
 			for failure in failures:
 				print(failure)
 			raise NoSuchElementException('Failed to load CurrentHealthForm')
-
-	# def read_warning(self):
-	# 	inputs = ['username', 'email', 'password', 'confirm password']
-	# 	warnings = []
-	# 	warning_els = [
-	# 		self.username_warning, self.email_warning, self.password_warning, self.confirm_password_warning,
-	# 	]
-	# 	for i, warning_el in enumerate(warning_els):
-	# 		text = warning_el.text
-	# 		if len(text) > 0:
-	# 			warnings.append({
-	# 				'inputName': inputs[i],
-	# 				'text': text,
-	# 			})
-	# 	if len(warnings) > 0:
-	# 		return warnings
-	# 	return None
-
-	# def interpret_warning(self, warningText):
-	# 	warningType = 'undefined'
-	# 	warningMsg = ''
-	# 	if warningText == 'Please enter a valid email address.':
-	# 		warningType = 'Invalid credentials'
-	# 		warningMsg = 'forgotPwForm: Submit form warning'
-
-	# 	return {
-	# 		'msg', warningMsg,
-	# 		'text', warningText,
-	# 		'type', warningType,
-	# 	}
 
 	def submit(self, questionInfo, action):
 		try:
