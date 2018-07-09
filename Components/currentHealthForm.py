@@ -63,8 +63,7 @@ class CurrentHealthForm():
 			# meta validation
 			try:
 				meta_validators = expectedValues['meta']
-				for validator in meta_validators:
-					for key, value in validator.iteritems():
+					for key, value in meta_validators.iteritems():
 						if key == 'num_questions' and value != len(self.questions):
 							failures.append('CurrentHealthForm Meta: Expected ' + str(value) + ' questions. Form has ' + str(len(self.questions)))
 			except KeyError:
