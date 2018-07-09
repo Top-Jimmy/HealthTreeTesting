@@ -62,14 +62,22 @@ class TreatmentsOutcomesView(view.View):
 	def validate(self, expectedValues):
 		failures = []
 
-		if self.state == 'fresh':
-			# todo: Validate text on 'fresh' popup
-			pass
-		else:
-			if self.add_treatments_button and self.add_treatments_button.text != 'Add Treatments':
-				failures.append('treatmentsOutcomesView: Unexpected text on add treatment button')
-			if self.state == 'saved':
-				if expectedValues:
+		if expectedValues:
+			meta = expectedValues.get('meta', None)
+			if meta:
+					for key, value in meta.iteritems():
+						if key == 'num_treatments' and value != len(self.saved_test_containers):
+							failures.append('Treatments&Outcomes Meta: Expected ' + str(value) + ' treatments. Form has ' + str(len(self.saved_test_containers)))
+						else:
+							print('correct # of treatments')
+
+			elif self.state == 'fresh':
+				# todo: Validate text on 'fresh' popup
+				pass
+			else:
+				if self.add_treatments_button and self.add_treatments_button.text != 'Add Treatments':
+					failures.append('treatmentsOutcomesView: Unexpected text on add treatment button')
+				if self.state == 'saved':
 					# Verify tests have expected data
 					expectedTests = expectedValues.get('test', expectedValues)
 					for testIndex, test in enumerate(expectedTests):
@@ -79,23 +87,14 @@ class TreatmentsOutcomesView(view.View):
 						expectedQuestions = expectedTests['questions']
 						expectedSideEffects = expectedTests['sideEffects']
 
+						# WIP
+						# for i, question in enumerate(expectedQuestions):
+						# 	expectedValue = ''
+						# 	try:
+						# 		savedValue = savedData[radiation_questions[i]]
+						# 	except KeyError:
+						# 		print('KeyError: ' + str(radiation_questions[i]))
 
-						for i, question in enumerate(expectedQuestions):
-							expectedValue = ''
-							try:
-								savedValue = savedData[radiation_questions[i]]
-							except KeyError:
-								print('KeyError: ' + str(radiation_questions[i]))
-
-				# 'startDate': startDate,
-				# 'endDate': endDate,
-				# 'type': therapyType,
-				# 'treatments': treatments,
-				# 'sideEffects': sideEffects,
-				# 'outcome': outcomeStr,
-				# 'testIndex': index,
-
-					pass
 				elif self.state == 'normal':
 					pass
 
@@ -189,7 +188,7 @@ class TreatmentsOutcomesView(view.View):
 					return True
 		return True
 
-	def edit(self, treatmentIndex, editType, newInfo):
+	def edit(self, treatmentIndex, editType, newInfo=None, popupAction='confirm'):
 		if self.state == 'saved':
 			table = self.saved_test_containers[treatmentIndex]
 			actionRow = table.find_element_by_class_name('bottom-last-row')
@@ -205,23 +204,28 @@ class TreatmentsOutcomesView(view.View):
 			if editType == 'delete':
 				self.popUpForm = popUpForm.PopUpForm(self.driver)
 				WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
-				self.popUpForm.confirm(newInfo)
+				self.popUpForm.confirm(popupAction)
 			# elif editType == 'treatments':
 				# pass
 
-			self.load()
+			self.load(newInfo)
 
 	def load_actions(self, actionRow):
 		links = actionRow.find_elements_by_tag_name('a')
-		if len(links) != 4:
-			print('Unexpected # links in treatment table: ' + str(len(links)))
+		if len(links) == 4: #
+			return {
+				'treatments': links[0],
+				'outcomes': links[1],
+				'sideEffects': links[2],
+				'delete': links[3],
+			}
+		elif len(links) == 2: # Bone Strengtheners, Antibiotics, Anti Fungals
+			return {
+				'treatments': links[0],
+				'delete': links[1],
+			}
 
-		return {
-			'treatments': links[0],
-			'outcomes': links[1],
-			'sideEffects': links[2],
-			'delete': links[3],
-		}
+
 
 
 

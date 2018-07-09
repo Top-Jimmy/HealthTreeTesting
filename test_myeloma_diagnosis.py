@@ -130,10 +130,10 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 
 		# Delete all physicians
 		formInfo['physicians'] = []
-		myelDiagView.delete('physician', 'all')
+		self.assertTrue(myelDiagView.delete('physician', 'all'))
 
 		# Reset: Delete diagnosis, reload fresh form
-		myelDiagView.delete('diagnosis', 'all')
+		self.assertTrue(myelDiagView.delete('diagnosis', 'all'))
 
 	def test_fresh_form(self):
 		'''MyelomaDiagnosis : MyelomaDiagnosis . test_fresh_form'''

@@ -170,14 +170,11 @@ class TestAddTreatment(unittest.TestCase):
     		}
     	}
 		}
-		self.assertTrue(toView.add_treatment(treatment2, 'save'))
-		toView.edit(0, 'delete', 'confirm')
-		raw_input('what order?')
 
-		# expectedValues = {
-		# 	'tests': [treatment1, treatment2],
-		# }
-		# self.assertTrue(toView.on())
+		# Reset: Delete treatments
+		self.assertTrue(toView.add_treatment(treatment2, 'save'))
+		toView.edit(1, 'delete', {'meta': {'num_treatments': 1}})
+		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
 	def test_bone_strengthener(self):
 		'''AddTreatment : AddTreatment . test_bone_strengthener'''
@@ -229,15 +226,88 @@ class TestAddTreatment(unittest.TestCase):
 			]
 		}
 		self.assertTrue(toView.add_treatment(treatment1, 'save'))
-		toView.edit(0, 'delete', 'confirm')
+		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
+		# Currently taking bone strengtheners
+		# todo:
 
-		raw_input('no treatments?')
+	def test_antibiotics(self):
+		'''AddTreatment : AddTreatment . test_antibiotics'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		toView = self.andrew.treatmentsOutcomesView
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
 
+		aboutMeView.menu.go_to('Treatments & Outcomes')
+		self.assertTrue(toView.on())
+		# Not currently taking antibiotics
+		treatment1 = {
+			'questions': [
+				{'type': 'single',
+					# Treatment Type
+					'options': {
+						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
+					},
+				},
+				{'type': 'single',
+					# Supportive Care Type
+					'options': {
+						'Antibiotics': {},
+					},
+					'actions': 'continue',
+				},
+				{'type': 'single',
+					# Antibiotics Type
+					'options': {
+						'Biaxin (clarithromycin)': {},
+					},
+				},
+				{'type': 'date', 'text': '10/2017' }, # Start date
+				{'type': 'single',
+					# Still taking antibiotics?
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'date', 'text': '02/2018' }, # Stop date
+			]
+		}
+		self.assertTrue(toView.add_treatment(treatment1, 'save'))
+		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
-
-
-
-
-
+		# Still taking antibiotics
+		treatment2 = {
+			'questions': [
+				{'type': 'single',
+					# Treatment Type
+					'options': {
+						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
+					},
+				},
+				{'type': 'single',
+					# Supportive Care Type
+					'options': {
+						'Antibiotics': {},
+					},
+					'actions': 'continue',
+				},
+				{'type': 'single',
+					# Antibiotics Type
+					'options': {
+						'Biaxin (clarithromycin)': {},
+					},
+				},
+				{'type': 'date', 'text': '10/2017' }, # Start date
+				{'type': 'single',
+					# Still taking antibiotics?
+					'options': {
+						'Yes': {},
+					},
+				}
+			]
+		}
+		self.assertTrue(toView.add_treatment(treatment2, 'save'))
+		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 

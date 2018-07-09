@@ -68,6 +68,7 @@ class MyelDiagView(view.View):
 		if self.myelomaDiagnosisSavedForm:
 			if self.myelomaDiagnosisSavedForm.add_physician(physicianInfo, action):
 				WDW(self.driver, 10).until(lambda x: self.load('saved', expectedInfo))
+				raw_input('# physicians: ' + str(len(self.myelomaDiagnosisSavedForm.physicians)))
 		elif self.myelomaDiagnosisFreshForm:
 			# todo: handle working on fresh form
 			pass

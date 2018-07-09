@@ -19,7 +19,7 @@ class MyelomaDiagnosisSavedForm():
 		self.driver = driver
 		self.load(expectedValues)
 
-	def load(self, expectedValues):
+	def load(self, expectedValues=None):
 		self.form = self.driver.find_element_by_id('diagnosis_form')
 		add_buttons = self.form.find_elements_by_class_name('custom_addDiagnoisisButton')
 
@@ -78,9 +78,9 @@ class MyelomaDiagnosisSavedForm():
 				# Physicians match expected values?
 				physician_keys = ['name', 'facility', 'city', 'state']
 				for i, physician in enumerate(self.physicians):
-					print(i)
+					# print(i)
 					for p_key in physician_keys:
-						print(p_key)
+						# print(p_key)
 						if p_key in expectedPhysicians and physician[p_key] != expectedPhysicians[p_key]:
 							failures.append('MyelDiagForm: Physican ' + str(i) + ' expected "' + p_key + '" ' + expectedPhysicians[key]
 								+ '", got ' + physician[key])
@@ -124,9 +124,6 @@ class MyelomaDiagnosisSavedForm():
 				diagnosis['actions'] = self.load_actions(table)
 
 				diagnoses.append(diagnosis)
-
-
-
 
 		return diagnoses
 
@@ -267,27 +264,28 @@ class MyelomaDiagnosisSavedForm():
 		if index == 'all':
 			length = len(dataList)
 
+		print('#: ' + str(length))
 		for i in xrange(length):
-			# print('deleting: ' + str(i))
 			if index != 'all':
 				dataList[index]['actions']['delete'].click()
 			else:
 				# Delete from last position to first (don't have to reload)
 				delIndex = len(dataList) - (i + 1)
-				raw_input('i wake up in the morning and i step outside')
-
-				deleted = False
+				print('deleting: ' + str(delIndex))
+				clicked = False
 				count = 0
-				while not deleted or count < 5:
-					try:
-						dataList[delIndex]['actions']['delete'].click()
-					except StaleElementReferenceException:
-						print('Failed to click delete button. Reloading page')
-						self.load()
+				while not clicked and count < 5:
+					# try:
+					dataList[delIndex]['actions']['delete'].click()
+					clicked = True
+					# except StaleElementReferenceException:
+					# 	print('Failed to click delete button. Reloading page')
+
+					# 	print('# physicians: ' + str(len(self.physicians)))
 					count += 1
 
-				if not deleted:
-					print('Failed to delete')
+				if not clicked:
+					print('Failed to click delete')
 					return False
 
 
@@ -297,10 +295,12 @@ class MyelomaDiagnosisSavedForm():
 			# Wait for confirm popup and loading overlay to disappear
 			WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'react-confirm-alert')))
 			WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+			raw_input('Wait')
+			self.load()
+			raw_input('#: ' + str(len(self.physicians)))
 		return True
 
 	def add_physician(self, physicianInfo, action='submit'):
-		raw_input('i said hey, whats going on?')
 		self.add_physician_button.click()
 		self.addPhysicianForm = addPhysicianForm.AddPhysicianForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.addPhysicianForm.load())

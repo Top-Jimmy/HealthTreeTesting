@@ -93,9 +93,7 @@ class TestCurrentHealth(unittest.TestCase):
 		# Should have 8 questions w/ no diagnosis saved
 		aboutMeView.menu.go_to('Current Health')
 		expectedValues = {
-			'meta': [
-				{'num_questions': 8},
-			],
+			'meta': {'num_questions': 8},
 		}
 		self.assertTrue(currentHealthView.on(expectedValues))
 
@@ -108,7 +106,7 @@ class TestCurrentHealth(unittest.TestCase):
 		# Should still have 8 questions
 		formInfo = {
 			'questions': self.defaultQuestions,
-			'meta': [{'num_questions': 8}],
+			'meta': {'num_questions': 8},
 		}
 		self.assertTrue(currentHealthView.on(formInfo))
 		self.driver.refresh()
@@ -138,7 +136,7 @@ class TestCurrentHealth(unittest.TestCase):
 		# Should not have a diagnosis saved. Therefore should get all questions
 		defaultFormInfo = {
 			'questions': self.defaultQuestions,
-			'meta': [{'num_questions': 8}],
+			'meta': {'num_questions': 8},
 		}
 		self.assertTrue(currentHealthView.on(defaultFormInfo))
 
@@ -174,7 +172,7 @@ class TestCurrentHealth(unittest.TestCase):
 		updatedQuestions[2] = kidneyConditions
 		updatedFormInfo = {
 			'questions': updatedQuestions,
-			'meta': [{'num_questions': 8}],
+			'meta': {'num_questions': 8},
 		}
 		currentHealthView.currentHealthForm.answer_question(0, heartConditions)
 		currentHealthView.currentHealthForm.answer_question(1, lungConditions)
