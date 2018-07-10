@@ -706,3 +706,11 @@ class MyelomaDiagnosisFreshForm():
 				}
 				WDW(self.driver, 5).until(lambda x: self.load(expectedValues))
 				# print('2. has # rows: ' + str(expectedRows))
+	def cancel_physician(self, physicianInfo):
+		self.set_physician(physicianInfo, 0)
+
+		self.add_physician_button.click()
+		raw_input('add physician button clicked?')
+		self.delete_button = self.form.find_element_by_class_name('delete_physician_icon')
+		self.delete_button.click()
+

@@ -265,5 +265,28 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 
 		myelDiagView.myelomaDiagnosisFreshForm.add_physician_typeahead('Dav', 'David Avigan', physicianInfo)
 
+	def test_cancel_physician(self):
+		'''MyelomaDiagnosis : MyelomaDiagnosis . test_cancel_physician'''
+		# Cancel adding a physician using the delete button
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelDiagView = self.andrew.myelomaDiagnosisView
+		physicianInfo = {
+			'name': 'David Avigan',
+			'facility': 'Beth Israel Deaconess Medical Center',
+			'city': 'Boston',
+			'state': 'Massachusetts',
+		}
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Myeloma Diagnosis')
+		self.assertTrue(myelDiagView.on('fresh'))
+
+		myelDiagView.myelomaDiagnosisFreshForm.cancel_physician(physicianInfo)
+		self.assertTrue(myelDiagView.on('fresh'))
+
 
 

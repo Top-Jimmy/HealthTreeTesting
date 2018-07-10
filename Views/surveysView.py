@@ -29,7 +29,7 @@ class SurveysView(view.View):
 			self.vaccinations_button = buttons[1]
 			self.imaging_button = buttons[2]
 			self.genetic_button = buttons[3]
-			# self.precursor_button = buttons[4]	
+			self.precursor_button = buttons[4]	
 
 			# self.validate()
 			return True
@@ -50,6 +50,14 @@ class SurveysView(view.View):
 		self.multipleMyelomaSurveyForm = multipleMyelomaSurveyForm.MultipleMyelomaSurveyForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.multipleMyelomaSurveyForm.load())
 		self.multipleMyelomaSurveyForm.submit(myelomaInfo, action)
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+	def imaging_survey(self, imagingInfo, action='cancel'):
+		self.imaging_button.click()
+		self.imagingSurveyForm = imagingSurveyForm.ImagingSurveyForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.imagingSurveyForm.load())
+		self.imagingSurveyForm.submit(imagingInfo, action)
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 

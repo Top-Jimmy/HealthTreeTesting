@@ -54,17 +54,17 @@ class TestSurveys(unittest.TestCase):
 		myelomaInfo = {
 			'fish': True,
 			'cytogenetics': True,
-			'gep': False,
-			'ngs': False,
-			'idk': False,
-			'none': False,
+			'gep': True,
+			'ngs': True,
+			'idk': True,
+			'none': True,
 			'since_fish': True,
-			'since_cytogenetics': False,
+			'since_cytogenetics': True,
 			'since_gep': True,
-			'since_ngs': False,
-			'since_idk': False,
-			'since_none': False,
-			'comment': 'New Orleans'
+			'since_ngs': True,
+			'since_idk': True,
+			'since_none': True,
+			'comment': 'New Orleans',
 		}
 
 		self.assertTrue(homeView.go())
@@ -75,3 +75,39 @@ class TestSurveys(unittest.TestCase):
 
 		self.assertTrue(surveysView.on())
 		surveysView.molecular_survey(myelomaInfo, 'cancel')
+		self.assertTrue(surveysView.on())
+
+	def test_imaging_survey(self):
+		'''Surveys : Surveys . test_imaging_survey'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		surveysView = self.andrew.surveysView
+
+		imagingInfo = {
+			'xray': True,
+			'wbldct': True,
+			'spinal': True,
+			'whole_mri': True,
+			'bonescan': True,
+			'petct': True,
+			'petmri': True,
+			'bone_density': True,
+			'since_xray': True,
+			'since_wbldct': True,
+			'since_spinal': True,
+			'since_whole_mri': True,
+			'since_bonescan': True,
+			'since_petct': True,
+			'since_petmri': True,
+			'since_bone_density': True,
+		}
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Surveys')
+
+		self.assertTrue(surveysView.on())
+		surveysView.imaging_survey(imagingInfo, 'cancel')
+		self.assertTrue(surveysView.on())

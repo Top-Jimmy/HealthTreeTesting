@@ -106,7 +106,7 @@ class TestCurrentHealth(unittest.TestCase):
 		# Should still have 8 questions
 		formInfo = {
 			'questions': self.defaultQuestions,
-			'meta': {'num_questions': 8},
+			'meta': {'num_questions': 8}, 
 		}
 		self.assertTrue(currentHealthView.on(formInfo))
 		self.driver.refresh()
@@ -117,7 +117,7 @@ class TestCurrentHealth(unittest.TestCase):
 		# Reset: Delete Diagnosis
 		self.assertTrue(fitLvlView.on())
 		fitLvlView.menu.go_to('Myeloma Diagnosis')
-		self.assertTrue(myelDiagView.on('saved'))
+		self.assertTrue(myelDiagView.on('saved', {'meta': {'num_diagnoses': 1}}))
 		myelDiagView.delete('diagnosis', 0)
 
 	def test_secondary_questions(self):
