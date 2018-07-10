@@ -19,22 +19,25 @@ class AddTreatmentForm():
 	def load(self, expectedValues=None):
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.form = self.driver.find_element_by_class_name('editroll')
-		self.questionConts = self.form.find_elements_by_class_name('new-ques-div')
 		self.load_questions()
 
 		# self.validate(expectedValues)
 		return True
 
 	def load_questions(self):
+		self.questionConts = self.form.find_elements_by_class_name('new-ques-div')
 		self.questions = []
 		for container in self.questionConts:
 			self.questions.append(self.load_question(container))
 
 	def load_question(self, container):
 			question = {}
-			radioContainers = container.find_elements_by_class_name('radio') # Div containing input and span (text)
+			radioContainers = container.find_elements_by_class_name('radio') # Div containing input and span (option text)
 			datepickerContainers = container.find_elements_by_class_name('new-datepicker')
-			if len(radioContainers) > 0: # Radio button question
+			categories = container.find_elements_by_class_name('new-treatment-dynamic') # Only for components like sideEffects or chemo options
+			if categories:
+				self.load_complex_question(categories)
+			elif len(radioContainers) > 0: # Radio button question
 
 				# Load question info. Make sure radio option isn't a subquestion
 				subquestion_filter = [] # Add index of any subquestion radio buttons to this list
@@ -86,6 +89,41 @@ class AddTreatmentForm():
 
 			return question
 
+	def load_complex_question(self, categories):
+		# For questions w/ multiple sections (sideEffects, chemotherapy drugs)
+		question = {}
+		for category in categories:
+			try:
+				categoryName = category.find_element_by_class_name('treatment-group').text.lower()
+			except NoSuchElementException:
+				categoryName = None
+
+			radioContainers = category.find_elements_by_class_name('radio')
+			options = {}
+			for radioCont in radioContainers:
+				label = radioCont.find_element_by_tag_name('label')
+				# Will have scale if option is selected
+				try:
+					scaleCont = radioCont.find_element_by_class_name('severity-indv-sld')
+					scale = scaleCont.find_element_by_class_name('rc-slider-handle')
+					scaleVal = scale.get_attribute('aria-valuenow')
+					# todo: handle reading value out of scale
+					# todo: handle setting value on scale
+				except NoSuchElementException:
+					scaleVal = None
+
+				# Save option name (key) and inputEl (value) in options dict
+				# radioCont will contain treatment scale or textarea (when visible)
+				optionName = label.text.lower()
+				optionInput = label.find_element_by_tag_name('input')
+				options[optionName] = {
+					'inputEl': optionInput,
+					'container': radioCont,
+				}
+
+			if categoryName:
+				categories[categoryName] = options
+
 ######################## Test Functions ###########################
 
 	def add_treatment(self, treatmentInfo, formAction='save'):
@@ -108,6 +146,10 @@ class AddTreatmentForm():
 					except (ElementNotVisibleException, StaleElementReferenceException, ValueError, KeyError) as e:
 						print('Failed to set date. Page probably reloaded')
 						time.sleep(.4)
+
+			elif qType == 'complex':
+				pass
+
 			elif qType == 'single' or qType == 'select-all':
 				options = question['options']
 				questionActions = question.get('actions', None)
@@ -124,6 +166,7 @@ class AddTreatmentForm():
 						self.questionConts[loadedIndex].find_element_by_class_name('green-hvr-bounce-to-top').click()
 					except NoSuchElementException:
 						print('question ' + str(i) + ' did not have continue button')
+
 			if i == len(questions) - 1:
 				print('loading after answering last question')
 			self.load()

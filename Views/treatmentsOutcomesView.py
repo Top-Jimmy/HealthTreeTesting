@@ -35,12 +35,10 @@ class TreatmentsOutcomesView(view.View):
 			else:
 				buttonCont = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
 				self.add_treatments_button = buttonCont.find_elements_by_tag_name('button')[0]
-				if self.state == 'saved':
-					self.saved_test_containers = self.driver.find_elements_by_class_name('custom-seperator')
+				self.saved_test_containers = self.driver.find_elements_by_class_name('custom-seperator')
 			return self.validate(expectedValues)
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
-			print('found error')
 			return False
 
 	def load_state(self):
@@ -208,7 +206,7 @@ class TreatmentsOutcomesView(view.View):
 			# elif editType == 'treatments':
 				# pass
 
-			self.load(newInfo)
+			WDW(self.driver, 10).until(lambda x: self.load(newInfo))
 
 	def load_actions(self, actionRow):
 		links = actionRow.find_elements_by_tag_name('a')

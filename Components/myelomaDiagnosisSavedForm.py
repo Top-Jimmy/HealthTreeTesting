@@ -44,12 +44,11 @@ class MyelomaDiagnosisSavedForm():
 			# meta validation
 			try:
 				meta_validators = expectedValues['meta']
-				for validator in meta_validators:
-					for key, value in validator.iteritems():
-						if key == 'num_diagnoses' and value != len(self.diagnoses):
-							failures.append('MyelDiagSavedForm Meta: Expected ' + str(value) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
-						elif key == 'num_physicians' and value != len(self.physicians):
-							failures.append('MyelomaDiagnosisSavedForm Meta: Expected ' + str(value) + ' physicians. Form has ' + str(len(self.physicians)))
+				for key, value in meta_validators.iteritems():
+					if key == 'num_diagnoses' and value != len(self.diagnoses):
+						failures.append('MyelDiagSavedForm Meta: Expected ' + str(value) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
+					elif key == 'num_physicians' and value != len(self.physicians):
+						failures.append('MyelomaDiagnosisSavedForm Meta: Expected ' + str(value) + ' physicians. Form has ' + str(len(self.physicians)))
 			except KeyError:
 				pass
 
