@@ -24,6 +24,7 @@ class FullHealthView(view.View):
 			if expectedTab and expectedTab != self.selectedTab:
 				print('Full Health Profile: Expected state: "' + expectedTab + '", got state: "' + self.selectedTab + '"')
 			else: 
+				print(expectedTab)
 				if expectedTab == 'My Myeloma':
 					self.fullHealthMyelomaForm = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
 				elif expectedTab == 'Demographics':

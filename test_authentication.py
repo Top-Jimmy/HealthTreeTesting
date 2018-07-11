@@ -35,6 +35,12 @@ class TestCreateAccount(unittest.TestCase):
 	def test_success(self):
 		'''Authentication : CreateAcct . test_success'''
 		pass
+	def test_create_account(self):
+		'''Authentication : CreateAcct . test_create_account'''
+		homeView = self.andrew.homeView
+		createAcctView = self.andrew.createAcctView
+
+		self.assertTrue(createAcctView.go())
 
 
 class TestForgotPassword(unittest.TestCase):

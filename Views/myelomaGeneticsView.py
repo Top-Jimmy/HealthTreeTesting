@@ -8,6 +8,7 @@ from Components import gepTestForm
 from Components import ngsTestForm
 from Components import editHighRiskForm
 from Components import popUpForm
+from Components import uploadFileForm
 from Views import view
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
@@ -22,26 +23,32 @@ class MyelomaGeneticsView(view.View):
 			self.header = header.AuthHeader(self.driver)
 
 			# When user has already filled out info
+			raw_input('loading...')
 			addDiagnosisButtons = self.driver.find_elements_by_class_name('addDiagnoisisButton')
 			self.add_fish_button = addDiagnosisButtons[0]
 			self.add_gep_button = addDiagnosisButtons[1]
 			self.add_ngs_button = addDiagnosisButtons[2]
 
-			self.edit_button = self.driver.find_element_by_class_name('editdetetegenetic')
+			raw_input('buttons loaded')
+
+			buttons = self.driver.find_elements_by_tag_name('button')
+			self.upload_file_button = buttons[2]
+
+			raw_input('file button loaded')
 
 			cont = self.driver.find_element_by_class_name('genetics-btn')
 			self.continue_button = cont.find_element_by_tag_name('button')
 
-			self.tables = self.driver.find_elements_by_class_name('marg-btm0')
-			raw_input('all but tables loaded')
-			self.load_fish_table()
-			raw_input('fish table loaded')
-			self.load_gep_table()
-			raw_input('gep table loaded')
-			self.load_ngs_table()
-			raw_input('ngs table loaded')
-			self.load_highRisk_table()
-			raw_input('high risk table loaded')
+			# self.tables = self.driver.find_elements_by_class_name('marg-btm0')
+			# raw_input('all but tables loaded')
+			# self.load_fish_table()
+			# raw_input('fish table loaded')
+			# self.load_gep_table()
+			# raw_input('gep table loaded')
+			# self.load_ngs_table()
+			# raw_input('ngs table loaded')
+			# self.load_highRisk_table()
+			# raw_input('high risk table loaded')
 
 
 			# When user hasn't filled anything out
@@ -321,6 +328,16 @@ class MyelomaGeneticsView(view.View):
 		self.editHighRiskForm.submit(riskInfo, action)
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+	def upload_file(self, action='cancel'):
+		self.upload_file_button.click()
+		self.uploadFileForm = uploadFileForm.UploadFileForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.uploadFileForm.load())
+		self.uploadFileForm.confirm(action)
+		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+
 
 
 

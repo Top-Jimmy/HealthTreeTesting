@@ -12,14 +12,17 @@ class PopUpForm():
 		buttons = self.container.find_elements_by_tag_name('button')
 
 		self.confirm_button = buttons[0]
-		self.cancel_button = buttons[1]
+		if len(buttons) > 1:
+			self.cancel_button = buttons[1]
+		else:
+			self.cancel_button = None
 		return self.validate()
 
 	def validate(self):
 		failures = []
 		if self.confirm_button.text != 'Confirm':
 			failures.append('PopUpForm: Unexpected confirm button text: "' + self.confirm_button.text + '"')
-		if self.cancel_button.text != 'Cancel':
+		if self.cancel_button and self.cancel_button.text != 'Cancel':
 			failures.append('PopUpForm: Unexpected cancel button text: "' + self.cancel_button.text + '"')
 		if len(failures) > 0:
 			for failure in failures:

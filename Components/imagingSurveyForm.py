@@ -51,8 +51,8 @@ class ImagingSurveyForm():
 			self.wbldct_input.click()
 
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
-		if imagingInfo['spinal'] != self.since_spinal_input.is_selected():
-			self.since_spinal_input.click()
+		if imagingInfo['spinal'] != self.spinal_input.is_selected():
+			self.spinal_input.click()
 
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		if imagingInfo['whole_mri'] != self.whole_mri_input.is_selected():
