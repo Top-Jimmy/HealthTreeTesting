@@ -103,6 +103,9 @@ class DatePicker():
   def parse_date(self, dateStr, dateType):
     # Given dateStr "mm/yyyy", parse and return month or year
     divider = dateStr.index('/')
+    # divider should always be 2
+    if divider != 2:
+      print('Trying to set invalid date: ' + str(dateStr))
     if dateType == 'month':
       months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
       return months[int(dateStr[:divider]) - 1]

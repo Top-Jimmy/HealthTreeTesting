@@ -35,7 +35,7 @@ class TreatmentsOutcomesView(view.View):
 			else:
 				buttonCont = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
 				self.add_treatments_button = buttonCont.find_elements_by_tag_name('button')[0]
-				self.saved_test_containers = self.driver.find_elements_by_class_name('custom-seperator')
+				self.saved_tests = self.driver.find_elements_by_class_name('table_container')
 			return self.validate(expectedValues)
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
@@ -103,9 +103,71 @@ class TreatmentsOutcomesView(view.View):
 		else:
 			return True
 
-	def read_test(self, index):
-		cont = self.saved_test_containers[testIndex]
-		rows = cont.find_elements_by_class_name('data-row')
+	def read_test(self, testIndex):
+		# {
+
+		# }
+
+		testData = {}
+		treatments = []
+		sideEffects = {}
+		actions = {}
+
+		cont = self.saved_tests[testIndex]
+		rows = cont.find_elements_by_tag_name('tr')
+		testKeys = [] # ['start date', 'end date', 'therapy type', 'treatments', 'side effects']
+		for rowIndex, row in enumerate(rows):
+
+
+			if rowIndex == 0: # Header values
+				tds = row.find_elements_by_tag_name('td')
+				for td in tds:
+					testKeys.append(td.text.lower())
+
+			elif rowIndex == 1: # Test values
+				tds = row.find_elements_by_tag_name('td')
+				for tdIndex, td in enumerate(tds):
+					key = testKeys[i]
+					if i == 3: # Treatments List
+						items = td.find_elements_by_tag_name('li')
+						for treatment in items:
+							treatmentText = treatment.text.lower()
+							treatments.append(treatmentText)
+						testData[key] = treatments
+
+					elif i == 4:  # SideEffects List
+						items = td.find_elements_by_tag_name('li')
+						for sideEffect in items:
+							name = td.find_element_by_tag_name('span').text.lower()
+							intensity = td.find_element_by_tag_name('div').text.lower()
+
+							sideEffects[name] = intensity
+						testData[key] = sideEffects
+
+					else: # Start date, end date, therapy type
+						testData[key] = td.text.lower()
+
+			elif rowIndex == 2: # Outcome
+				td = row.find_elements_by_tag_name('td')[1] # text is in 2nd td
+				testData['outcome'] = td.text.lower()
+
+			elif rowIndex == 3: # Actions
+				anchors = row.find_elements_by_tag_name('a')
+				if len(anchors) == 4:
+					actions['treatments'] = anchors[0]
+					actions['outcomes'] = anchors[1]
+					actions['sideEffects'] = anchors[2]
+					actions['delete'] = anchors[3]
+				elif len(anchors == 2):
+					pass
+
+
+		return {
+			'actions': actions,
+			'testData': testData,
+		}
+
+
 		divs = rows[0].find_elements_by_tag_name('div')
 		uls = rows[0].find_elements_by_tag_name('ul')
 
@@ -138,7 +200,7 @@ class TreatmentsOutcomesView(view.View):
 			'testIndex': index,
 		}
 
-	def add_treatment(self, treatmentInfo, action='submit', expectedError=None, expectedWarnings=None):
+	def add_treatment(self, treatmentInfo, expectedError=None, expectedWarnings=None):
 		try:
 			# print(self.state)
 			if self.state == 'normal' or self.state == 'saved':
@@ -197,7 +259,7 @@ class TreatmentsOutcomesView(view.View):
 				action.click()
 			except KeyError:
 				print(str(editType) + ' Is not a valid treatment option')
-				raise KeyError('Not a valid treatment optino')
+				raise KeyError('Not a valid treatment option')
 
 			if editType == 'delete':
 				self.popUpForm = popUpForm.PopUpForm(self.driver)
