@@ -15,79 +15,62 @@ class FullHealthMyelomaForm():
 	def load(self):
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
-		self.sections = self.form.find_elements_by_class_name('after-head-row')
-	# 	self.load_sections()
+		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
+		self.load_sections()
+		raw_input('info: ' + str(self.sections))
 
-	# def load_sections(self):
-	# 	self.sections = []
-	# 	for section in self.sections:
-	# 		questionConts = section.find_elements_by_class_name('question')
-	# 		questionConts = questionConts[::2] # Every question has an empty question div after it
-	# 		for questionCont in questionConts:
-	# 			self.sections.append(self.load_question(questionCont))
+		# self.sections = [
+		# 	{'1': [
+		# 		{'options': {
+		# 			'yes': inputEl,
+		# 			'no': inputEl,
+		# 		}},
+		# 		{'date': inputEl},
+		# 	]},
+		# ]
 
-	# def load_question(self, questionCont):
-	# 	question = {}
-	# 	radioContainers = section.find_elements_by_tag_name('label') # Contains label and input
-	# 	# Load question info. Make sure radio option isn't a subquestion
-	# 	subquestion_filter = []
-	# 	for i, container in radioContainers:
-	# 		if i == 0:
-	# 			# 1st label is question text
-	# 			questionName = container.text
-	# 		else:
-	# 			print('loading question: ' + str(i))
-	# 			if i not in subquestion_filter:
-	# 				raw_input('test moved into non-subquestion filter')
-	# 				inputs = container.find_element_by_tag_name('input')
-	# 				raw_input('inputs loaded')
-	# 				spans = container.find_element_by_tag_name('span')
-	# 				raw_input('inputs and spans loaded')
+		# Get input for 1st section, 2st row, second question 'yes'
+		# self.sections[0][1]['2']['options']['yes']
 
-	# 				#Test Validation
-	# 				if len(inputs) == 0:
-	# 					print('FullHealthMyelomaForm: radio option has no inputElements?')
-	# 				elif len(spans) == 0:
-	# 					print('FullHealthMyelomaForm: radio option has no spanElements?')
+	def load_sections(self):
+		self.sections = []
+		for section in self.sectionConts:
+			self.rows = section.find_elements_by_class_name('row')
+			for row in self.rows:
+				# Row contains at least 1 question, might also have 1 or more subquestion
+				self.sections.append(self.load_questions(row))
 
-	# 				# Get option name.
-	# 				optionName = spans[0].text
-	# 				print(spans[0].text)
-	# 				# Check for textarea
-	# 				try:
-	# 					textareaEl = container.find_element_by_tag_name('textarea')
-	# 				except NoSuchElementException:
-	# 					textareaEl = None
+	def load_questions(self, row):
+		rowInfo = {} # {questionIndex: [{questionInfo1}, {questionInfo2}]}
+		questionList = []
+		questionIndex = None
+		questionConts = row.find_elements_by_class_name('cls_survey_question')
 
-	# 				subquestions = None
-	# 				if len(inputs) > 1:
-	# 					raw_input('test moved into subquestions')
-	# 					for inputIndex, inputEl in enumerate(inputs):
-	# 						if inputIndex > 0:
+		for i, question in enumerate(questionConts):
+			questionInfo = {}
+			if i == 0: # Load question index (use as key for individual questions w/in each row)
+				label = question.find_element_by_tag_name('label')
+				questionIndex = label.text[:1]
+				raw_input('questionIndex: ' + str(questionIndex))
+			options = {}
+			radioContainers = question.find_elements_by_class_name('dynamic-radio') # Div containing input and span (text)
+			dateContainer = None
+			if len(radioContainers) == 0: # No radio buttons? Check for date input
+				dateInput = question.find_element_by_tag_name('input')
+				questionInfo['date'] = dateInput
+			for radioCont in radioContainers:
+				inputs = radioCont.find_elements_by_tag_name('input')
+				spans = radioCont.find_elements_by_tag_name('span')
+				optionName = spans[0].text
+				options[optionName] = inputs[0]
 
-	# 							# Add subquestion to filter list
-	# 							subquestion_filter.append(i + inputIndex)
+			if options:
+				questionInfo['options'] = options
 
-	# 							# Load subquestion info
-	# 							subquestions = self.load_question(radioContainers[i])
+			questionList.append(questionInfo)
 
-	# 				if textareaEl or subquestions:
-	# 					question[optionName] = {
-	# 						'element': inputs[0],
-	# 						'textareaEl': textareaEl,
-	# 						'subquestions': subquestions,
-	# 					}
-	# 				else:
-	# 					question[optionName] = inputs[0]
-	# 	elif len(datepickerContainers) > 0: # Datepicker
-	# 		question['datepicker'] = datepickerContainers[0].find_element_by_tag_name('input')
+		rowInfo[questionIndex] = questionList
 
-	# 	return question
+		return rowInfo
 
-		#Find sections
-		#Within sections find questions
-		#Within questions, filter out every other question
-			# questionDivs = container.find_elements_by_class_name('')
-			# questions = questionDivs[::2]
-
-		#
+		

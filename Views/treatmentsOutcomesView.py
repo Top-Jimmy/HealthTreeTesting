@@ -3,6 +3,7 @@ from Components import addTreatmentForm
 from Components import menu
 from Components import header
 from Components import popUpForm
+from Components import newAccountPopUpForm
 from Views import view
 
 from selenium.common.exceptions import (NoSuchElementException,
@@ -29,6 +30,7 @@ class TreatmentsOutcomesView(view.View):
 				print('Wrong state! Expected ' + str(expectedState) + ', got ' + str(self.state))
 
 			if self.state == 'fresh':
+				self.newAccountPopUpForm = newAccountPopUpForm.NewAccoutPopUpForm(self.driver)
 				# load new popup
 				# todo: need new account to get this state
 				pass

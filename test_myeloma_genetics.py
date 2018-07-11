@@ -180,6 +180,24 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		self.assertTrue(myelomaGeneticsView.on())
 
+	def test_upload_file(self):
+		'''MyelomaGenetics : MyelomaGenetics . test_upload_file'''
+		#Doesn't actually upload a file, loads upload file form
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelomaGeneticsView = self.andrew.myelomaGeneticsView
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Myeloma Genetics')
+		self.assertTrue(myelomaGeneticsView.on())
+
+		myelomaGeneticsView.upload_file('cancel')
+
+		self.assertTrue(myelomaGeneticsView.on())
+
 
 
 
