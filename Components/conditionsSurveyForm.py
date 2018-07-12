@@ -1,6 +1,9 @@
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class ConditionsSurveyForm():
 
@@ -8,6 +11,7 @@ class ConditionsSurveyForm():
 		self.driver = driver
 
 	def load(self):
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		form = self.driver.find_elements_by_tag_name('form')[-2]
 		buttons = form.find_elements_by_tag_name('button')
 		inputs = form.find_elements_by_tag_name('input')
@@ -21,14 +25,13 @@ class ConditionsSurveyForm():
 		return True
 
 	def submit(self, conditionsInfo, action='cancel'):
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		if conditionsInfo['participate'] == 'yes':
 			self.study_yes_input.click()
 		else:
 			self.study_no_input.click()
 
-		# WDW(self.driver, 10).until(lambda x: self.conditionsSurveyForm.load())
-		raw_input('is info there?')
-
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		if action == 'save':
 			self.save_button.click()
 		else:

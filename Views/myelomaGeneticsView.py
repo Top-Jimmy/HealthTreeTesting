@@ -23,32 +23,22 @@ class MyelomaGeneticsView(view.View):
 			self.header = header.AuthHeader(self.driver)
 
 			# When user has already filled out info
-			raw_input('loading...')
 			addDiagnosisButtons = self.driver.find_elements_by_class_name('addDiagnoisisButton')
 			self.add_fish_button = addDiagnosisButtons[0]
 			self.add_gep_button = addDiagnosisButtons[1]
 			self.add_ngs_button = addDiagnosisButtons[2]
 
-			raw_input('buttons loaded')
-
 			buttons = self.driver.find_elements_by_tag_name('button')
 			self.upload_file_button = buttons[2]
-
-			raw_input('file button loaded')
 
 			cont = self.driver.find_element_by_class_name('genetics-btn')
 			self.continue_button = cont.find_element_by_tag_name('button')
 
-			# self.tables = self.driver.find_elements_by_class_name('marg-btm0')
-			# raw_input('all but tables loaded')
+			# self.tables = self.driver.find_elements_by_class_name('table_container')
 			# self.load_fish_table()
-			# raw_input('fish table loaded')
 			# self.load_gep_table()
-			# raw_input('gep table loaded')
 			# self.load_ngs_table()
-			# raw_input('ngs table loaded')
 			# self.load_highRisk_table()
-			# raw_input('high risk table loaded')
 
 
 			# When user hasn't filled anything out
@@ -61,39 +51,33 @@ class MyelomaGeneticsView(view.View):
 			return False
 
 	def load_fish_table(self):
-		fishTable = self.tables[0]
-		rows = fishTable.find_elements_by_class_name('row')
+		self.fish_tables = []
+		done = False
+		count = 0
+		while not done:
+			tableId = 'fish' + str(count) + '_table'
+			try:
+				self.fish_tables.append(self.driver.find_element_by_id(tableId))
+			except NoSuchElementException:
+				# No more tables
+				done = True
+			count += 1
 
-		values = [] # add text from each header row to values list
-		self.fish_tests = [] # add text from test rows to dictionary (use values as keys)
-		for i, row in enumerate(rows):
-			# print('row ' + str(i))
+
+		self.fish_tests = []
+		for i, fishTable in enumerate(self.fish_tables):
+			rows = fishTable.find_elements_by_class_name('table_row')
 			labResult = {}
-			divs = row.find_elements_by_tag_name('div')
-			# last 2 divs are containers for actions. Remove one of them
-			if i > 0:
-				del divs[-1]
-			# print('# fish divs: ' + str(len(divs)))
-			for divIndex, div in enumerate(divs):
-				text = div.text
-				# find divs in row
-				# loop through divs
-				if i == 0:
-					# Collect column headers
-					values.append(div.text)
-				else:
-					# print(str(divIndex))
-					key = values[divIndex]
-					if key.lower() == 'actions':
-						actions = []
-						buttons = row.find_elements_by_tag_name('button')
-						actions.append(buttons[0])
-						actions.append(buttons[1])
-						labResult[key] = actions
-					else:
-						labResult[key] = text
-			if labResult:
-				self.fish_tests.append(labResult)
+			labInfo = [] # add text from each header row to values list
+			for rowIndex, row in enumerate(rows):
+				if i == 1: # contains the form data
+					divs = row.find_elements_by_tag_name('div')
+					for divIndex, div in enumerate(divs):
+						labInfo.append(div.text)
+				if i == 2: # row contains the actions
+					labResult['edit'] = row.find_element_by_class_name('edit-treatment-icon')
+					labResult['delete'] = row.find_element_by_class_name('delete-treatment-icon')
+
 
 	def load_gep_table(self):
 		gepTable = self.tables[1]

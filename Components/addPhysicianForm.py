@@ -20,7 +20,7 @@ class AddPhysicianForm():
 		self.cancel_button = buttons[2]
 
 		inputs = self.cont.find_elements_by_tag_name('input')
-		self.name_input = self.cont.find_element_by_id('Physician_name')
+		self.name_input = self.cont.find_element_by_id('physician_diagnostician')
 		self.facility_input = inputs[2]
 		self.city_input = inputs[3]
 
