@@ -36,7 +36,7 @@ class TestSettings(unittest.TestCase):
 		settingsView = self.elliot.settingsView
 
 		usernameInfo = {
-			'new_username': 'Elliot'
+			'new_username': 'elliot'
 		}
 
 		passwordInfo = {
@@ -47,7 +47,7 @@ class TestSettings(unittest.TestCase):
 		}
 
 		otherusernameInfo = {
-			'new_username': 'Elliot1'
+			'new_username': 'elliot1'
 		}
 
 		otherpasswordInfo = {

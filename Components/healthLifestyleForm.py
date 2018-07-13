@@ -3,30 +3,22 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 
-class HealthHistForm():
+class HealthLifestyleForm():
 
-	def __init__(self, driver, expectedValues=None):
+	def __init__(self, driver):
 		self.driver = driver
-		self.load(expectedValues)
+		self.load()
 
-	def load(self, expectedValues):
+	def load(self):
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
+
 		self.load_sections()
 		self.save_button = self.form.find_element_by_tag_name('button')
+		# print('sections: ' + str(self.sections))
 
-		# self.sections = [
-		# 	{'1': [
-		# 		{'options': {
-		# 			'yes': inputEl,
-		# 			'no': inputEl,
-		# 		}},
-		# 		{'date': inputEl},
-		# 	]},
-		# ]
-
-		# Get input for 1st section, 2st row, second question 'yes'
-		# self.sections[0][1]['2']['options']['yes']
+		# self.validate()
+		return True
 
 	def load_sections(self):
 		self.sections = []
@@ -37,34 +29,44 @@ class HealthHistForm():
 				self.sections.append(self.load_questions(row))
 
 	def load_questions(self, row):
-		rowInfo = {} # {questionIndex: [{questionInfo1}, {questionInfo2}]}
+		rowInfo = {}
 		questionList = []
 		questionIndex = None
 		questionConts = row.find_elements_by_class_name('cls_survey_question')
-
 		for i, question in enumerate(questionConts):
 			questionInfo = {}
-			if i == 0: # Load question index (use as key for individual questions w/in each row)
-				label = question.find_element_by_tag_name('label')
-				index = label.text.find('.')
-				questionIndex = label.text[:index]
-				# raw_input('questionIndex: ' + str(questionIndex))
+			if i == 0: # Grab the question number for the index
+				labels = question.find_elements_by_tag_name('label')
+				index = labels[0].text.find('.')
+				questionIndex = labels[0].text[:index]
 			options = {}
-			radioContainers = question.find_elements_by_class_name('dynamic-radio') # Div containing input and span (text)
-			if len(radioContainers) == 0: # No radio buttons? Check for date input
+			radioContainers = question.find_elements_by_class_name('dynamic-radio') # Container with the text (span) and input
+			dropdownContainers = question.find_elements_by_class_name('Select-control')
+			if dropdownContainers:
+				questionInfo['dropdown'] = dropdownContainers[0]
+			if radioContainers:
+				for radioCont in radioContainers:
+					inputs = radioCont.find_elements_by_tag_name('input')
+					spans = radioCont.find_elements_by_tag_name('span')
+					optionName = spans[0].text
+					options[optionName] = inputs[0]
+
+			if len(radioContainers) == 0 and len(dropdownContainers) == 0: # Non-dropdown inputs
 				dataInput = question.find_element_by_tag_name('input')
 				questionInfo['data'] = dataInput
-			for radioCont in radioContainers:
-				inputs = radioCont.find_elements_by_tag_name('input')
-				spans = radioCont.find_elements_by_tag_name('span')
-				optionName = spans[0].text
-				options[optionName] = inputs[0]
 
 			if options:
 				questionInfo['options'] = options
 
 			questionList.append(questionInfo)
 
+			if questionIndex == None:
+				print('i: ' + str(i))
+
 		rowInfo[questionIndex] = questionList
 
 		return rowInfo
+
+
+
+	

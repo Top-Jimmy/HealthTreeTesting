@@ -35,10 +35,10 @@ class MyelomaGeneticsView(view.View):
 			self.continue_button = cont.find_element_by_tag_name('button')
 
 			# self.tables = self.driver.find_elements_by_class_name('table_container')
-			# self.load_fish_table()
-			# self.load_gep_table()
-			# self.load_ngs_table()
-			# self.load_highRisk_table()
+			self.load_fish_table()
+			self.load_gep_table()
+			self.load_ngs_table()
+			self.load_highRisk_table()
 
 
 			# When user hasn't filled anything out
@@ -51,141 +51,111 @@ class MyelomaGeneticsView(view.View):
 			return False
 
 	def load_fish_table(self):
-		self.fish_tables = []
-		done = False
-		count = 0
-		while not done:
-			tableId = 'fish' + str(count) + '_table'
-			try:
-				self.fish_tables.append(self.driver.find_element_by_id(tableId))
-			except NoSuchElementException:
-				# No more tables
-				done = True
-			count += 1
-
-
 		self.fish_tests = []
-		for i, fishTable in enumerate(self.fish_tables):
-			rows = fishTable.find_elements_by_class_name('table_row')
+		fishTable = self.driver.find_element_by_id('fish_table')
+		rows = fishTable.find_elements_by_class_name('table_row')
+		labInfo = [] # add text from each header row to values list
+		for rowIndex, row in enumerate(rows):
 			labResult = {}
-			labInfo = [] # add text from each header row to values list
-			for rowIndex, row in enumerate(rows):
-				if i == 1: # contains the form data
-					divs = row.find_elements_by_tag_name('div')
-					for divIndex, div in enumerate(divs):
-						labInfo.append(div.text)
-				if i == 2: # row contains the actions
-					labResult['edit'] = row.find_element_by_class_name('edit-treatment-icon')
-					labResult['delete'] = row.find_element_by_class_name('delete-treatment-icon')
+			divs = row.find_elements_by_tag_name('div')
+			tds = row.find_elements_by_tag_name('td')
+			# for divIndex, div in enumerate(divs):
+			for tdIndex, td in enumerate(tds):
+				if rowIndex == 0:
+					labInfo.append(td.text.lower())
+				else: 
+					key = labInfo[tdIndex]
+					if key.lower() == 'actions':
+						actions = []
+						self.edit_button = row.find_element_by_class_name('edit-treatment-icon')
+						self.delete_button = row.find_element_by_class_name('delete-treatment-icon')
+						actions.append(self.edit_button)
+						actions.append(self.delete_button)
+						labResult[key] = actions
+					else:
+						text = td.text
+						labResult[key] = text
+			
+			self.fish_tests.append(labResult)
+
 
 
 	def load_gep_table(self):
-		gepTable = self.tables[1]
-		rows = gepTable.find_elements_by_class_name('row')
-
-		values = [] # add text from each header row to values list
-		self.gep_tests = [] # add text from test rows to dictionary (use values as keys)
-		for i, row in enumerate(rows):
+		self.gep_tests = []
+		gepTable = self.driver.find_element_by_id('gep_table')
+		rows = gepTable.find_elements_by_class_name('table_row')
+		labInfo = [] # add text from each header row to values list
+		for rowIndex, row in enumerate(rows):
 			labResult = {}
 			divs = row.find_elements_by_tag_name('div')
-			# last 2 divs are containers for actions. Remove one of them
-			# print('row ' + str(i))
-			# print('# divs: ' + str(len(divs)))
-			if i > 0:
-				del divs[-1]
-			for divIndex, div in enumerate(divs):
-				text = div.text
-				# find divs in row
-				# loop through divs
-				if i == 0:
-					# Collect column headers
-					values.append(div.text)
-				else:
-					key = values[divIndex]
-						# No div for 'actions' in header.
+			tds = row.find_elements_by_tag_name('td')
+			# for divIndex, div in enumerate(divs):
+			for tdIndex, td in enumerate(tds):
+				if rowIndex == 0:
+					labInfo.append(td.text.lower())
+				else: 
+					key = labInfo[tdIndex]
 					if key.lower() == 'actions':
 						actions = []
-						buttons = row.find_elements_by_tag_name('button')
-						actions.append(buttons[0])
-						actions.append(buttons[1])
-						labResult['actions'] = actions
+						self.edit_button = row.find_element_by_class_name('edit-treatment-icon')
+						self.delete_button = row.find_element_by_class_name('delete-treatment-icon')
+						actions.append(self.edit_button)
+						actions.append(self.delete_button)
+						labResult[key] = actions
 					else:
+						text = td.text
 						labResult[key] = text
-			if labResult:
-				self.gep_tests.append(labResult)
+			
+			self.gep_tests.append(labResult)
 
 	def load_ngs_table(self):
-		ngsTable = self.tables[2]
-		rows = ngsTable.find_elements_by_class_name('row')
-
-		values = [] # add text from each header row to values list
-		self.ngs_tests = [] # add text from test rows to dictionary (use values as keys)
-		for i, row in enumerate(rows):
+		self.ngs_tests = []
+		ngsTable = self.driver.find_element_by_id('ngs_table')
+		rows = ngsTable.find_elements_by_class_name('table_row')
+		labInfo = [] # add text from each header row to values list
+		for rowIndex, row in enumerate(rows):
 			labResult = {}
 			divs = row.find_elements_by_tag_name('div')
-			# last 2 divs are containers for actions. Remove one of them
-			if i > 0:
-				del divs[-1]
-			# print('# divs in ngs table: ' + str(len(divs)))
-			for divIndex, div in enumerate(divs):
-				text = div.text
-				if i == 0:
-					# Collect text from column headers
-					values.append(div.text)
-				else:
-					key = values[divIndex]
+			tds = row.find_elements_by_tag_name('td')
+			# for divIndex, div in enumerate(divs):
+			for tdIndex, td in enumerate(tds):
+				if rowIndex == 0:
+					labInfo.append(td.text.lower())
+				else: 
+					key = labInfo[tdIndex]
 					if key.lower() == 'actions':
 						actions = []
-						buttons = row.find_elements_by_tag_name('button')
-						actions.append(buttons[0])
-						actions.append(buttons[1])
+						self.edit_button = row.find_element_by_class_name('edit-treatment-icon')
+						self.delete_button = row.find_element_by_class_name('delete-treatment-icon')
+						actions.append(self.edit_button)
+						actions.append(self.delete_button)
 						labResult[key] = actions
-					elif key != '':
+					else:
+						text = td.text
 						labResult[key] = text
-			if labResult:
-				self.ngs_tests.append(labResult)
+			
+			self.ngs_tests.append(labResult)
 
 	def load_highRisk_table(self):
-		highRiskTable = self.tables[3]
-		self.edit_high_risk_button = highRiskTable.find_element_by_tag_name('button')
-		rows = highRiskTable.find_elements_by_class_name('row')
-
-		values = []
-		self.highRisk_tests = []
+		highRiskTable = self.driver.find_element_by_id('yesno_table')
+		rows = highRiskTable.find_elements_by_class_name('table_row')
+		labInfo = []
+		self.highRisk_tests = {}
+		self.highRisk_tests['edit'] = highRiskTable.find_element_by_class_name('edit-treatment-icon')
+		# {'High Beta-2 Microglobulin': 'Yes',
+		# 	'High Lactate Dehydrogenase': 'I dont know',
+		# 	'Low albumin': 'I dont know',
+		# 	'edit': webElement,
+		# }
 		for i, row in enumerate(rows):
-			labResult = {}
-			divs = row.find_elements_by_tag_name('div')
-			# print('High risk: row ' + str(i) + ' has ' + str(len(divs)) + ' divs')
-			for divIndex, div in enumerate(divs):
-
-				text = div.text
-				if i == 0:
-					values.append(div.text)
-				else:
-					# Only grab 'test' and 'answer'
-					if divIndex < 2:
-						key = values[divIndex]
-						labResult[key] = text
-					# elif i == 1 and divIndex == 2:
-					# 	# Only 1st test row has action button
-					# 	self.edit_high_risk_button = row.find_element_by_tag_name('button')
-						
-				
-
-					
-				
-
-				# if i == 0:
-				# 	values.append(div.text)
-				# else:
-				# 	key = values[i]
-
-				# 	if key == 'actions':
-				# 		if i == 1:
-				# 			raw_input('heyo')
-				# 			self.high_risk_edit_button = row.find_element_by_tag_name('button')
-			if labResult:
-				self.highRisk_tests.append(labResult)
+			if i > 0 and i < 4:
+				tds = row.find_elements_by_tag_name('td')
+				for tdIndex, td in enumerate(tds):
+					if tdIndex == 0:
+						name = td.text
+					else:
+						value = td.text
+				self.highRisk_tests[name] = value
 
 	def validate(self):
 		failures = []
@@ -267,9 +237,9 @@ class MyelomaGeneticsView(view.View):
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def edit_test(self, testType, testIndex, testValues, action='delete', popUpAction='confirm'):
-		test = ''
+		test = self.get_test(testType, testIndex)
+
 		if testType == 'fish':
-			test = self.fish_tests[testIndex]
 			if action == 'edit':
 				test['actions'][0].click()
 			else:
@@ -277,11 +247,8 @@ class MyelomaGeneticsView(view.View):
 				self.popUpForm = popUpForm.PopUpForm(self.driver)
 				WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
 				self.popUpForm.confirm(popUpAction)
-			# Load edit form
-			# call submit function of edit form and pass in testValues
-			# reload page and pass in testValues as expectedValues
+
 		elif testType == 'gep':
-			test = self.gep_tests[testIndex]
 			if action == 'edit':
 				test['actions'][0].click()
 			else:
@@ -291,7 +258,6 @@ class MyelomaGeneticsView(view.View):
 				self.popUpForm.confirm(popUpAction)
 
 		elif testType == 'ngs':
-			test = self.ngs_tests[testIndex]
 			if action == 'edit':	
 				test['actions'][0].click()
 			else:
@@ -300,13 +266,17 @@ class MyelomaGeneticsView(view.View):
 				WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
 				self.popUpForm.confirm(popUpAction)
 		else:
-			self.edit_high_risk_button.click()
+			if action == 'edit':
+				self.highRisk_tests['edit'].click()
+				self.edit_high_risk(testValues, 'save')
+			else:
+				print('Error: Edit High Risk Test action not possible')
+
 
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def edit_high_risk(self, riskInfo, action='save'):
-		self.edit_high_risk_button.click()
 		self.editHighRiskForm = editHighRiskForm.EditHighRiskForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.editHighRiskForm.load())
 		self.editHighRiskForm.submit(riskInfo, action)
@@ -322,7 +292,15 @@ class MyelomaGeneticsView(view.View):
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 
-
+	def get_test(self, testType, testIndex):
+		if testType == 'fish':
+			return self.fish_tests[testIndex]
+		elif testType == 'gep':
+			return self.gep_tests[testIndex]
+		elif testType == 'ngs':
+			return self.ngs_tests[testIndex]
+		else:
+			return self.highRisk_tests
 
 
 

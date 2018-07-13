@@ -16,7 +16,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 	def tearDown(self):
 		self.driver.quit()
 
-	@unittest.skip("Needs modifications")
+	# @unittest.skip("Needs modifications")
 	def test_navigate(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_navigate'''
 		homeView = self.andrew.homeView
@@ -30,7 +30,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		time.sleep(3)
 		self.assertTrue(myelomaGeneticsView.on())
 
-	@unittest.skip("Needs modifications")
+	# @unittest.skip("Needs modifications")
 	def test_add_fish(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_add_fish'''
 		homeView = self.andrew.homeView
@@ -98,7 +98,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		# myelomaGeneticsView.edit_high_risk(riskInfo, 'save')
 
 		# self.assertTrue(myelomaGeneticsView.on())
-	@unittest.skip("Needs modifications")
+	# @unittest.skip("Needs modifications")
 	def test_add_gep(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_add_gep'''
 		homeView = self.andrew.homeView
@@ -123,7 +123,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		myelomaGeneticsView.edit_test('gep', -1, gepInfo, 'delete', 'confirm')
 
-	@unittest.skip("Needs modifications")
+	# @unittest.skip("Needs modifications")
 	def test_add_ngs(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_add_ngs'''
 		homeView = self.andrew.homeView
@@ -154,7 +154,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		self.assertTrue(myelomaGeneticsView.on())
 
-	@unittest.skip("Needs modifications")
+	# @unittest.skip("Needs modifications")
 	def test_riskInfo(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_riskInfo'''
 		homeView = self.andrew.homeView
@@ -162,7 +162,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		myelomaGeneticsView = self.andrew.myelomaGeneticsView
 
 		riskInfo = {
-			'high_b2m': 'yes',
+			'high_b2m': 'no',
 			'high_ldh': 'I dont know',
 			'low_albumin': 'I dont know',
 		}
@@ -176,7 +176,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		# WDW(self.driver, 10).until(lambda x: self.myelomaGeneticsView.load())
 
-		myelomaGeneticsView.edit_high_risk(riskInfo)
+		myelomaGeneticsView.edit_test('high_risk', 0, riskInfo, 'edit', 'confirm')
 
 		self.assertTrue(myelomaGeneticsView.on())
 

@@ -17,6 +17,7 @@ class FullHealthMyelomaForm():
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
 		self.load_sections()
+		self.save_button = self.form.find_element_by_tag_name('button')
 
 		# self.sections = [
 		# 	{'1': [
