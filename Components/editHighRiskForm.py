@@ -12,7 +12,7 @@ class EditHighRiskForm():
 		self.form = self.driver.find_elements_by_tag_name('form')[1]
 		buttons = self.form.find_elements_by_tag_name('button')
 
-		# self.close_button = buttons[5]
+		# self.close_button = buttons[0]
 		self.high_b2m_yes_radio = self.form.find_element_by_id('high_b2m_1_div')
 		self.high_b2m_no_radio = self.form.find_element_by_id('high_b2m_2_div')
 		self.high_b2m_idk_radio = self.form.find_element_by_id('high_b2m_3_div')

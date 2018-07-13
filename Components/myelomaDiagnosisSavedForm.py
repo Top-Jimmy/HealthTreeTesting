@@ -23,11 +23,13 @@ class MyelomaDiagnosisSavedForm():
 		self.form = self.driver.find_element_by_id('diagnosis_form')
 		add_buttons = self.form.find_elements_by_class_name('custom_addDiagnoisisButton')
 
-		self.diagnosis_tables = self.form.find_elements_by_class_name('diagnosis-frst-table')
+		self.diagnosisCont = self.form.find_element_by_class_name('diagnosis-frst-table-outer')
+		self.diagnosis_tables = self.diagnosisCont.find_elements_by_tag_name('table')
 		self.diagnoses = self.load_diagnoses()
 		self.add_diagnosis_button = add_buttons[0].find_element_by_tag_name('p')
 
-		self.physician_tables = self.form.find_elements_by_class_name('diagnosis-scnd-table')
+		self.physicianCont = self.form.find_element_by_class_name('diagnosis-scnd-table-outer')
+		self.physician_tables = self.physicianCont.find_elements_by_tag_name('table')
 		self.physicians = self.load_physicians()
 		self.add_physician_button = add_buttons[1].find_element_by_tag_name('div')
 
@@ -94,66 +96,60 @@ class MyelomaDiagnosisSavedForm():
 	def load_diagnoses(self):
 		diagnoses = []
 		if self.diagnosis_tables:
-			for table in self.diagnosis_tables:
+			for i, table in enumerate(self.diagnosis_tables):
 				# Pull info out of diagnosis table
-				row = table.find_element_by_class_name('borderTableRow')
+				rows = table.find_elements_by_class_name('table_row')
 				diagnosis = {}
-				values = [] # Store text in each div
-				divs = row.find_elements_by_tag_name('div')
-				for divIndex, div in enumerate(divs):
-					if divIndex != 3: # div 3 is container div for state and city
-						values.append(div.text.replace("'", '')) # Get rid of ' in "I don't know"
+				diagnosisInfo = [] # Store text in each div
+				for rowIndex, row in enumerate(rows): # Row0: header, Row1: info, Row2: actions
+					if rowIndex == 1:
+						divs = row.find_elements_by_tag_name('div')
+						for divIndex, div in enumerate(divs):
+							if divIndex != 3 and divIndex != 4: # divs 3 and 4 are container div for state and city
+								diagnosisInfo.append(div.text.replace("'", '')) # Get rid of ' in "I don't know"
 
-				# Grab text out of list
-				diagnosis['date'] = self.convertDate(values[0], 'mm/yyyy')
-				diagnosis['type'] = values[1]
-				diagnosis['lesions'] = values[2]
-				diagnosis['facility'] = values[3]
+						# Grab text out of list
+						diagnosis['date'] = self.convertDate(diagnosisInfo[0], 'mm/yyyy')
+						diagnosis['type'] = diagnosisInfo[1]
+						diagnosis['lesions'] = diagnosisInfo[2]
+						diagnosis['facility'] = diagnosisInfo[3]
 
-				cityState_text = values[4] # Sandy, Utah
-				index = cityState_text.find(',')
-				if index != -1:
-					diagnosis['city'] = cityState_text[:index]
-					diagnosis['state'] = cityState_text[index+2:]
-				else: # Assume it's an additional diagnosis (no facility)
-					diagnosis['city'] = ''
-					diagnosis['state'] = ''
+						cityState_text = diagnosisInfo[4] # Sandy, Utah
+						index = cityState_text.find(',')
+						if index != -1:
+							diagnosis['city'] = cityState_text[:index]
+							diagnosis['state'] = cityState_text[index+2:]
+						else: # Assume it's an additional diagnosis (no facility)
+							diagnosis['city'] = ''
+							diagnosis['state'] = ''
+					if rowIndex == 2:
+						diagnosis['edit'] = row.find_element_by_class_name('edit-treatment-icon')
+						diagnosis['delete'] = row.find_element_by_class_name('delete-treatment-icon')
 
-				# Diagnosis actions
-				diagnosis['actions'] = self.load_actions(table)
-
-				diagnoses.append(diagnosis)
+				diagnoses.append(diagnosis)	
 
 		return diagnoses
-
-	def load_actions(self, table):
-		actions = {}
-		actionRows = self.driver.find_elements_by_class_name('bottom-last-row')
-		for i, actionRow in enumerate(actionRows):
-			cont1 = actionRows[i].find_element_by_class_name('edit-treatment-icon')
-			actions['edit'] = cont1.find_element_by_tag_name('a')
-			cont2 = actionRows[i].find_element_by_class_name('delete-treatment-icon')
-			actions['delete'] = cont2.find_element_by_tag_name('a')
-		return actions
-
 
 	def load_physicians(self):
 		physicians = []
 		if self.physician_tables:
-			for table in self.physician_tables:
-				row = table.find_element_by_class_name('borderTableRow')
+			for i, table in enumerate(self.physician_tables):
+				rows = table.find_elements_by_class_name('table_row')
 				physician = {}
-				values = []
-				divs = row.find_elements_by_tag_name('div')
-				for i, div in enumerate(divs):
-					values.append(div.text)
-				# Data
-				physician['name'] = values[0]
-				physician['facility'] = values[1]
-				physician['city'] = values[2]
-				physician['state'] = values[3]
-
-				physician['actions'] = self.load_actions(table)
+				physicianInfo = []
+				for rowIndex, row in enumerate(rows):
+					if rowIndex == 1:
+						divs = row.find_elements_by_tag_name('div')
+						for divIndex, div in enumerate(divs):
+							physicianInfo.append(div.text)
+						# Data
+						physician['name'] = physicianInfo[0]
+						physician['facility'] = physicianInfo[1]
+						physician['city'] = physicianInfo[2]
+						physician['state'] = physicianInfo[3]
+					if rowIndex == 2:
+						physician['edit'] = row.find_element_by_class_name('edit-treatment-icon')
+						physician['delete'] = row.find_element_by_class_name('delete-treatment-icon')
 
 				physicians.append(physician)
 		return physicians
@@ -266,7 +262,7 @@ class MyelomaDiagnosisSavedForm():
 		print('#: ' + str(length))
 		for i in xrange(length):
 			if index != 'all':
-				dataList[index]['actions']['delete'].click()
+				dataList[index]['delete'].click()
 			else:
 				# Delete from last position to first (don't have to reload)
 				delIndex = len(dataList) - (i + 1)
@@ -275,7 +271,7 @@ class MyelomaDiagnosisSavedForm():
 				count = 0
 				while not clicked and count < 5:
 					# try:
-					dataList[delIndex]['actions']['delete'].click()
+					dataList[delIndex]['delete'].click()
 					clicked = True
 					# except StaleElementReferenceException:
 					# 	print('Failed to click delete button. Reloading page')
@@ -294,9 +290,6 @@ class MyelomaDiagnosisSavedForm():
 			# Wait for confirm popup and loading overlay to disappear
 			WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'react-confirm-alert')))
 			WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
-			raw_input('Wait')
-			self.load()
-			raw_input('#: ' + str(len(self.physicians)))
 		return True
 
 	def add_physician(self, physicianInfo, action='submit'):

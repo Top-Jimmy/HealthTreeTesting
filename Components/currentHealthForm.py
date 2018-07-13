@@ -18,7 +18,6 @@ class CurrentHealthForm():
 			self.load_question(self.question_elements[i])
 
 		self.continue_button = self.form.find_element_by_class_name('submitForm')
-		# raw_input(self.questions)
 		self.validate(expectedValues)
 		return True
 

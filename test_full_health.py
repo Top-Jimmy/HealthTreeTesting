@@ -24,7 +24,7 @@ class TestFullHealth(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Full Health Profile')
 		
-		self.assertTrue(fullHealthView.on('My Myeloma'))
+		self.assertTrue(fullHealthView.on('my myeloma'))
 
 		self.assertTrue(fullHealthView.select_tab('demographics'))
 
@@ -36,4 +36,4 @@ class TestFullHealth(unittest.TestCase):
 
 		self.assertTrue(fullHealthView.select_tab('quality of life'))
 
-		self.assertTrue(fullHealthView.select_tab('summary'))
+		# self.assertTrue(fullHealthView.select_tab('summary'))

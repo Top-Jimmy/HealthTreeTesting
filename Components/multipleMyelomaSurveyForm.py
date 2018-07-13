@@ -93,8 +93,6 @@ class MultipleMyelomaSurveyForm():
 			WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 			if myelomaInfo['comment']:
 				self.comment_textarea.send_keys(myelomaInfo['comment'])
-			raw_input('correct info?')
-
 
 			WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 			if action == 'save':

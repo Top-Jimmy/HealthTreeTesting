@@ -1,7 +1,7 @@
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError
-from Components import fullHealthMyelomaForm, healthDemoForm, healthHistForm, famHistForm
+from Components import fullHealthMyelomaForm, healthDemoForm, healthHistForm, famHistForm, healthLifestyleForm, healthQualityForm
 from Components import menu
 from Components import header
 from Views import view
@@ -24,18 +24,17 @@ class FullHealthView(view.View):
 			if expectedTab and expectedTab != self.selectedTab:
 				print('Full Health Profile: Expected state: "' + expectedTab + '", got state: "' + self.selectedTab + '"')
 			else: 
-				print(expectedTab)
-				if expectedTab == 'My Myeloma':
+				if expectedTab == 'my myeloma':
 					self.fullHealthMyelomaForm = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
-				elif expectedTab == 'Demographics':
+				elif expectedTab == 'demographics':
 					self.healthDemoForm = healthDemoForm.HealthDemoForm(self.driver)
-				elif expectedTab == 'Full Health History':
+				elif expectedTab == 'full health history':
 					self.healthHistForm = healthHistForm.HealthHistForm(self.driver)
-				elif expectedTab == 'Family History':
-					self.famHistForm = famHistform.FamHistform(self.driver)
-				elif expectedTab == 'Lifestyle':
+				elif expectedTab == 'family history':
+					self.famHistForm = famHistForm.FamHistForm(self.driver)
+				elif expectedTab == 'lifestyle':
 					self.healthLifestyleForm = healthLifestyleForm.HealthLifestyleForm(self.driver)
-				elif expectedTab == 'Quality of Life':
+				elif expectedTab == 'quality of life':
 					self.healthQualityForm = healthQualityForm.HealthQualityForm(self.driver)
 				else:
 					self.healthSummaryForm = healthSummaryForm.HealthSummaryForm(self.driver)
@@ -57,7 +56,6 @@ class FullHealthView(view.View):
 
 	def load_tabs(self):
 		self.tabs = {}
-		raw_input('loading tabs?')
 		# Find elements w/ class 'tab-name'
 		tabs = self.driver.find_elements_by_class_name('RRT__tab')
 		for tab in tabs:
@@ -77,6 +75,6 @@ class FullHealthView(view.View):
 			tab.click()
 
 			WDW(self.driver, 10).until(lambda x: self.load(tabName))
+			return True
 		except KeyError:
 			print('fullHealthView: No tab named: ' + str(tabName))
-	

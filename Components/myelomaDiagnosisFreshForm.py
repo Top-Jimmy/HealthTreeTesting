@@ -21,6 +21,7 @@ class MyelomaDiagnosisFreshForm():
 		self.form = self.driver.find_element_by_id('diagnosis_form')
 		self.rows = self.form.find_elements_by_class_name('form-group')
 		self.load_state()
+		print(self.state)
 
 		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
 		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
@@ -205,7 +206,7 @@ class MyelomaDiagnosisFreshForm():
 		self.physicians = []
 		for i, physician in enumerate(self.physician_rows):
 			# name, facility, city, state
-			name_cont = physician.find_element_by_id('physician_name_' + str(i))
+			name_cont = physician.find_element_by_id('physician_diagnostician_' + str(i))
 			name_inputs = name_cont.find_elements_by_tag_name('input')
 			name_input = name_inputs[0]
 			name_hidden_input = name_inputs[1]
@@ -710,7 +711,6 @@ class MyelomaDiagnosisFreshForm():
 		self.set_physician(physicianInfo, 0)
 
 		self.add_physician_button.click()
-		raw_input('add physician button clicked?')
 		self.delete_button = self.form.find_element_by_class_name('delete_physician_icon')
 		self.delete_button.click()
 

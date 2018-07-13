@@ -17,7 +17,7 @@ class FullHealthMyelomaForm():
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
 		self.load_sections()
-		raw_input('info: ' + str(self.sections))
+		self.save_button = self.form.find_element_by_tag_name('button')
 
 		# self.sections = [
 		# 	{'1': [
@@ -51,7 +51,7 @@ class FullHealthMyelomaForm():
 			if i == 0: # Load question index (use as key for individual questions w/in each row)
 				label = question.find_element_by_tag_name('label')
 				questionIndex = label.text[:1]
-				raw_input('questionIndex: ' + str(questionIndex))
+				# raw_input('questionIndex: ' + str(questionIndex))
 			options = {}
 			radioContainers = question.find_elements_by_class_name('dynamic-radio') # Div containing input and span (text)
 			dateContainer = None

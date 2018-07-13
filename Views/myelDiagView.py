@@ -90,6 +90,7 @@ class MyelDiagView(view.View):
 					WDW(self.driver, 10).until(lambda x: self.load('fresh', expectedInfo))
 				else:
 					WDW(self.driver, 10).until(lambda x: self.load('saved', expectedInfo))
+				return True
 		elif self.myelomaDiagnosisFreshForm:
 			# todo: handle working on fresh form
 			pass
