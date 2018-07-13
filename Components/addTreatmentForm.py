@@ -36,62 +36,71 @@ class AddTreatmentForm():
 			radioContainers = container.find_elements_by_class_name('radio') # Div containing input and span (option text)
 			datepickerContainers = container.find_elements_by_class_name('new-datepicker')
 			categories = container.find_elements_by_class_name('new-treatment-dynamic') # Only for components like sideEffects or chemo options
-			tables = container.find_elements_by_class_name('table-striped') # Drugs Removed (Chemotherapy)
+			# Some questions have 'categories' class that aren't complex questions.
+			# Make sure they also have 'treatment-group' class
+			groups = None
 			if categories:
+				groups = container.find_elements_by_class_name('treatment-group')
+			tables = container.find_elements_by_class_name('table-striped') # Drugs Removed (Chemotherapy)
+			if categories and groups:
 				question = self.load_complex_question(container, categories)
 			elif tables:
 				question = self.load_table(tables[0])
 			elif len(radioContainers) > 0: # Radio button question
-
-				# Load question info. Make sure radio option isn't a subquestion
-				subquestion_filter = [] # Add index of any subquestion radio buttons to this list
-				for i in xrange(len(radioContainers)):
-					# print('loading question: ' + str(i))
-					if i not in subquestion_filter:
-						radioCont = radioContainers[i]
-						inputs = radioCont.find_elements_by_tag_name('input')
-						spans = radioCont.find_elements_by_tag_name('span')
-
-						# Test Validation
-						if len(inputs) == 0:
-							print('AddTreatmentForm: radio option has no inputElements?')
-						elif len(spans) == 0:
-							print('AddTreatmentForm: radio option has no spanElements?')
-
-						# Get option name.
-						optionName = spans[0].text
-						# Check for textarea
-						try:
-							textareaEl = radioCont.find_element_by_tag_name('textarea')
-						except NoSuchElementException:
-							textareaEl = None
-
-						# handle any subquestions
-						subquestions = None
-						if len(inputs) > 1: # All inputs after 1st should be secondary questions
-							for inputIndex, inputEl in enumerate(inputs):
-								if inputIndex > 0:
-
-									# Add subquestion to filter list
-									subquestion_filter.append(i + inputIndex)
-
-									# Load subquestion info
-									subquestions = self.load_question(radioContainers[i])
-
-						# Pass back dict if loaded anything besides inputElement
-						# todo: handle passing back secondary questions
-						if textareaEl or subquestions:
-							question[optionName] = {
-								'element': inputs[0],
-								'textareaEl': textareaEl,
-								'subquestions': subquestions,
-							}
-						else:
-							question[optionName] = inputs[0]
+				question = self.load_radio_question(radioContainers)
 			elif len(datepickerContainers) > 0: # Datepicker
 				question['datepicker'] = datepickerContainers[0].find_element_by_tag_name('input')
 
 			return question
+
+	def load_radio_question(self, radioContainers):
+		# Load question info. Make sure radio option isn't a subquestion
+		question = {}
+		subquestion_filter = [] # Add index of any subquestion radio buttons to this list
+		for i in xrange(len(radioContainers)):
+			# print('loading question: ' + str(i))
+			if i not in subquestion_filter:
+				radioCont = radioContainers[i]
+				inputs = radioCont.find_elements_by_tag_name('input')
+				spans = radioCont.find_elements_by_tag_name('span')
+
+				# Test Validation
+				if len(inputs) == 0:
+					print('AddTreatmentForm: radio option has no inputElements?')
+				elif len(spans) == 0:
+					print('AddTreatmentForm: radio option has no spanElements?')
+
+				# Get option name.
+				optionName = spans[0].text
+				# Check for textarea
+				try:
+					textareaEl = radioCont.find_element_by_tag_name('textarea')
+				except NoSuchElementException:
+					textareaEl = None
+
+				# handle any subquestions
+				subquestions = None
+				if len(inputs) > 1: # All inputs after 1st should be secondary questions
+					for inputIndex, inputEl in enumerate(inputs):
+						if inputIndex > 0:
+
+							# Add subquestion to filter list
+							subquestion_filter.append(i + inputIndex)
+
+							# Load subquestion info
+							subquestions = self.load_question(radioContainers[i])
+
+				# Pass back dict if loaded anything besides inputElement
+				# todo: handle passing back secondary questions
+				if textareaEl or subquestions:
+					question[optionName] = {
+						'element': inputs[0],
+						'textareaEl': textareaEl,
+						'subquestions': subquestions,
+					}
+				else:
+					question[optionName] = inputs[0]
+		return question
 
 	def load_complex_question(self, container, categories):
 		# For questions w/ multiple sections (sideEffects, chemotherapy drugs, medications added/removed)
@@ -202,9 +211,11 @@ class AddTreatmentForm():
 		questions = treatmentInfo['questions']
 		# sideEffects = treatmentInfo.get('sideEffects', None)
 
+		lastQuestionIndex = len(questions) - 1
 		# questions
 		for i, question in enumerate(questions):
 			qType = question['type']
+			questionActions = question.get('actions', None)
 			if qType == 'date':
 				# Container should always be 1st (latest questions are on top of page)
 				self.set_date(self.questionConts[0], question['text'])
@@ -212,7 +223,6 @@ class AddTreatmentForm():
 				self.set_table(question)
 			else:
 				options = question['options']
-				questionActions = question.get('actions', None)
 				if qType == 'single' and len(options) > 1:
 					print('Single type question:  should not pass in more than 1 option')
 					return False
@@ -227,16 +237,16 @@ class AddTreatmentForm():
 				else:
 					print('AddTreatmentForm: unexpected question type! ' + str(qType))
 
-				# Handle any actions necessary for this question
-				# Don't need to pass in actions for 'complex' questions. Assumes they all have continue action
-				if questionActions and questionActions == 'continue':
-					try:
-						self.questionConts[0].find_element_by_class_name('green-hvr-bounce-to-top').click()
-					except NoSuchElementException:
-						print('question ' + str(i) + ' did not have continue button')
+			# Handle any actions necessary for this question
+			# Don't need to pass in actions for 'complex' questions. Assumes they all have continue action
+			if questionActions and questionActions == 'continue':
+				try:
+					self.questionConts[0].find_element_by_class_name('green-hvr-bounce-to-top').click()
+				except NoSuchElementException:
+					print('question ' + str(i) + ' did not have continue button')
 
 			# Reload if this isn't the last question
-			if i != len(questions) - 1:
+			if i != lastQuestionIndex:
 				WDW(self.driver, 10).until(lambda x: self.load())
 		return True
 
@@ -261,7 +271,12 @@ class AddTreatmentForm():
 		secondaryOptions = optionInfo.get('options', None)
 
 		# Get loaded info for given option/subOption
-		loadedQuestion = self.questions[0][optionName]
+		try:
+			loadedQuestion = self.questions[0][optionName]
+		except KeyError:
+			print(optionName + ' not in question options')
+			print('question: ' + str(self.questions[0]))
+			raise KeyError()
 		if subOptionName:
 			loadedQuestion = loadedQuestion['subquestions'][subOptionName]
 

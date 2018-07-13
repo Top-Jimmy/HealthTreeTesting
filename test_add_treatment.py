@@ -30,24 +30,25 @@ class TestChemotherapy(unittest.TestCase):
 		# Chemo: Currently taking
 		# Should have 8 questions (base amount)
 		treatment1 = {
+			'testMeta': {'type': 'chemo'},
 			'questions': [
-				{'type': 'single',	# Treatment Type
+				{'type': 'single',	# 0: Treatment Type
 					'options': {
 						'Chemotherapy/Myeloma Therapy': {},
 					},
 				},
-				{'type': 'date', 'text': '10/2017' }, # Start date
-				{'type': 'single',	# Currently taking?
+				{'type': 'date', 'text': '10/2017' }, # 1: Start date
+				{'type': 'single',	# 2: Currently taking?
 					'options': {
 						'Yes': {},
 					},
 				},
-				{'type': 'single',	# Maintenance therapy? (don't think it matters how you answer this question)
+				{'type': 'single',	# 3: Maintenance therapy? (don't think it matters how you answer this question)
 					'options': {
 						'Yes': {},
 					},
 				},
-				{'type': 'complex', # Chemo treatment options
+				{'type': 'complex', # 4: Chemo treatment options
 					'options': {
 						'chemotherapies': {
 		    			'Melphalan': None,
@@ -59,17 +60,17 @@ class TestChemotherapy(unittest.TestCase):
 		    		},
 		    	}
 				},
-				{'type': 'single',	# Changes to treatment?
+				{'type': 'single',	# 5: Changes to treatment?
 					'options': {
 						'No': {},
 					},
 				},
-				{'type': 'single',	# Best response?
+				{'type': 'single',	# 6: Best response?
 					'options': {
 						'The treatment did not reduce my myeloma': {},
 					},
 				},
-				{'type': 'complex', # Side effects
+				{'type': 'complex', # 7: Side effects
 					'options': {
 						'cardiovascular/circulatory system': {
 		    			'blood clots': {'intensity': 9},
@@ -84,25 +85,26 @@ class TestChemotherapy(unittest.TestCase):
 		# Chemo: Stopped taking
 		# Should have 9 questions (+1 for stop date)
 		treatment2 = {
+			'testMeta': {'type': 'chemo'},
 			'questions': [
-				{'type': 'single',	# Treatment Type
+				{'type': 'single',	# 0: Treatment Type
 					'options': {
 						'Chemotherapy/Myeloma Therapy': {},
 					},
 				},
-				{'type': 'date', 'text': '10/2017' }, # Start date
-				{'type': 'single',	# Currently taking?
+				{'type': 'date', 'text': '10/2017' }, # 1: Start date
+				{'type': 'single',	# 2: Currently taking?
 					'options': {
 						'No': {},
 					},
 				},
-				{'type': 'date', 'text': '02/2018' }, # Stop date
-				{'type': 'single',	# Maintenance therapy? (don't think it matters how you answer this question)
+				{'type': 'date', 'text': '02/2018' }, # 3: Stop date
+				{'type': 'single',	# 4: Maintenance therapy? (don't think it matters how you answer this question)
 					'options': {
-						'Yes': {},
+						'No': {},
 					},
 				},
-				{'type': 'complex', # Chemo treatment options
+				{'type': 'complex', # 5: Chemo treatment options
 					'options': {
 						'chemotherapies': {
 		    			'Melphalan': None,
@@ -114,17 +116,17 @@ class TestChemotherapy(unittest.TestCase):
 		    		},
 		    	}
 				},
-				{'type': 'single',	# Changes to treatment?
+				{'type': 'single',	# 6: Changes to treatment?
 					'options': {
 						'No': {},
 					},
 				},
-				{'type': 'single',	# Best response?
+				{'type': 'single',	# 7: Best response?
 					'options': {
 						'The treatment did not reduce my myeloma': {},
 					},
 				},
-				{'type': 'complex', # Side effects
+				{'type': 'complex', # 8: Side effects
 					'options': {
 						'cardiovascular/circulatory system': {
 		    			'blood clots': {'intensity': 9},
@@ -155,24 +157,25 @@ class TestChemotherapy(unittest.TestCase):
 		# Chemo: Medications were added and removed
 		# Should have 10 questions: 8 (base amount) +1 (added) +1 (removed)
 		treatment1 = {
+			'testMeta': {'type': 'chemo'},
 			'questions': [
-				{'type': 'single',	# Treatment Type
+				{'type': 'single',	# 0: Treatment Type
 					'options': {
 						'Chemotherapy/Myeloma Therapy': {},
 					},
 				},
-				{'type': 'date', 'text': '10/2017' }, # Start date
-				{'type': 'single',	# Currently taking?
+				{'type': 'date', 'text': '10/2017' }, # 1: Start date
+				{'type': 'single',	# 2: Currently taking?
 					'options': {
 						'Yes': {},
 					},
 				},
-				{'type': 'single',	# Maintenance therapy? (don't think it matters how you answer this question)
+				{'type': 'single',	# 3: Maintenance therapy? (don't think it matters how you answer this question)
 					'options': {
 						'Yes': {},
 					},
 				},
-				{'type': 'complex', # Chemo treatment options
+				{'type': 'complex', # 4: Chemo treatment options
 					'options': {
 						'chemotherapies': {
 		    			'Adriamycin': None,
@@ -182,7 +185,7 @@ class TestChemotherapy(unittest.TestCase):
 		    		},
 		    	}
 				},
-				{'type': 'single',	# Changes to treatment?
+				{'type': 'single',	# 5: Changes to treatment?
 					'options': {
 						'Yes': {
 							'type': 'select-all',
@@ -194,13 +197,13 @@ class TestChemotherapy(unittest.TestCase):
 					},
 					'actions': 'continue',
 				},
-				{'type': 'complex', # Drugs ADDED
+				{'type': 'complex', # 6: Drugs ADDED
 					'date': '12/2017',
 					'options': {
 						'chemotherapies': {'melphalan': None,}
 					}
 				},
-				{'type': 'table', # Drugs REMOVED
+				{'type': 'table', # 7: Drugs REMOVED
 					'options': {
 						'dexamethasone': {
 		    			'date stopped': '03/2018',
@@ -213,12 +216,12 @@ class TestChemotherapy(unittest.TestCase):
 		    		'melphalan': {},
 		    	}
 				},
-				{'type': 'single',	# Best response?
+				{'type': 'single',	# 8: Best response?
 					'options': {
 						'The treatment did not reduce my myeloma': {},
 					},
 				},
-				{'type': 'complex', # Side effects
+				{'type': 'complex', # 9: Side effects
 					'options': {
 						'cardiovascular/circulatory system': {
 		    			'blood clots': {'intensity': 9},
@@ -228,6 +231,7 @@ class TestChemotherapy(unittest.TestCase):
 				},
 			]
 		}
+		# self.assertTrue(toView.on({'tests': [treatment1] }))
 		self.assertTrue(toView.add_treatment(treatment1))
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
@@ -253,21 +257,22 @@ class TestRadiation(unittest.TestCase):
 		self.assertTrue(toView.on())
 
 		treatment1 = {
+			'testMeta': {'type': 'radiation'},
 			'questions': [
-				{'type': 'single',
+				{'type': 'single', 		# 0: Treatment Type
 					'options': {
 						'Radiation': {},
 					},
 				},
-				{'type': 'single',
+				{'type': 'single', 		# 1: Radiation Type
 					'options': {
 						'Other': {'comment': 'Radiation treatment X'},
 					},
 					'actions': 'continue',
 				},
-				{'type': 'date', 'text': '10/2017' },
-				{'type': 'date', 'text': '02/2018' },
-				{'type': 'single',
+				{'type': 'date', 'text': '10/2017' },	# 2: Start Date
+				{'type': 'date', 'text': '02/2018' }, # 3: Stop Date
+				{'type': 'single',										# 4: Best Response
 					'options': {
 						'I discontinued this treatment': {
 							'type': 'select-all',
@@ -280,7 +285,7 @@ class TestRadiation(unittest.TestCase):
 					},
 					'actions': 'continue',
 				},
-				{'type': 'complex', # Side effects
+				{'type': 'complex', 								# 5: Side effects
 					'options': {
 						'cardiovascular/circulatory system': {
 		    			'blood clots': {'intensity': 9},
@@ -290,25 +295,27 @@ class TestRadiation(unittest.TestCase):
 				},
 			],
 		}
+		# self.assertTrue(toView.on({'tests': [treatment1] }))
 		self.assertTrue(toView.add_treatment(treatment1, 'save'))
 
 		treatment2 = {
+			'testMeta': {'type': 'radiation'},
 			'questions': [
-				{'type': 'single',
+				{'type': 'single',											# 0: Treatment Type
 					'name': 'What was the type of myeloma treatment you received?',
 					'options': {
 						'Radiation': {},
 					},
 				},
-				{'type': 'single',
+				{'type': 'single',											# 1: Radiation Type
 					'name': 'What type of Radiation treatment did you receive?',
 					'options': {
 						'Local Radiation': {},
 					},
 				},
-				{'type': 'date', 'text': '10/2015' },
-				{'type': 'date', 'text': '02/2016' },
-				{'type': 'single',
+				{'type': 'date', 'text': '10/2015' },		# 2: Start Date
+				{'type': 'date', 'text': '02/2016' },		# 3: End Date
+				{'type': 'single',											# 4: Best Response
 					'options': {
 						'I discontinued this treatment': {
 							'type': 'select-all',
@@ -320,7 +327,7 @@ class TestRadiation(unittest.TestCase):
 					},
 					'actions': 'continue',
 				},
-				{'type': 'complex', # Side effects
+				{'type': 'complex', 										# 5: Side effects
 					'options': {
 						'cardiovascular/circulatory system': {
 		    			'low potassium': {'intensity': 2},
@@ -358,38 +365,35 @@ class TestExtra(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
+
 		# Not currently taking bone strengtheners
 		treatment1 = {
+			'testMeta': {'type': 'bone strengtheners'},
 			'questions': [
-				{'type': 'single',
-					# Treatment Type
+				{'type': 'single', 			# 0: Treatment Type
 					'options': {
 						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
 					},
 				},
-				{'type': 'single',
-					# Supportive Care Type
+				{'type': 'single', 			# 1. Supportive Care Type
 					'options': {
 						'Bone Strengthener': {},
 					},
 					'actions': 'continue',
 				},
-				{'type': 'single',
-					# Bone strengthener Type
+				{'type': 'single', 			# 2. Bone strengthener Type
 					'options': {
 						'Aredia': {},
 					},
 				},
-				{'type': 'date', 'text': '10/2017' }, # Start date
-				{'type': 'single',
-					# Bone Strengtheners: Same Frequency
+				{'type': 'date', 'text': '10/2017' }, # 3. Start date
+				{'type': 'single',										# 4. Bone Strengtheners: Same Frequency
 					'options': {
 						'No': {},
 					},
 				},
-				{'type': 'date', 'text': '02/2018' }, # Stop date
-				{'type': 'single',
-					# Bone Strengtheners: Frequency
+				{'type': 'date', 'text': '02/2018' }, # 5. Stop date
+				{'type': 'single', 										# 6. Bone Strengtheners: Frequency
 					'options': {
 						'Yearly': {},
 					},
@@ -397,43 +401,41 @@ class TestExtra(unittest.TestCase):
 				},
 			]
 		}
+
 		self.assertTrue(toView.add_treatment(treatment1, 'save'))
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
 		# Currently taking bone strengtheners
 		treatment2 = {
+			'testMeta': {'type': 'bone strengtheners'},
 			'questions': [
-				{'type': 'single',
-					# Treatment Type
+				{'type': 'single',					# 0. Treatment Type
 					'options': {
 						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
 					},
 				},
-				{'type': 'single',
-					# Supportive Care Type
+				{'type': 'single',					# 1. Supportive Care Type
 					'options': {
 						'Bone Strengthener': {},
 					},
 					'actions': 'continue',
 				},
-				{'type': 'single',
-					# Bone strengthener Type
+				{'type': 'single',					# 2. Bone strengthener Type
 					'options': {
 						'Denosumab': {},
 					},
 				},
-				{'type': 'date', 'text': '10/2017' }, # Start date
-				{'type': 'single',
-					# Bone Strengtheners: Same Frequency
+				{'type': 'date', 'text': '10/2017' }, # 3. Start date
+				{'type': 'single',										# 4. Bone Strengtheners: Same Frequency
 					'options': {
-						'No': {},
+						'Yes': {},
 					},
 				},
-				{'type': 'single',
-					# Bone Strengtheners: Frequency
+				{'type': 'single',										# 5. Bone Strengtheners: Frequency
 					'options': {
 						'Once every 3 months': {},
 					},
+					'actions': 'continue',
 				},
 			]
 		}
@@ -451,36 +453,37 @@ class TestExtra(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
+
 		# Not currently taking antibiotics
 		treatment1 = {
+			'testMeta': {'type': 'antibiotics'},
 			'questions': [
-				{'type': 'single',
-					# Treatment Type
+				{'type': 'single', 									# 0. Treatment Type
 					'options': {
 						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
 					},
 				},
-				{'type': 'single',
-					# Supportive Care Type
+				{'type': 'single',									# 1. Supportive Care Type
 					'options': {
 						'Antibiotics': {},
 					},
 					'actions': 'continue',
 				},
-				{'type': 'single',
-					# Antibiotics Type
+				{'type': 'single',									# 2. Antibiotics Type
 					'options': {
 						'Biaxin (clarithromycin)': {},
 					},
 				},
-				{'type': 'date', 'text': '10/2017' }, # Start date
-				{'type': 'single',
-					# Still taking antibiotics?
+				{'type': 'date', 'text': '10/2017' }, # 3. Start date
+				{'type': 'single', 										# 4. Still taking antibiotics?
 					'options': {
 						'No': {},
 					},
 				},
-				{'type': 'date', 'text': '02/2018' }, # Stop date
+				{'type': 'date', 											# 5. Stop date
+					'text': '02/2018',
+					'actions': 'continue',
+				},
 			]
 		}
 		self.assertTrue(toView.add_treatment(treatment1, 'save'))
@@ -488,32 +491,30 @@ class TestExtra(unittest.TestCase):
 
 		# Still taking antibiotics
 		treatment2 = {
+			'testMeta': {'type': 'antibiotics'},
 			'questions': [
-				{'type': 'single',
-					# Treatment Type
+				{'type': 'single',										# 0. Treatment Type
 					'options': {
 						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
 					},
 				},
-				{'type': 'single',
-					# Supportive Care Type
+				{'type': 'single', 										# 1. Supportive Care Type
 					'options': {
 						'Antibiotics': {},
 					},
 					'actions': 'continue',
 				},
-				{'type': 'single',
-					# Antibiotics Type
+				{'type': 'single',										# 2. Antibiotics Type
 					'options': {
 						'Biaxin (clarithromycin)': {},
 					},
 				},
-				{'type': 'date', 'text': '10/2017' }, # Start date
-				{'type': 'single',
-					# Still taking antibiotics?
+				{'type': 'date', 'text': '10/2017' }, # 3. Start date
+				{'type': 'single',										# 4. Still taking antibiotics?
 					'options': {
 						'Yes': {},
 					},
+					'actions': 'continue',
 				}
 			]
 		}
@@ -533,34 +534,34 @@ class TestExtra(unittest.TestCase):
 		self.assertTrue(toView.on())
 		# Not currently taking antibiotics
 		treatment1 = {
+			'testMeta': {'type': 'antifungal'},
 			'questions': [
-				{'type': 'single',
-					# Treatment Type
+				{'type': 'single', 							# 0. Treatment Type
 					'options': {
 						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
 					},
 				},
-				{'type': 'single',
-					# Supportive Care Type
+				{'type': 'single',							# 1. Supportive Care Type
 					'options': {
 						'Anti-Fungal': {},
 					},
 					'actions': 'continue',
 				},
-				{'type': 'single',
-					# Anti-fungal Type
+				{'type': 'single',							# 2. Anti-fungal Type
 					'options': {
 						'Amphotericin B': {},
 					},
 				},
-				{'type': 'date', 'text': '10/2017' }, # Start date
-				{'type': 'single',
-					# Still taking antifungals?
+				{'type': 'date', 'text': '10/2017' }, # 3. Start date
+				{'type': 'single',										# 4. Still taking antifungals?
 					'options': {
 						'No': {},
 					},
 				},
-				{'type': 'date', 'text': '02/2018' }, # Stop date
+				{'type': 'date', 											# 5. Stop date
+					'text': '02/2018',
+					'actions': 'continue',
+				},
 			]
 		}
 		self.assertTrue(toView.add_treatment(treatment1, 'save'))
@@ -568,32 +569,30 @@ class TestExtra(unittest.TestCase):
 
 		# Still taking antibiotics
 		treatment2 = {
+			'testMeta': {'type': 'antifungal'},
 			'questions': [
-				{'type': 'single',
-					# Treatment Type
+				{'type': 'single',								# 0. Treatment Type
 					'options': {
 						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
 					},
 				},
-				{'type': 'single',
-					# Supportive Care Type
+				{'type': 'single',								# 1. Supportive Care Type
 					'options': {
 						'Anti-Fungal': {},
 					},
 					'actions': 'continue',
 				},
-				{'type': 'single',
-					# Anti-fungal Type
+				{'type': 'single',								# 2. Anti-fungal Type
 					'options': {
 						'Amphotericin B': {},
 					},
 				},
-				{'type': 'date', 'text': '10/2017' }, # Start date
-				{'type': 'single',
-					# Still taking antifungals?
+				{'type': 'date', 'text': '10/2017' }, # 3. Start date
+				{'type': 'single',										# 4. Still taking antifungals?
 					'options': {
 						'Yes': {},
 					},
+					'actions': 'continue',
 				},
 			]
 		}
