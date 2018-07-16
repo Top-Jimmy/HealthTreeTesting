@@ -1,7 +1,7 @@
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError
-from Components import fullHealthMyelomaForm, healthDemoForm, healthHistForm, famHistForm, healthLifestyleForm, healthQualityForm
+from Components import fullHealthMyelomaForm, healthDemoForm, healthHistForm, famHistForm, healthLifestyleForm, healthQualityForm, healthSummaryForm
 from Components import menu
 from Components import header
 from Views import view

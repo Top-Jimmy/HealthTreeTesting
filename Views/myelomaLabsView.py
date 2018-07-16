@@ -29,6 +29,9 @@ class MyelomaLabsView(view.View):
 
 			self.to_date_input = inputs[1]
 
+			self.load_table()
+			print(self.clinical_tables)
+
 			self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
@@ -112,6 +115,26 @@ class MyelomaLabsView(view.View):
 	# 		self.createAccount_link.click()
 	# 	elif link == 'forgot password':
 	# 		self.signInForm.forgotPassword_link.click()
+
+	def load_table(self):
+		self.clinical_tables = []
+		clinical_table = self.form.find_element_by_id('clinical_table')
+		rows = clinical_table.find_elements_by_class_name('table_row')
+		keys = ['actions', 'dobd', 'monoclonal', 'kappa', 'lambda', 'ratio', 'blood', 'calcium', 'platelets', 'blood_cell', 'hemoglobin', 'lactate', 'immuno_g', 'immuno_a', 'immuno_m', 'albumin'	]
+		for rowIndex, row in enumerate(rows):
+			rowInfo = {} # Info for an individual test
+			if rowIndex != 0:
+				tds = row.find_elements_by_tag_name('td')
+				for tdIndex, td in enumerate(tds):
+					if tdIndex == 0:
+						buttons = row.find_elements_by_tag_name('i')
+						rowInfo['edit'] = buttons[0]
+						rowInfo['delete'] = buttons[1]
+					else:
+						rowInfo[keys[tdIndex]] = td.text.lower()
+
+			self.clinical_tables.append(rowInfo)
+
 
 	def add_new_lab(self, labInfo, action='save'):	
 		self.add_new_button.click()

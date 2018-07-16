@@ -36,4 +36,4 @@ class TestFullHealth(unittest.TestCase):
 
 		self.assertTrue(fullHealthView.select_tab('quality of life'))
 
-		# self.assertTrue(fullHealthView.select_tab('summary'))
+		self.assertTrue(fullHealthView.select_tab('full health profile summary'))

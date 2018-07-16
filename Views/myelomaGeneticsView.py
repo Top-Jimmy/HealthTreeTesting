@@ -115,7 +115,6 @@ class MyelomaGeneticsView(view.View):
 		labInfo = [] # add text from each header row to values list
 		for rowIndex, row in enumerate(rows):
 			labResult = {}
-			divs = row.find_elements_by_tag_name('div')
 			tds = row.find_elements_by_tag_name('td')
 			# for divIndex, div in enumerate(divs):
 			for tdIndex, td in enumerate(tds):
