@@ -16,6 +16,10 @@ class Menu():
 		# Loading full menu or basic menu for new user?
 		self.menu_type = self.calculate_menu_type()
 
+		if len(self.list_items) != 15:
+			print('Unexpected # of menu items, menu has ' + str(len(self.list_items)))
+			return False
+
 		for i, option in enumerate(self.list_items):
 			if 'Surveys' in option.text:
 				self.menu_options['Surveys'] = self.list_items[i]

@@ -2,12 +2,14 @@ from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError, WarningError
 from Components import addLabsForm
+from Components import popUpForm
 from Components import menu
 from Components import header
 from Views import view
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import time
 
 class MyelomaLabsView(view.View):
 	post_url = 'myeloma-labs'
@@ -24,13 +26,23 @@ class MyelomaLabsView(view.View):
 			inputs = self.form.find_elements_by_tag_name('input')
 
 			self.add_new_button = buttons[0]
+			self.lab_values_dropdown = buttons[1]
+			self.three_month_button = buttons[2]
+			self.six_month_button = buttons[3]
+			self.year_to_date_button = buttons[4]
+			self.one_year_button = buttons[5]
+			self.two_year_button = buttons[6]
+			self.five_year_button = buttons[7]
+			self.ten_year_button = buttons[8]
+			self.all_button = buttons[9]
+
+			self.continue_button = buttons[10]
 
 			self.from_date_input = inputs[0]
 
 			self.to_date_input = inputs[1]
 
 			self.load_table()
-			print(self.clinical_tables)
 
 			self.validate()
 			return True
@@ -42,85 +54,13 @@ class MyelomaLabsView(view.View):
 		failures = []
 		if self.add_new_button.text != 'Add New Labs':
 			failure.append('AddLabsView: Unexpected add new labs button text')
-		# if self.createAccount_link.text != 'Create Account':
-		# 	failures.append('1. Create Account link. Expecting text "Create Account", got "' + self.createAccount_link.text + '"')
-		# if len(failures) > 0:
-		# 	print(failures)
-		# 	raise NoSuchElementException('Failed to load HomeView')
-
-	# def createErrorObj(self, errorText):
-	# 	errorType = 'undefined';
-	# 	errorMsg = '';
-
-	# 	if 'confirm your email address' in errorText:
-	# 		errorType = 'confirmation'
-	# 		errorMsg = 'homeView.login: Confirmation error'
-	# 	elif 'invalid username or password' in errorText:
-	# 		errorType = 'invalid credentials'
-	# 		errorMsg = 'homeView.login: Invalid Credentials error'
-
-	# 	return {
-	# 		'errorText': errorText,
-	# 		'errorType': errorType,
-	# 		'errorMsg': errorMsg,
-	# 	}
-
-	# def submit(self, formInfo, expectedError=None, expectedWarnings=None):
-	# 	try:
-	# 		if self.aboutMeForm.enter_info(formInfo):
-	# 			# Should be on myeloma diagnosis page
-	# 			url = self.driver.current_url
-	# 			if '/about-me' not in url:
-	# 				self.error = self.readErrors()
-	# 				self.warnings = self.aboutMeForm.read_warnings()
-	# 				if self.error:
-	# 					raise MsgError('Login Error')
-	# 				elif self.warnings:
-	# 					raise WarningError('Submission warning')
-	# 		return True
-	# 	except MsgError:
-	# 		# Is login expected to fail?
-	# 		errorType = self.error['errorType']
-	# 		if expectedError and errorType.lower() == expectedError.lower():
-	# 			return True
-	# 		print(self.error['errorMsg'])
-	# 		if errorType == 'undefined':
-	# 			print('Undefined error: ' + self.error['errorText'])
-	# 	except WarningError:
-	# 		# Is form submission expected to have warning?
-	# 		unexpectedWarnings = []
-	# 		if expectedWarnings:
-	# 			# Go through self.warnings and check each warningType matches an expectedWarning
-	# 			# Append warnings that aren't expected to unexpectedWarnings
-	# 			for i, warning in enumerate(self.warnings):
-	# 				expected = False
-	# 				warningType = warning['type']
-	# 				for expectedWarning in expectedWarnings:
-	# 					if expectedWarning == warningType:
-	# 						expected = True
-	# 				if not expected:
-	# 					unexpectedWarnings.append(self.warnings[i])
-
-	# 			if unexpectedWarnings:
-	# 				for unexpected in unexpectedWarnings:
-	# 						print(unexpected['msg'])
-	# 						if warningType == 'undefined':
-	# 							print('Undefined warning: ' + unexpected['text'])
-	# 			else:
-	# 				return True
-	# 	return False
-
-	# def click_link(self, link):
-	# 	if link == 'create account':
-	# 		self.createAccount_link.click()
-	# 	elif link == 'forgot password':
-	# 		self.signInForm.forgotPassword_link.click()
+		
 
 	def load_table(self):
 		self.clinical_tables = []
 		clinical_table = self.form.find_element_by_id('clinical_table')
 		rows = clinical_table.find_elements_by_class_name('table_row')
-		keys = ['actions', 'dobd', 'monoclonal', 'kappa', 'lambda', 'ratio', 'blood', 'calcium', 'platelets', 'blood_cell', 'hemoglobin', 'lactate', 'immuno_g', 'immuno_a', 'immuno_m', 'albumin'	]
+		keys = ['actions', 'dobd', 'monoclonal', 'kappa', 'lambda', 'ratio', 'blood', 'blood_cell', 'hemoglobin',  'lactate', 'albumin', 'immuno_g', 'immuno_a', 'immuno_m', 'calcium', 'platelets']
 		for rowIndex, row in enumerate(rows):
 			rowInfo = {} # Info for an individual test
 			if rowIndex != 0:
@@ -128,12 +68,12 @@ class MyelomaLabsView(view.View):
 				for tdIndex, td in enumerate(tds):
 					if tdIndex == 0:
 						buttons = row.find_elements_by_tag_name('i')
-						rowInfo['edit'] = buttons[0]
-						rowInfo['delete'] = buttons[1]
+						rowInfo['edit'] = row.find_element_by_class_name('edit')
+						rowInfo['delete'] = row.find_element_by_class_name('delete')
 					else:
 						rowInfo[keys[tdIndex]] = td.text.lower()
-
-			self.clinical_tables.append(rowInfo)
+			if rowInfo:
+				self.clinical_tables.append(rowInfo)
 
 
 	def add_new_lab(self, labInfo, action='save'):	
@@ -144,7 +84,25 @@ class MyelomaLabsView(view.View):
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
+	def edit_delete_lab(self, testIndex, revisedLabInfo, action='delete', popUpAction='confirm'):
+		try:
+			test = self.clinical_tables[testIndex]
+		except IndexError:
+			print('No test w/ index: ' + str(testIndex))
+			return False
 
+		if test:
+			if action == 'delete':
+				test['delete'].click()
+				self.popUpForm = popUpForm.PopUpForm(self.driver)
+				WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+				self.popUpForm.confirm(popUpAction)
+			else:
+				test['edit'].click()
+				WDW(self.driver, 10).until(lambda x: self.addLabsForm.load())
+				self.addLabsForm.submit(revisedLabInfo, 'save')
+
+			return True
 
 
 

@@ -11,7 +11,7 @@ class CreateAcctView(view.View):
 		try:
 			# Crap on left
 			self.signInForm = signInForm.SignInForm(self.driver)
-			self.createAccount_link = self.driver.find_elements_by_tag_name('a')[-1]
+			self.createAccount_link = self.driver.find_elements_by_tag_name('a')[2]
 			self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
