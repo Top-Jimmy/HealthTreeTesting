@@ -55,7 +55,7 @@ class TreatmentsOutcomesView(view.View):
 				return 'fresh'
 
 	def validate(self, expectedValues):
-		failures = []
+		self.failures = []
 
 		if expectedValues:
 			# print('validating expectedValues')
@@ -63,14 +63,14 @@ class TreatmentsOutcomesView(view.View):
 			if meta:
 				for key, value in meta.iteritems():
 					if key == 'num_treatments' and value != len(self.saved_tests):
-						failures.append('Treatments&Outcomes Meta: Expected ' + str(value) + ' treatments. Form has ' + str(len(self.saved_tests)))
+						self.failures.append('Treatments&Outcomes Meta: Expected ' + str(value) + ' treatments. Form has ' + str(len(self.saved_tests)))
 
 			elif self.state == 'fresh':
 				# todo: Validate text on 'fresh' popup
 				pass
 			else:
 				if self.add_treatments_button and self.add_treatments_button.text != 'Add Treatments':
-					failures.append('treatmentsOutcomesView: Unexpected text on add treatment button')
+					self.failures.append('treatmentsOutcomesView: Unexpected text on add treatment button')
 				if self.state == 'saved':
 					# Verify tests have expected data
 					# raw_input('expectedValues: ' + str(expectedValues))
@@ -86,135 +86,30 @@ class TreatmentsOutcomesView(view.View):
 						if len(expectedTests) == 1:
 							testIndex = -1
 						savedTest = self.read_test(testIndex)
-						# raw_input('savedTEst: ' + str(savedTest))
+						# raw_input('savedTest: ' + str(savedTest))
 						savedData = savedTest['testData']
 
-						if testType == 'chemo':
+						# All treatment types have treatments and therapy type
+						self.compare_therapy_type(savedData['therapy type'], test, testType)
+						self.compare_treatments(savedData['treatments'], test, testType)
+						if testType == 'stem cell':
+							self.compare_start_date(self.convert_date(savedData['transplant date']), test, testType)
+						else:
+							self.compare_start_date(self.convert_date(savedData['start date']), test, testType)
+							self.compare_end_date(self.convert_date(savedData['end date']), test, testType)
 
-							# Start date (always 2nd question)
-							savedVal = self.convert_date(savedData['start date'])
-							expectedVal = test['questions'][1]['text']
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected start date ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct start date')
-
-							# End Date
-							hasEndDate = False
-							expectedVal = 'current treatment'
-							if test['questions'][3]['type'] == 'date':
-								hasEndDate = True
-								expectedVal = test['questions'][3]['text']
-
-							savedVal = self.convert_date(savedData['end date'])
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected end date ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct end date')
-
-							# Therapy Type
-							# ExpectedVal is option from 1st question, unless question 3/4 is 'yes' (then it's 'maintenance therapy')
-							isMaintenance = False
-							maintenanceIndex = 3 # Maintenance question is index 3, unless there is an end date
-							if hasEndDate:
-								maintenanceIndex = 4
-							for key in test['questions'][maintenanceIndex]['options']:
-								if key.lower() == 'yes':
-									isMaintenance = True
-
-							if isMaintenance:
-								expectedVal = 'maintenance therapy'
-							else:
-								# Don't pull from question options. Exact text does not match
-								expectedVal = 'Chemotherapy / Myeloma Therapy'.lower()
-
-							savedVal = savedData['therapy type']
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected treatmentType ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct therapy')
-
-							# sideEffects
-							savedVal = savedData['side effects']
-							expectedVal = self.parse_sideEffects(test['questions'][-1]['options'])
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected sideEffects ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct side effects')
-
-						elif testType == 'radiation':
-							pass
-
-							# Start date (always question[2])
-							savedVal = self.convert_date(savedData['start date'])
-							expectedVal = test['questions'][2]['text']
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected start date ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct start date')
-
-							# End Date (alwyas 4th question)
-							savedVal = self.convert_date(savedData['end date'])
-							expectedVal = test['questions'][3]['text']
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected end date ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct end date')
-
-							# Treatment Type
-							savedVal = savedData['therapy type']
-							expectedVal = 'radiation'
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected treatmentType ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct therapy')
-
-							# Side Effects
-							savedVal = savedData['side effects']
-							expectedVal = self.parse_sideEffects(test['questions'][-1]['options'])
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected sideEffects ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct side effects')
-
-						elif testType in extraTypes:
-
-							# Start date
-							savedVal = self.convert_date(savedData['start date'])
-							expectedVal = test['questions'][3]['text']
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected start date ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct start date')
-
-							# End Date
-							savedVal = self.convert_date(savedData['end date'])
-							try:
-								# End Date is question[5]
-								expectedVal = test['questions'][5]['text']
-							except (IndexError, KeyError) as e:
-								# No end date
-								expectedVal = 'current treatment'
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected end date ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct end date')
-
-							# Treatment Type
-							savedVal = savedData['therapy type']
-							for key in test['questions'][1]['options']:
-								expectedVal = key.lower()
-							if savedVal != expectedVal:
-								failures.append('T&Outcomes: Expected treatmentType ' + str(expectedVal) + ', loaded ' + str(savedVal))
-							else:
-								print('correct therapy')
+						if testType in extraTypes: # Bone Strengtheners, Antibiotics, Antifungal
+							self.compare_frequency(savedData['frequency'], test, testType)
+						else: # Chemo, Radiation, Stem Cell
+							self.compare_side_effects(savedData['side effects'], test, testType)
+							self.compare_outcome(savedData['outcome'], test, testType)
 
 				elif self.state == 'normal':
 					pass
 
-		if len(failures) > 0:
+		if len(self.failures) > 0:
 			print('Failures!')
-			for failure in failures:
+			for failure in self.failures:
 				print(failure)
 				raise NoSuchElementException("Failed to load treatmentsOutcomesView")
 		else:
@@ -249,21 +144,31 @@ class TreatmentsOutcomesView(view.View):
 				tds = row.find_elements_by_tag_name('td')
 				for tdIndex, td in enumerate(tds):
 					key = testKeys[tdIndex]
-					if tdIndex == 3: # Treatments List
+					if tdIndex == len(tds)-2: # Treatments List (2nd to last td)
 						items = td.find_elements_by_class_name('treatments-lbl-span')
 						for treatment in items:
 							treatmentText = treatment.text.lower()
 							treatments.append(treatmentText)
 						testData[key] = treatments
 
-					elif tdIndex == 4:  # SideEffects List
+					elif tdIndex == len(tds)-1: # Last row: index=4 (3 for stem cell)
+						# Side Effects (chemo, radiation, stem cell)
 						items = td.find_elements_by_class_name('treatments-lbl-span')
-						for effect in items:
-							name = effect.find_element_by_tag_name('span').text.lower()
-							intensity = int(effect.find_element_by_tag_name('div').text)
-							sideEffects[name] = {'intensity': intensity}
+						if len(items) > 0:
+							for effect in items:
+								name = effect.find_element_by_tag_name('span').text.lower()
+								intensity = int(effect.find_element_by_tag_name('div').text)
+								sideEffects[name] = {'intensity': intensity}
+							testData[key] = sideEffects
 
-						testData[key] = sideEffects
+						else: # Frequency (Bone strengtheners, antibiotics, antifungal)
+							# Only bone strengtheners have frequency (otherwise 'N/A')
+							text = td.text
+							print('text: ' + str(text))
+							if text:
+								testData[key] = text.lower()
+							else: # Might have no side effects (any type of treatment)
+								testData[key] = sideEffects
 
 					else: # Start date, end date, therapy type
 						testData[key] = td.text.lower()
@@ -318,10 +223,156 @@ class TreatmentsOutcomesView(view.View):
 		# }
 
 		sideEffects = {}
-		for category in info:
-			for effect, value in info[category].iteritems():
-				sideEffects[effect] = value
+		if info:
+			for category in info:
+				for effect, value in info[category].iteritems():
+					sideEffects[effect] = value
 		return sideEffects
+
+	def calc_start_date(self, testType, test):
+		# Stem Cell: question[3] unless it's induction therapy (question[2]=yes), then it's 8
+		if testType == 'stem cell':
+			index = 3
+			for key in test['questions'][2]['options']:
+				if key.lower() == 'yes':
+					index = 8
+			# print('index: ' + str(index))
+			return index
+
+	def compare_start_date(self, savedVal, test, testType):
+		questionIndicies = {
+			'stem cell': self.calc_start_date(testType, test),
+			'radiation': 2,
+			'chemo': 1,
+			'bone strengtheners': 3,
+			'antibiotics': 3,
+			'antifungal': 3,
+		}
+
+		# Start Date (universal treatment option)
+		questionIndex = questionIndicies[testType]
+		expectedVal = test['questions'][questionIndex]['text']
+		if savedVal != expectedVal:
+			self.failures.append('T&Outcomes: Expected start date ' + str(expectedVal) + ', loaded ' + str(savedVal))
+		else:
+			print('correct start date')
+
+	def compare_end_date(self, savedVal, test, testType):
+		if testType == 'radiation':
+			expectedVal = test['questions'][3]['text']
+		elif testTye == 'chemo':
+			expectedVal = 'current treatment'
+			if test['questions'][3]['type'] == 'date':
+				expectedVal = test['questions'][3]['text']
+		else:
+			try:
+				expectedVal = test['questions'][5]['text'] # If no question[5] it's 'current treatment'
+			except (IndexError, KeyError) as e:
+				# No end date
+				expectedVal = 'current treatment'
+
+
+		if savedVal != expectedVal:
+			self.failures.append('T&Outcomes: Expected end date ' + str(expectedVal) + ', loaded ' + str(savedVal))
+		else:
+			print('correct end date')
+
+	def compare_therapy_type(self, savedVal, test, testType):
+		if testType == 'radiation':
+			expectedVal = 'radiation'
+		elif testType == 'stem cell':
+			expectedVal = 'stem cell transplant'
+		elif testType == 'chemo':
+			# If it's not maintenance therapy, ExpectedVal is option from 1st question
+			# Index of maintenance therapy question depends on if treatment is 'current' or not
+			expectedVal = 'current treatment'
+			maintenanceIndex = 3
+			if test['questions'][3]['type'] == 'date':
+				# Is a current treatment. Maintenance is index 4
+				maintenanceIndex = 3
+
+			isMaintenance = False
+			for key in test['questions'][maintenanceIndex]['options']:
+				if key.lower() == 'yes':
+					expectedVal = 'maintenance therapy'
+				else:
+					# Don't pull from question options. Exact text does not match
+					expectedVal = 'Chemotherapy / Myeloma Therapy'.lower()
+		else:
+			for key in test['questions'][1]['options']:
+				expectedVal = key.lower()
+
+		if savedVal != expectedVal:
+			self.failures.append('T&Outcomes: Expected therapyType ' + str(expectedVal) + ', loaded ' + str(savedVal))
+		else:
+			print('correct therapy type')
+
+	def compare_side_effects(self, savedVal, test, testType):
+		# Everything has sideEffects except for 'extra' treatments
+		index = -1
+		if testType == 'stem cell':
+			index = -2
+		expectedVal = self.parse_sideEffects(test['questions'][index]['options'])
+		print('expectedVal: ' + str(expectedVal))
+		if savedVal != expectedVal:
+			self.failures.append('T&Outcomes: Expected sideEffects ' + str(expectedVal) + ', loaded ' + str(savedVal))
+		else:
+			print('correct side effects')
+
+	def compare_treatments(self, savedData, test, testType):
+		pass
+
+	def compare_frequency(self, savedVal, test, testType):
+		# Only for Bone strengthener, antibiotics, antifungal
+		if testType == 'bone strengtheners':
+			for key in test['questions'][-1]['options']:
+				expectedVal = key.lower()
+		else:
+			expectedVal == 'na'
+
+		if savedVal != expectedVal:
+			self.failures.append('T&Outcomes: Expected frequency ' + str(expectedVal) + ', loaded ' + str(savedVal))
+		else:
+			print('correct frequency')
+
+	def compare_outcome(self, savedVal, test, testType):
+		# Only for chemo, radiation, stem cell
+		expectedOutcomes = []
+		index = -2
+		if testType == 'stem cell':
+			index = -3
+		for key in test['questions'][index]['options']:
+			expectedOutcomes.append(key.lower())
+
+		# 'options': {
+		# 	'I discontinued this treatment': {
+		# 		'type': 'select-all',
+		# 		'options': {
+		# 			'Too much travel': {},
+		# 			'Other': {'comment': 'Discontinued comment: Treatment2'},
+		# 		},
+		# 	}
+		if expectedOutcomes[0] == 'i discontinued this treatment':
+			# Get options for subquestion
+			suboptions = test['questions'][-2][initialOutcome]['options']
+			for suboption, value in suboptions.iteritems():
+				expectedOutcomes.append(suboption.lower())
+				# Get comment if 'other' is selected
+				if suboption.lower() == 'other':
+					try:
+						comment = value['comment']
+						expectedOutcomes.append(comment.lower())
+					except AttributeError:
+						print('No comment')
+
+		hasError = False
+		for expectedOutcome in expectedOutcomes:
+			if not expectedOutcome in savedVal:
+				self.failures.append('T&Outcomes: Expected outcome ' + str(expectedOutcome) + ', loaded ' + str(savedVal))
+				hasError = True
+
+		if not hasError:
+			print('correct outcome')
 
 
 ############################### Test Functions. ####################################

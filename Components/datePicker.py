@@ -19,71 +19,23 @@ class DatePicker():
         print('DatePicker: Expected state: "' + expectedState + '". Got state: "' + self.picker_state + '"')
         return False
       else:
-        time.sleep(.4)
-        if self.picker_state == 'month':
-          # Header should display current year. # Picker table should have months
-          self.cont = self.container.find_element_by_class_name('rdtMonths')
-          self.tables = self.cont.find_elements_by_tag_name('table')
+        dropdownConts = self.container.find_elements_by_class_name('Select--single')
+        self.year_cont = dropdownConts[0]
+        self.month_cont = dropdownConts[1]
 
-          self.picker_table = self.tables[1]
-          self.months = self.load_picker_table_items('month')
-        else: # Header should display range of years, picker table should display those years
-          self.cont = self.container.find_element_by_class_name('rdtYears')
-          self.tables = self.cont.find_elements_by_tag_name('table')
-
-          self.picker_table = self.tables[1]
-          self.years = self.load_picker_table_items('year')
-
-        header = self.tables[0]
-        self.previous_button = header.find_element_by_class_name('rdtPrev')
-        self.next_button = header.find_element_by_class_name('rdtNext')
-        self.current_button = header.find_element_by_class_name('rdtSwitch')
-
-        self.current_year = self.load_current_year()
-        self.current_month = self.load_current_month()
       return True
     except (NoSuchElementException, StaleElementReferenceException) as e:
       print('failed to load datePicker')
       return False
 
   def get_picker_state(self):
-    state = 'undefined'
+    state = 'normal'
+    # Make sure container has datePicker in it
     try:
-      # Make sure container has datePicker in it (or has datepicker class itself)
-      classes = self.container.get_attribute('class')
-      if 'mnth-datepicker' not in classes:
-        # Try to find datepicker in container
-        cont = self.container.find_element_by_class_name('mnth-datepicker')
-
-      # Currently selecting years or months? Default should be months
-      try:
-        el = self.container.find_element_by_class_name('rdtYears')
-        state = 'year'
-      except NoSuchElementException:
-        pass
-
-      if state == 'undefined':
-        try:
-          el = self.container.find_element_by_class_name('rdtMonths')
-          state = 'month'
-        except NoSuchElementException:
-          print('no month')
-          pass
-
+      cont = self.container.find_element_by_class_name('Select--single')
     except NoSuchElementException:
-      print('datePicker: Cont does not have datepicker component')
       state = 'wrong container'
     return state
-
-  def load_picker_table_items(self, expectedType):
-    # If state matches expectedType, return dict of tds in picker table (months or years)
-    if expectedType and expectedType == self.picker_state:
-      items = {}
-      if self.picker_table:
-        tds = self.picker_table.find_elements_by_tag_name('td')
-        for i, td in enumerate(tds):
-          items[td.text] = tds[i]
-        return items
 
 
 ########################### General ##############################
@@ -92,13 +44,64 @@ class DatePicker():
     month = self.parse_date(date, 'month')
     year = self.parse_date(date, 'year')
     self.load()
-
-    if self.current_year != year:
-      self.set_year(year)
-    self.set_month(month)
+    # print('setting date')
+    # print(month)
+    # print(year)
+    WDW(self.driver, 10).until(lambda x: self.set_dropdown(self.year_cont, year))
+    WDW(self.driver, 10).until(lambda x: self.set_dropdown(self.month_cont, month))
 
     # Wait for datepicker to disappear
     time.sleep(.4)
+
+  def set_dropdown(self, container, value):
+    # Figure out if you need to click 'Select-value-label' or 'Select-placeholder' element
+    dropdown_preSet = False
+    try:
+      dropdown_value = container.find_element_by_class_name('Select-value-label')
+      dropdown_placeholder = None
+      dropdown_preSet = True
+    except NoSuchElementException:
+      dropdown_value = None
+      dropdown_placeholder = container.find_element_by_class_name('Select-placeholder')
+
+    # Only continue if value isn't already set
+    if dropdown_value and dropdown_value.text == value:
+      return True
+
+    # click it
+    if dropdown_preSet:
+      dropdown_value.click()
+    else:
+      dropdown_placeholder.click()
+    # load options in dropdown
+    options = {}
+    count = 0
+    loaded = False
+    while not loaded and count < 5:
+      try:
+        menu = container.find_element_by_class_name('Select-menu-outer')
+        divs = menu.find_elements_by_tag_name('div')
+        for i, div in enumerate(divs):
+          if i != 0:
+            options[div.text.lower()] = divs[i]
+        loaded = True
+      except NoSuchElementException:
+        print('Unable to find dropdown items for datepicker')
+        count += 1
+
+    if count == 5 or not options:
+      print('Failed to load date dropdown options')
+      return False
+
+    # click option
+    try:
+      option = options[value.lower()]
+      option.click()
+      return True
+    except (IndexError, KeyError) as e:
+      print('invalid date option: ' + value)
+      for option in options:
+        print(option)
 
   def parse_date(self, dateStr, dateType):
     # Given dateStr "mm/yyyy", parse and return month or year
@@ -112,87 +115,3 @@ class DatePicker():
     else:
       year = dateStr[divider + 1:]
       return year
-
-
-########################### Month Picker ##############################
-
-  def load_current_month(self):
-    # Return first 3 letters of currently selected month (None if none selected or picking year)
-    if self.picker_state == 'month':
-      for month, element in self.months.iteritems():
-        classes = element.get_attribute('class')
-        if 'rdtActive' in classes:
-          # if element.get_attribute('class').contains('rdtActive'):
-          # .get_attribute(class) returns unicode object. Cannot call .contains() on unicode object
-          return month
-    return None
-
-  def load_months(self):
-    # Return dict of month elements. Key is first 3 letters of month.
-    if self.picker_state == 'month':
-      months = {}
-      if self.picker_table:
-        month_tds = self.picker_table.find_elements_by_tag_name('td')
-        for i, month in enumerate(month_tds):
-          months[month.text] = month_tds[i]
-      return months
-
-  def get_month_status(self, month):
-    # Is given month enabled or disabled?
-    if self.picker_state == 'month' and self.months:
-      classes = self.months[month].get_attribute('class')
-      if 'rdtDisabled' in classes:
-        # if self.months[month].get_attribute('class').contains('rdtDisabled'):
-        # .get_attribute(class) returns unicode object. Cannot call .contains() on unicode object
-        return 'disabled'
-      else:
-        return 'enabled'
-
-  def set_month(self, month):
-    if self.picker_state == 'month':
-      # Is month enabled?
-      if self.get_month_status(month) == 'enabled':
-        self.months[month].click()
-        return True
-    return False
-
-
-########################### Year Picker ##############################
-
-  def set_year(self, year):
-    if self.picker_state == 'month':
-      self.current_button.click()
-      WDW(self.driver, 3).until(lambda x: self.load('year'))
-
-    # Is year visible? Before or after current page?
-    first_year = self.get_earliest_year()
-    last_year = first_year + 11   # Always displays 12 years
-    if int(year) < first_year:
-      self.previous_button.click()
-      self.load('year')
-      self.set_year(year)
-    elif int(year) > last_year:
-      self.next_button.click()
-      self.load('year')
-      self.set_year(year)
-    else:
-      self.years[year].click()
-      self.load('month')
-
-  def get_earliest_year(self):
-    # Return earliest year visible on year picker
-    if self.picker_state == 'year' and self.years:
-      lowest_year = 3000
-      for year, element in self.years.iteritems():
-        if int(year) < lowest_year:
-          lowest_year = int(year)
-      if lowest_year < 3000:
-        return int(lowest_year)
-      else:
-        print('Datepicker: Failed to get earliest year')
-
-  def load_current_year(self):
-    if self.picker_state == 'month':
-      return self.current_button.text
-
-

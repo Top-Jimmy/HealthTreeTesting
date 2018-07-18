@@ -22,7 +22,7 @@ class AddTreatmentForm():
 		self.form = self.driver.find_element_by_class_name('editroll')
 		self.load_questions()
 
-		# self.validate(expectedValues)
+		self.validate(expectedValues)
 		return True
 
 	def load_questions(self):
@@ -205,6 +205,22 @@ class AddTreatmentForm():
 
 		return tableInfo
 
+	def validate(self, expectedValues):
+		self.failures = []
+
+		if expectedValues:
+			meta = expectedValues.get('meta', None)
+			if meta:
+				for key, value in meta.iteritems():
+					if key == 'num_questions' and value != len(self.questionConts):
+						self.failures.append('AddTreatment Meta: Expected ' + str(value) + ' questions. Form has ' + str(len(self.questionConts)))
+
+		if len(self.failures) > 0:
+			for failure in self.failures:
+				print(failure)
+				return False
+		return True
+
 ######################## Test Functions ###########################
 
 	def add_treatment(self, treatmentInfo, formAction='save'):
@@ -243,11 +259,12 @@ class AddTreatmentForm():
 				try:
 					self.questionConts[0].find_element_by_class_name('green-hvr-bounce-to-top').click()
 				except NoSuchElementException:
-					print('question ' + str(i) + ' did not have continue button')
+					print('question[' + str(i) + '] did not have continue button')
 
 			# Reload if this isn't the last question
 			if i != lastQuestionIndex:
-				WDW(self.driver, 10).until(lambda x: self.load())
+				# Should have i+1 questions
+				WDW(self.driver, 10).until(lambda x: self.load({'meta': {'num_questions': i+1}}))
 		return True
 
 	def set_date(self, dateCont, date):

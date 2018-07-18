@@ -5,6 +5,18 @@ import profiles
 import form_info
 # import copy # copy.deepcopy(object)
 
+# TestChemotherapy
+# 	test_current_chemotherapy					Question[2] Are you currently taking chemotherapy?
+# 	test_changed_chemotherapy: 				Question[5] Medications were added/removed during treatment?
+# TestRadiation
+# 	test_add_radiation
+# TestExtra
+# 	test_bone_strengthener: 					Question[4] still taking bone strengtheners?
+# 	test_antibiotics: 								Question[4] Still taking antibiotics?
+# 	test_antifungal: 									Question[4] still taking antifungal?
+# TestStemCell
+# 	test_basic_stem_cell
+
 class TestChemotherapy(unittest.TestCase):
 
 	def setUp(self):
@@ -16,7 +28,7 @@ class TestChemotherapy(unittest.TestCase):
 
 	def test_current_chemotherapy(self):
 		'''AddTreatment : TestChemotherapy . test_chemotherapy'''
-		# Different flows depending on how you answer question #3 (Are you currently taking chemotherapy)
+		# Different flows depending on how you answer question[2] (Are you currently taking chemotherapy)
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -295,7 +307,6 @@ class TestRadiation(unittest.TestCase):
 				},
 			],
 		}
-		# self.assertTrue(toView.on({'tests': [treatment1] }))
 		self.assertTrue(toView.add_treatment(treatment1, 'save'))
 
 		treatment2 = {
@@ -598,4 +609,97 @@ class TestExtra(unittest.TestCase):
 		}
 		self.assertTrue(toView.add_treatment(treatment2, 'save'))
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+
+class TestStemCell(unittest.TestCase):
+	# 1. Treatment Type
+	# 2. Stemcell Type
+	# 3. Induction Therapy? (yes: +5)
+	# 	Extra: Induction start date (if yes)
+	# 	Extra: Induction stop date (if yes)
+	# 	Extra: Induction treatments (if yes)
+	# 	Extra: Best Induction Response  (if yes)
+	# 	Extra: Induction Side Effects (if yes)
+
+	# 4. Transplant Start Date
+	# 5. Dose of Melphalan
+	# 6. Best Response to transplant
+	# 7. Transplant SideEffects
+
+	# 8. Maintenance therapy? (done if no)
+	# 9. Maintenance: start date
+	# 10. Currently on maintenance therapy?
+	# 	Extra (No) Maintenance stop date
+	# 11. Maintenance treatments
+	# 12. Maintenance best response
+	# 13. Maintenance sideEffects
+
+	def setUp(self):
+		self.driver = initDriver.start(main.browser)
+		self.andrew = profiles.Profile(self.driver, 'andrew')
+
+	def tearDown(self):
+		self.driver.quit()
+
+	def test_basic(self):
+		"""test_add_treatment.py:TestStemCell.test_basic"""
+		# Only 8 questions. Not induction theraapy, not maintenance therapy
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		toView = self.andrew.treatmentsOutcomesView
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Treatments & Outcomes')
+		self.assertTrue(toView.on())
+
+		stemCellBasic = {
+			'testMeta': {'type': 'stem cell'},
+			'questions': [
+				{'type': 'single', 							# 0. Treatment Type
+					'options': {
+						'Stem Cell Transplant': {},
+					},
+				},
+				{'type': 'single',							# 1. Stem Cell type
+					'options': {
+						'Autologous (AUTO) Stem Cell Transplant': {},
+					},
+				},
+				{'type': 'single',							# 2. Induction therapy?
+					'options': {
+						'No': {},
+					},
+				},
+				{'name': 'start date',								# 3. Start date
+					'type': 'date',
+					'text': '01/2018'
+				},
+				{'type': 'single',										# 4. Melphalan dose
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'single',										# 5. Response
+					'options': {
+						'The treatment did not reduce my myeloma': {},
+					},
+				},
+				{'type': 'complex', 										# 6: Side effects
+					'options': {}
+				},
+				{'type': 'single',										# 7. Maintenance Therapy?
+					'options': {
+						'No': {},
+					},
+				},
+			]
+		}
+		# self.assertTrue(toView.on({'tests': [stemCellBasic]}))
+		self.assertTrue(toView.add_treatment(stemCellBasic, 'save'))
+		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+
+
+
+
 

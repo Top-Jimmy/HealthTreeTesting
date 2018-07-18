@@ -23,8 +23,8 @@ class MyelomaDiagnosisFreshForm():
 		self.load_state()
 		print(self.state)
 
-		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
-		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
+		# self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
+		# self.dateDiagnosis_input = self.rows[0].find_element_by_tag_name('input')
 		self.load_first_diagnosis_dropdown()
 
 		if self.state == 'extra_questions':
@@ -290,10 +290,10 @@ class MyelomaDiagnosisFreshForm():
 
 ############################### Dropdown functions #####################################
 
-	def set_dropdown(self, dropdownIndex, value):
+	def set_dropdown(self, cont, value):
 		# find right container given index (class='Select-control')
-		conts = self.driver.find_elements_by_class_name('Select-control')
-		cont = conts[dropdownIndex]
+		# conts = self.driver.find_elements_by_class_name('Select-control')
+		# cont = conts[dropdownIndex]
 
 		# Figure out if you need to click 'Select-value-label' or 'Select-placeholder' element
 		dropdown_preSet = False
@@ -521,7 +521,7 @@ class MyelomaDiagnosisFreshForm():
 				dateSet = False
 				while not dateSet:
 					try:
-						self.dateDiagnosis_input.click()
+						# self.dateDiagnosis_input.click()
 						picker.set_date(formInfo['diagnosis_date'])
 						dateSet = True
 					except (ElementNotVisibleException, StaleElementReferenceException, ValueError, KeyError, AttributeError, WebDriverException) as e:
@@ -530,7 +530,10 @@ class MyelomaDiagnosisFreshForm():
 				self.load()
 
 			if formInfo['type'] is not None:
-				self.set_dropdown(0, formInfo['type'])
+				self.set_dropdown(self.rows[1], formInfo['type'])
+
+			# Update state (might have 3 new questions)
+			self.load_state()
 
 			if formInfo['stable'] is not None and self.state == 'new_diagnosis':
 				stable_myeloma = formInfo['stable']
@@ -647,12 +650,12 @@ class MyelomaDiagnosisFreshForm():
 			cont = conts[i]
 
 			# set date
-			dateInput = cont.find_element_by_id('diagnosisDate_' + str(i + 1))
+			# dateInput = cont.find_element_by_id('diagnosisDate_' + str(i + 1))
 			picker = datePicker.DatePicker(self.driver, self.rows[rowIndex])
 			dateSet = False
 			while not dateSet:
 				try:
-					dateInput.click()
+					# dateInput.click()
 					picker.set_date(diagnosis['date'])
 					dateSet = True
 				except ElementNotVisibleException:
@@ -671,8 +674,8 @@ class MyelomaDiagnosisFreshForm():
 
 			# set diagnosis type
 			if diagnosis['type']:
-				# 0: first diagnosis, 1: state, 2: first add. diagnosis
-				self.set_dropdown((2 + i), diagnosis['type'])
+				# Row right after date row index
+				self.set_dropdown(self.rows[rowIndex+1], diagnosis['type'])
 
 			# set lesions
 			if diagnosis['lesions']:
