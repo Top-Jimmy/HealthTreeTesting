@@ -17,25 +17,33 @@ class SurveysView(view.View):
 	post_url = 'surveys'
 
 	def load(self):
-		try:
-			# Crap on left
-			self.menu = menu.Menu(self.driver)
-			self.header = header.AuthHeader(self.driver)
+		self.menu = menu.Menu(self.driver)
+		self.header = header.AuthHeader(self.driver)
 
-			form = self.driver.find_element_by_id('page-content-wrapper')
-			buttons = form.find_elements_by_tag_name('button')
+		self.form = self.driver.find_element_by_id('page-content-wrapper')
 
-			self.mrd_testing_button = buttons[0]
-			self.vaccinations_button = buttons[1]
-			self.imaging_button = buttons[2]
-			self.genetic_button = buttons[3]
-			self.precursor_button = buttons[4]	
+		self.continue_button = self.form.find_element_by_tag_name('a')
 
-			# self.validate()
-			return True
-		except (NoSuchElementException, StaleElementReferenceException,
-			IndexError) as e:
-			return False
+		self.load_surveys()
+
+		# self.validate()
+		return True
+		
+
+	def load_surveys(self):
+		self.surveys = []
+		surveyButtons = {}
+		surveys = self.form.find_elements_by_class_name('survey-div')
+		for survey in surveys:
+			span = survey.find_element_by_tag_name('span')
+			key = span.text[1:-1]
+			surveyButton = survey.find_element_by_tag_name('button')
+			surveyButtons[key.lower()] = surveyButton
+
+		self.surveys.append(surveyButtons)
+
+		return self.surveys
+
 
 	def conditions_survey(self, conditionsInfo, action='cancel'):
 		self.precursor_button.click()
@@ -61,4 +69,3 @@ class SurveysView(view.View):
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
-	# def submit(self):
