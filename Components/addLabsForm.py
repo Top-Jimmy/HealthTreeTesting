@@ -46,34 +46,49 @@ class AddLabsForm():
 	
 	def submit(self, labInfo, action='save'):
 		if labInfo:
+			self.dobd_input.clear()
 			self.dobd_input.send_keys(labInfo['dobd'])
 			
+			self.monoclonal_input.clear()
 			self.monoclonal_input.send_keys(labInfo['monoclonal'])
 
+			self.kappa_free_input.clear()
 			self.kappa_free_input.send_keys(labInfo['kappa'])
 
+			self.lambda_free_input.clear()
 			self.lambda_free_input.send_keys(labInfo['lambda'])
 
+			self.ratio_input.clear()
 			self.ratio_input.send_keys(labInfo['ratio'])
 
+			self.blood_input.clear()
 			self.blood_input.send_keys(labInfo['blood'])
 
+			self.calcium_input.clear()
 			self.calcium_input.send_keys(labInfo['calcium'])
 
+			self.platelets_input.clear()
 			self.platelets_input.send_keys(labInfo['platelets'])
 
+			self.blood_cell_input.clear()
 			self.blood_cell_input.send_keys(labInfo['blood_cell'])
 
+			self.hemoglobin_input.clear()
 			self.hemoglobin_input.send_keys(labInfo['hemoglobin'])
 
+			self.lactate_input.clear()
 			self.lactate_input.send_keys(labInfo['lactate'])
 
+			self.immuno_g_input.clear()
 			self.immuno_g_input.send_keys(labInfo['immuno_g'])
 
+			self.immuno_a_input.clear()
 			self.immuno_a_input.send_keys(labInfo['immuno_a'])
 
+			self.immuno_m_input.clear()
 			self.immuno_m_input.send_keys(labInfo['immuno_m'])
 
+			self.albumin_input.clear()
 			self.albumin_input.send_keys(labInfo['albumin'])
 
 			if action == 'save':

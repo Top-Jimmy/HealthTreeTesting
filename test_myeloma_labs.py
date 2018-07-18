@@ -56,3 +56,61 @@ class TestMyelomaLabs(unittest.TestCase):
 		self.assertTrue(myelomaLabsView.on())
 
 		myelomaLabsView.add_new_lab(labInfo, 'save')
+
+		self.assertTrue(myelomaLabsView.on())
+
+		myelomaLabsView.edit_delete_lab(-1, 'delete', 'confirm')
+
+	def test_edit_lab(self):
+		'''MyelomaLabs : MyelomaLabs . test_edit_lab'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelomaLabsView = self.andrew.myelomaLabsView
+
+		labInfo = {
+			'dobd': '12/12/2013',
+			'monoclonal': '14',
+			'kappa': '234',
+			'lambda': '457',
+			'ratio': '2',
+			'blood': '8435',
+			'calcium': '78345',
+			'platelets': '3',
+			'blood_cell': '90',
+			'hemoglobin': '798',
+			'lactate': '532',
+			'immuno_g': '275',
+			'immuno_a': '97969765',
+			'immuno_m': '7459',
+			'albumin': '539',
+		}
+
+		revisedLabInfo = {
+			'monoclonal': '19',
+			'kappa': '234',
+			'lambda': '457',
+			'ratio': '2',
+			'blood': '8435',
+			'calcium': '0',
+			'platelets': '3',
+			'blood_cell': '90',
+			'hemoglobin': '23',
+			'lactate': '532',
+			'immuno_g': '275',
+			'immuno_a': '43',
+			'immuno_m': '7459',
+			'albumin': '539',
+		}
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Myeloma Labs')
+		self.assertTrue(myelomaLabsView.on())
+
+		myelomaLabsView.add_new_lab(labInfo, 'save')
+
+		self.assertTrue(myelomaLabsView.on())
+
+		myelomaLabsView.edit_delete_lab(-1, revisedLabInfo, 'edit')

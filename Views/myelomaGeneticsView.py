@@ -55,28 +55,29 @@ class MyelomaGeneticsView(view.View):
 		fishTable = self.driver.find_element_by_id('fish_table')
 		rows = fishTable.find_elements_by_class_name('table_row')
 		labInfo = [] # add text from each header row to values list
-		for rowIndex, row in enumerate(rows):
-			labResult = {}
-			divs = row.find_elements_by_tag_name('div')
-			tds = row.find_elements_by_tag_name('td')
-			# for divIndex, div in enumerate(divs):
-			for tdIndex, td in enumerate(tds):
-				if rowIndex == 0:
-					labInfo.append(td.text.lower())
-				else: 
-					key = labInfo[tdIndex]
-					if key.lower() == 'actions':
-						actions = []
-						self.edit_button = row.find_element_by_class_name('edit-treatment-icon')
-						self.delete_button = row.find_element_by_class_name('delete-treatment-icon')
-						actions.append(self.edit_button)
-						actions.append(self.delete_button)
-						labResult[key] = actions
-					else:
-						text = td.text
-						labResult[key] = text
-			
-			self.fish_tests.append(labResult)
+		if fishTable:
+			for rowIndex, row in enumerate(rows):
+				labResult = {}
+				divs = row.find_elements_by_tag_name('div')
+				tds = row.find_elements_by_tag_name('td')
+				# for divIndex, div in enumerate(divs):
+				for tdIndex, td in enumerate(tds):
+					if rowIndex == 0:
+						labInfo.append(td.text.lower())
+					else: 
+						key = labInfo[tdIndex]
+						if key.lower() == 'actions':
+							actions = []
+							self.edit_button = row.find_element_by_class_name('edit-treatment-icon')
+							self.delete_button = row.find_element_by_class_name('delete-treatment-icon')
+							actions.append(self.edit_button)
+							actions.append(self.delete_button)
+							labResult[key] = actions
+						else:
+							text = td.text
+							labResult[key] = text
+				
+				self.fish_tests.append(labResult)
 
 
 
@@ -85,28 +86,29 @@ class MyelomaGeneticsView(view.View):
 		gepTable = self.driver.find_element_by_id('gep_table')
 		rows = gepTable.find_elements_by_class_name('table_row')
 		labInfo = [] # add text from each header row to values list
-		for rowIndex, row in enumerate(rows):
-			labResult = {}
-			divs = row.find_elements_by_tag_name('div')
-			tds = row.find_elements_by_tag_name('td')
-			# for divIndex, div in enumerate(divs):
-			for tdIndex, td in enumerate(tds):
-				if rowIndex == 0:
-					labInfo.append(td.text.lower())
-				else: 
-					key = labInfo[tdIndex]
-					if key.lower() == 'actions':
-						actions = []
-						self.edit_button = row.find_element_by_class_name('edit-treatment-icon')
-						self.delete_button = row.find_element_by_class_name('delete-treatment-icon')
-						actions.append(self.edit_button)
-						actions.append(self.delete_button)
-						labResult[key] = actions
-					else:
-						text = td.text
-						labResult[key] = text
-			
-			self.gep_tests.append(labResult)
+		if gepTable:
+			for rowIndex, row in enumerate(rows):
+				labResult = {}
+				divs = row.find_elements_by_tag_name('div')
+				tds = row.find_elements_by_tag_name('td')
+				# for divIndex, div in enumerate(divs):
+				for tdIndex, td in enumerate(tds):
+					if rowIndex == 0:
+						labInfo.append(td.text.lower())
+					else: 
+						key = labInfo[tdIndex]
+						if key.lower() == 'actions':
+							actions = []
+							self.edit_button = row.find_element_by_class_name('edit-treatment-icon')
+							self.delete_button = row.find_element_by_class_name('delete-treatment-icon')
+							actions.append(self.edit_button)
+							actions.append(self.delete_button)
+							labResult[key] = actions
+						else:
+							text = td.text
+							labResult[key] = text
+				if labResult:
+					self.gep_tests.append(labResult)
 
 	def load_ngs_table(self):
 		self.ngs_tests = []

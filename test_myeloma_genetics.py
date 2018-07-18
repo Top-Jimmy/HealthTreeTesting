@@ -89,15 +89,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		self.assertTrue(myelomaGeneticsView.on())
 
-		# riskInfo = {
-		# 	'high_b2m': 'Yes',
-		# 	'high_ldh': 'I dont know',
-		# 	'low_albumin': 'I dont know',
-		# }
-
-		# myelomaGeneticsView.edit_high_risk(riskInfo, 'save')
-
-		# self.assertTrue(myelomaGeneticsView.on())
+		myelomaGeneticsView.edit_test('fish', -1, fishInfo, 'delete', 'confirm')
 	# @unittest.skip("Needs modifications")
 	def test_add_gep(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_add_gep'''
@@ -153,6 +145,8 @@ class TestMyelomaGenetics(unittest.TestCase):
 		myelomaGeneticsView.add_ngs_test(ngsInfo)
 
 		self.assertTrue(myelomaGeneticsView.on())
+
+		myelomaGeneticsView.edit_test('ngs', -1, ngsInfo, 'delete', 'confirm')
 
 	# @unittest.skip("Needs modifications")
 	def test_riskInfo(self):
