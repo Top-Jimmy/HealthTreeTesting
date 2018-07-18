@@ -313,7 +313,7 @@ class TreatmentsOutcomesView(view.View):
 		if testType == 'stem cell':
 			index = -2
 		expectedVal = self.parse_sideEffects(test['questions'][index]['options'])
-		print('expectedVal: ' + str(expectedVal))
+		# print('expectedVal: ' + str(expectedVal))
 		if savedVal != expectedVal:
 			self.failures.append('T&Outcomes: Expected sideEffects ' + str(expectedVal) + ', loaded ' + str(savedVal))
 		else:

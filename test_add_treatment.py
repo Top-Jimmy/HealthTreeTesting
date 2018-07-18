@@ -614,9 +614,13 @@ class TestStemCell(unittest.TestCase):
 	# 1. Treatment Type
 	# 2. Stemcell Type
 	# 3. Induction Therapy? (yes: +5)
-	# 	Extra: Induction start date (if yes)
-	# 	Extra: Induction stop date (if yes)
-	# 	Extra: Induction treatments (if yes)
+	# 	Extra: Induction start date
+	#   Extra: Current induction?
+		# 	Extra: Induction stop date (if no)
+	# 	Extra: Induction treatments
+	# 	Extra: Changes to induction?
+		# 	Extra: Added (if yes)
+		# 	Extra: Removed (if yes)
 	# 	Extra: Best Induction Response  (if yes)
 	# 	Extra: Induction Side Effects (if yes)
 
@@ -671,7 +675,7 @@ class TestStemCell(unittest.TestCase):
 						'No': {},
 					},
 				},
-				{'name': 'start date',								# 3. Start date
+				{'name': 'transplant start date',								# 3. Transplant Start date
 					'type': 'date',
 					'text': '01/2018'
 				},
@@ -696,10 +700,151 @@ class TestStemCell(unittest.TestCase):
 			]
 		}
 		# self.assertTrue(toView.on({'tests': [stemCellBasic]}))
-		self.assertTrue(toView.add_treatment(stemCellBasic, 'save'))
+		# self.assertTrue(toView.add_treatment(stemCellBasic, 'save'))
+		# toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+
+		# Still taking induction (yes to question[4])
+		# No drugs added/removed
+		stemCellInduction = {
+			'testMeta': {'type': 'stem cell'},
+			'questions': [
+				{'type': 'single', 							# 0. Treatment Type
+					'options': {
+						'Stem Cell Transplant': {},
+					},
+				},
+				{'type': 'single',							# 1. Stem Cell type
+					'options': {
+						'Autologous (AUTO) Stem Cell Transplant': {},
+					},
+				},
+				{'type': 'single',							# 2. Induction therapy?
+					'options': {
+						'Yes': {},
+					},
+				},
+				{'type': 'date', 											# 3. Induction: Start date
+					'text': '01/2018'
+				},
+				{'type': 'single',										# 4. Induction: Still taking?
+					'options': {
+						'Yes': {},
+					},
+				},
+				{'type': 'complex', 										# 5: Induction: therapy treatments
+					'options': {
+						'chemotherapies': {
+							'melphalan': {},
+						}
+					}
+				},
+				{'type': 'single',										# 6. Induction: Changes to therapy?
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'single',										# 7. Induction therapy Response
+					'options': {
+						'The treatment did not reduce my myeloma': {},
+					},
+				},
+				{'type': 'complex', 									# 8: Induction side effects
+					'options': {
+						'musculoskeletal system': {
+		    			'Back pain': {},
+		    		},
+		    	}
+				},
+
+
+				{'name': 'transplant start date',								# 9. Transplant Start date
+					'type': 'date',
+					'text': '01/2018'
+				},
+				{'type': 'single',										# 10. Melphalan dose
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'single',										# 11. Response
+					'options': {
+						'The treatment did not reduce my myeloma': {},
+					},
+				},
+				{'type': 'complex', 										# 12: Side effects
+					'options': {}
+				},
+				{'type': 'single',										# 13. Maintenance Therapy?
+					'options': {
+						'No': {},
+					},
+				},
+			]
+		}
+		self.assertTrue(toView.add_treatment(stemCellInduction, 'save'))
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
-
-
-
-
+		# Still taking induction (no to question[4])
+		# No drugs added/removed
+		stemCellInduction = {
+			'testMeta': {'type': 'stem cell'},
+			'questions': [
+				{'type': 'single', 							# 0. Treatment Type
+					'options': {
+						'Stem Cell Transplant': {},
+					},
+				},
+				{'type': 'single',							# 1. Stem Cell type
+					'options': {
+						'Autologous (AUTO) Stem Cell Transplant': {},
+					},
+				},
+				{'type': 'single',							# 2. Induction therapy?
+					'options': {
+						'Yes': {},
+					},
+				},
+				{'type': 'date', 											# 3. Induction Start date
+					'text': '01/2018'
+				},
+				{'type': 'single',										# 4. Still taking induction therapy?
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'date', 											# 3. Induction End date
+					'text': '03/2018'
+				},
+				{'type': 'complex', 										# 5: Induction therapy treatments
+					'options': {
+						'chemotherapies': {
+							'melphalan': {},
+						}
+					}
+				},
+				{'name': 'transplant start date',								# 6. Transplant Start date
+					'type': 'date',
+					'text': '01/2018'
+				},
+				{'type': 'single',										# 7. Melphalan dose
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'single',										# 8. Response
+					'options': {
+						'The treatment did not reduce my myeloma': {},
+					},
+				},
+				{'type': 'complex', 										# 9: Side effects
+					'options': {}
+				},
+				{'type': 'single',										# 10. Maintenance Therapy?
+					'options': {
+						'No': {},
+					},
+				},
+			]
+		}
+		self.assertTrue(toView.add_treatment(stemCellInduction, 'save'))
+		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})

@@ -230,6 +230,7 @@ class AddTreatmentForm():
 		lastQuestionIndex = len(questions) - 1
 		# questions
 		for i, question in enumerate(questions):
+			print('question[' + str(i) + ']')
 			qType = question['type']
 			questionActions = question.get('actions', None)
 			if qType == 'date':
@@ -268,7 +269,7 @@ class AddTreatmentForm():
 		return True
 
 	def set_date(self, dateCont, date):
-		# Assumes datepicker was selected and is visible
+		# Assumes dateCont has both month/year dropdowns in it
 		picker = datePicker.DatePicker(self.driver, dateCont)
 		dateSet = False
 		count = 0

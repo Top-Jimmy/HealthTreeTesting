@@ -8,20 +8,23 @@ class DatePicker():
 
   def __init__(self, driver, container):
     self.driver = driver
-    self.container = container # Will have datepicker elements for each datepicker on page
+    # Throw exception if container doesn't contain date stuff
+    cont = container.find_element_by_class_name('Select--single')
+    self.container = container
 
   def load(self, expectedState=None):
     try:
-      self.picker_state = self.get_picker_state()
-      if self.picker_state == 'wrong container':
+      # self.picker_state = self.get_picker_state()
+      # if self.picker_state == 'wrong container':
+      #   print('wrong datepicker container')
+      #   return False
+      # else:
+      dropdownConts = self.container.find_elements_by_class_name('Select--single')
+      if len(dropdownConts) < 2:
+        print('not enough dropdown containers')
         return False
-      elif expectedState and expectedState != self.picker_state:
-        print('DatePicker: Expected state: "' + expectedState + '". Got state: "' + self.picker_state + '"')
-        return False
-      else:
-        dropdownConts = self.container.find_elements_by_class_name('Select--single')
-        self.year_cont = dropdownConts[0]
-        self.month_cont = dropdownConts[1]
+      self.year_cont = dropdownConts[0]
+      self.month_cont = dropdownConts[1]
 
       return True
     except (NoSuchElementException, StaleElementReferenceException) as e:
