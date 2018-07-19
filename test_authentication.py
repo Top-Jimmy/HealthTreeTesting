@@ -107,4 +107,3 @@ class TestLogin(unittest.TestCase):
 		self.assertTrue(homeView.login(self.andrew.credentials))
 
 		self.assertTrue(aboutMeView.on())
-

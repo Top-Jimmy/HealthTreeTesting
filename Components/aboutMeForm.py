@@ -29,6 +29,8 @@ class AboutMeForm():
 
 		self.treatment_textarea = self.form.find_element_by_tag_name('textarea')
 
+		self.academic_tooltip = self.form.find_element_by_class_name('tool-tip-history')
+
 		self.load_cancer_care()
 
 		# Terms of Use and Privacy Policy checkboxes and links
@@ -59,20 +61,20 @@ class AboutMeForm():
 				failures.append('AboutMeForm: Expecting zip code "' + expectedValues['zip_code'] + '", got"' + self.zipcode_input.get_attribute('value') + '"')
 
 			if expectedValues['gender'] == 'male' and not self.male_radio.get_attribute('checked'):
-				failure.append('AboutMeForm: Expecting gender "male"')
+				failures.append('AboutMeForm: Expecting gender "male"')
 			elif expectedValues['gender'] == 'female' and not self.female_radio.get_attribute('checked'):
-				failure.append('AboutMeForm: Expecting gender "female"')
+				failures.append('AboutMeForm: Expecting gender "female"')
 
 			if expectedValues['assisted'] == 'no' and not self.cancerCareNo_radio.get_attribute('checked'):
-				failure.append('AboutMeForm: Expecting "no" to family assistance')
+				failures.append('AboutMeForm: Expecting "no" to family assistance')
 			elif expectedValues['assisted'] == 'yes' and not self.cancerCareYes_radio.get_attribute('checked'):
-				failure.append('AboutMeForm: Expecting "yes" to family assistance')
+				failures.append('AboutMeForm: Expecting "yes" to family assistance')
 
 			if expectedValues['terms'] != self.termsprivacy_checkbox.get_attribute('checked'):
-				failure.append('AboutMeForm: Expecting "' + str(expectedValues['terms']) + '" Terms and Conditions')
+				failures.append('AboutMeForm: Expecting "' + str(expectedValues['terms']) + '" Terms and Conditions')
 
 			if expectedValues['sparkCures'] != self.SparkCuresterms_checkbox.get_attribute('checked'):
-				failure.append('AboutMeForm: Expecting "' + str(expectedVaues['sparkCures']) + '" Terms and Conditions')
+				failures.append('AboutMeForm: Expecting "' + str(expectedValues['sparkCures']) + '" Terms and Conditions')
 
 		if len(failures) > 0:
 			print(failures)
@@ -143,6 +145,15 @@ class AboutMeForm():
 			self.caregiver_name_input = None
 			self.caregiver_phone_input = None
 			self.caregiver_email_input = None
+
+	def tooltip(self):
+		self.academic_tooltip.click()
+		p = self.academic_tooltip.find_element_by_tag_name('p')
+		if p.text != 'See the closest Cancer Treatment Centers or Specialist to your zip code.':
+			print('tooltip not clicked correctly:' + str(p.text))
+			return False
+		return True
+
 
 	def enter_info(self, form_info):
 		if form_info:

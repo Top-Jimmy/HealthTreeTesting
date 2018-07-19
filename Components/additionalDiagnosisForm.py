@@ -21,13 +21,14 @@ class AdditionalDiagnosisForm():
 
 		self.cont = self.driver.find_element_by_class_name('modal-content')
 		self.buttons = self.cont.find_elements_by_tag_name('button')
+		self.rows = self.cont.find_elements_by_class_name('row')
 
 		self.close_button = self.buttons[0] # x in upper right
 		self.submit_button = self.buttons[1]
 		self.cancel_button = self.buttons[2]
 
-		self.dateDiagnosis_cont = self.cont.find_element_by_class_name('mnth-datepicker')
-		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
+		# self.dateDiagnosis_cont = self.cont.find_element_by_class_name('mnth-datepicker')
+		# self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
 
 		self.lesions0 = self.cont.find_element_by_id('0')
 		self.lesions1 = self.cont.find_element_by_id('1')
@@ -102,11 +103,11 @@ class AdditionalDiagnosisForm():
 
 			# Date
 			if formInfo['date'] is not None:
-				picker = datePicker.DatePicker(self.driver, self.dateDiagnosis_cont)
+				picker = datePicker.DatePicker(self.driver, self.rows[0])
 				dateSet = False
 				while not dateSet:
 					try:
-						self.dateDiagnosis_input.click()
+						# self.dateDiagnosis_input.click()
 						picker.set_date(formInfo['date'])
 						dateSet = True
 					except (ElementNotVisibleException, StaleElementReferenceException) as e:

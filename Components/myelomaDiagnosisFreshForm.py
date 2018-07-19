@@ -45,6 +45,7 @@ class MyelomaDiagnosisFreshForm():
 		self.boneLesion2_radio = self.form.find_element_by_id('2')
 		self.boneLesion3_radio = self.form.find_element_by_id('3')
 
+		self.highRisk_tooltip = self.form.find_element_by_class_name('tool-tip-history')
 		self.highRisk1_radio = self.form.find_element_by_id('highRisk1')
 		self.highRisk2_radio = self.form.find_element_by_id('highRisk2')
 		self.highRisk3_radio = self.form.find_element_by_id('highRisk3')
@@ -393,14 +394,28 @@ class MyelomaDiagnosisFreshForm():
 
 		# Load dropdown options
 		dropdownOptions = {}
-		try:
+		count = 0
+		loaded = False
+		while not loaded and count < 5:
+		  try:
 			menu = self.physician_rows[physicianIndex].find_element_by_class_name('Select-menu-outer')
 			divs = menu.find_elements_by_tag_name('div')
 			for i, div in enumerate(divs):
-				if i != 0: # First div is container
-					dropdownOptions[div.text.lower()] = divs[i]
-		except NoSuchElementException:
-			print('Unable to find dropdown items for physician ' + str(physicianIndex) + ' state')
+			  if i != 0: # First div is container
+				dropdownOptions[div.text.lower()] = divs[i]
+			loaded = True
+		  except NoSuchElementException:
+			print('Unable to find states in physician dropdown')
+			count += 1
+
+		# try:
+		# 	menu = self.physician_rows[physicianIndex].find_element_by_class_name('Select-menu-outer')
+		# 	divs = menu.find_elements_by_tag_name('div')
+		# 	for i, div in enumerate(divs):
+		# 		if i != 0: # First div is container
+		# 			dropdownOptions[div.text.lower()] = divs[i]
+		# except NoSuchElementException:
+		# 	print('Unable to find dropdown items for physician ' + str(physicianIndex) + ' state')
 
 		try: # click one that matches value
 			option = dropdownOptions[value.lower()]
@@ -409,6 +424,8 @@ class MyelomaDiagnosisFreshForm():
 			print('invalid state: ' + value)
 		# reload page to update physician values
 		WDW(self.driver, 5).until(lambda x: self.load())
+
+		
 
 	def set_physician(self, physicianInfo, index):
 		p_elements = self.physicians[index]['elements']
@@ -534,8 +551,10 @@ class MyelomaDiagnosisFreshForm():
 
 			# Update state (might have 3 new questions)
 			self.load_state()
+			if self.state == 'extra_questions':
+				self.load()
 
-			if formInfo['stable'] is not None and self.state == 'new_diagnosis':
+			if formInfo['stable'] is not None and self.state == 'extra_questions':
 				stable_myeloma = formInfo['stable']
 				if stable_myeloma == 'no':
 					self.stable_no_input.click()
@@ -544,7 +563,7 @@ class MyelomaDiagnosisFreshForm():
 				else:
 					self.stable_idk_input.click()
 
-			if formInfo['m_protein'] is not None and self.state == 'new_diagnosis':
+			if formInfo['m_protein'] is not None and self.state == 'extra_questions':
 				stable_myeloma = formInfo['m_protein']
 				if stable_myeloma == 'no':
 					self.mprotein_no_input.click()
@@ -553,7 +572,7 @@ class MyelomaDiagnosisFreshForm():
 				else:
 					self.mprotein__idk_input.click()
 
-			if formInfo['recent_pain'] is not None and self.state == 'new_diagnosis':
+			if formInfo['recent_pain'] is not None and self.state == 'extra_questions':
 				stable_myeloma = formInfo['recent_pain']
 				if stable_myeloma == 'no':
 					self.recent_pain_no_input.click()
@@ -710,10 +729,19 @@ class MyelomaDiagnosisFreshForm():
 				}
 				WDW(self.driver, 5).until(lambda x: self.load(expectedValues))
 				# print('2. has # rows: ' + str(expectedRows))
+
 	def cancel_physician(self, physicianInfo):
 		self.set_physician(physicianInfo, 0)
 
 		self.add_physician_button.click()
 		self.delete_button = self.form.find_element_by_class_name('delete_physician_icon')
 		self.delete_button.click()
+
+	def tooltip(self):
+		self.highRisk_tooltip.click()
+		p = self.form.find_element_by_class_name('tooltip-p')
+		if p.text != 'Risk in myeloma is tied to disease stage, chromosomal abnormalities, disease biology, and gene expression. In the Myeloma Genetics page we will gather more details about risk.':
+			print('tooltip not clicked correctly: ' + str(p.text))
+			return False
+		return True
 

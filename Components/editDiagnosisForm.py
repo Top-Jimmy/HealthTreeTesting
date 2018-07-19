@@ -20,8 +20,8 @@ class EditDiagnosisForm():
 		self.rows = self.form.find_elements_by_class_name('form-group')
 		buttons = self.popup.find_elements_by_tag_name('button')
 
-		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
-		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_id('diagnosis_date')
+		# self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
+		# self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_id('diagnosis_date')
 
 		self.load_first_diagnosis_dropdown()
 
@@ -201,7 +201,7 @@ class EditDiagnosisForm():
 				dateSet = False
 				while not dateSet:
 					try:
-						self.dateDiagnosis_input.click()
+						# self.dateDiagnosis_input.click()
 						picker.set_date(formInfo['diagnosis_date'])
 						dateSet = True
 						time.sleep(.6)

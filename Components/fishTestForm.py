@@ -16,10 +16,10 @@ class FishTestForm():
 		self.rows = self.form.find_elements_by_class_name('form-group')
 
 
-		# self.close_button = buttons[5]
-
-		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
-		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
+		# Make sure datepicker row has right stuff loaded
+		if not self.rows:
+			return False
+		datepicker = self.rows[0].find_element_by_class_name('Select--single')
 
 		self.add_1q21_checkbox = self.form.find_element_by_id('Addition_1q21')
 
@@ -146,7 +146,7 @@ class FishTestForm():
 				dateSet = False
 				while not dateSet:
 					try:
-						self.dateDiagnosis_input.click()
+						# self.dateDiagnosis_input.click()
 
 						picker.set_date(fishInfo['test_fish_date'])
 						dateSet = True

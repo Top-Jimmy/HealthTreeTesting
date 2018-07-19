@@ -17,8 +17,9 @@ class GepTestForm():
 
 		# self.close_button = buttons[5]
 
-		self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
-		self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
+		if not self.rows:
+			return False
+		datepicker = self.rows[0].find_element_by_class_name('Select--single')
 
 		self.comment_textarea = self.form.find_element_by_tag_name('textarea')
 
@@ -37,7 +38,7 @@ class GepTestForm():
 				dateSet = False
 				while not dateSet:
 					try:
-						self.dateDiagnosis_input.click()
+						# self.dateDiagnosis_input.click()
 
 						picker.set_date(gepInfo['test_gep_date'])
 						dateSet = True

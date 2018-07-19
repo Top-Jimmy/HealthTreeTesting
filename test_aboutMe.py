@@ -46,6 +46,14 @@ class TestAboutMe(unittest.TestCase):
 
 		self.assertTrue(aboutMeView.on())
 
-		# self.assertTrue(aboutMeView.submit(about_me_data, expectedWarnings=expectedWarnings))
+	def test_tooltip(self):
+		'''AboutMe: AboutMe . test_tooltip'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
 
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.aboutMeForm.tooltip()
 

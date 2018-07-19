@@ -288,5 +288,60 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		myelDiagView.myelomaDiagnosisFreshForm.cancel_physician(physicianInfo)
 		self.assertTrue(myelDiagView.on('fresh'))
 
+	def test_tooltip(self):
+		'''MyelomaDiagnosis : MyelomaDiagnosis . test_tooltip'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelDiagView = self.andrew.myelomaDiagnosisView
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Myeloma Diagnosis')
+		self.assertTrue(myelDiagView.on('fresh'))
+
+		myelDiagView.myelomaDiagnosisFreshForm.tooltip()
+
+	def test_additional_questions(self):
+		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_questions'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelDiagView = self.andrew.myelomaDiagnosisView
+
+		formInfo =  {
+				'diagnosis_date': '05/2016',
+				'type': 'solitary plasmacytoma',
+				'stable': 'no',
+				'm_protein': 'no',
+				'recent_pain': 'yes',
+				'lesions': 'no lesions',
+				'high_risk': 'no',
+				'transplant_eligible': 'no',
+				'diagnosis_location': {
+					'facility': 'Huntsman Cancer',
+					'city': 'Salt Lake City',
+					'state': 'Utah',
+				},
+				'additional_diagnosis': False,
+				'physicians': [
+					{'name': 'David Avigan',
+						'facility': 'Beth Israel Deaconess Medical Center',
+						'city': 'Boston',
+						'state': 'Massachusetts',
+					},
+				],
+			}
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Myeloma Diagnosis')
+		self.assertTrue(myelDiagView.on('fresh'))
+		self.assertTrue(myelDiagView.submitFreshForm(formInfo))
+
+		self.assertTrue(myelDiagView.on('saved'))
+		self.assertTrue(myelDiagView.delete('diagnosis', 'all'))
 
 

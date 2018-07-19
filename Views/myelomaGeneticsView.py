@@ -34,12 +34,11 @@ class MyelomaGeneticsView(view.View):
 			cont = self.driver.find_element_by_class_name('genetics-btn')
 			self.continue_button = cont.find_element_by_tag_name('button')
 
-			# self.tables = self.driver.find_elements_by_class_name('table_container')
 			self.load_fish_table()
 			self.load_gep_table()
 			self.load_ngs_table()
 			self.load_highRisk_table()
-
+				
 
 			# When user hasn't filled anything out
 				# todo
@@ -52,7 +51,11 @@ class MyelomaGeneticsView(view.View):
 
 	def load_fish_table(self):
 		self.fish_tests = []
-		fishTable = self.driver.find_element_by_id('fish_table')
+		fishTable = ''
+		try:
+			fishTable = self.driver.find_element_by_id('fish_table')
+		except NoSuchElementException:
+			pass
 		rows = fishTable.find_elements_by_class_name('table_row')
 		labInfo = [] # add text from each header row to values list
 		if fishTable:
@@ -83,10 +86,14 @@ class MyelomaGeneticsView(view.View):
 
 	def load_gep_table(self):
 		self.gep_tests = []
-		gepTable = self.driver.find_element_by_id('gep_table')
-		rows = gepTable.find_elements_by_class_name('table_row')
-		labInfo = [] # add text from each header row to values list
+		gepTable = ''
+		try:
+			gepTable = self.driver.find_element_by_id('gep_table')
+		except NoSuchElementException:
+			pass
 		if gepTable:
+			rows = gepTable.find_elements_by_class_name('table_row')
+			labInfo = [] # add text from each header row to values list
 			for rowIndex, row in enumerate(rows):
 				labResult = {}
 				divs = row.find_elements_by_tag_name('div')
@@ -112,6 +119,11 @@ class MyelomaGeneticsView(view.View):
 
 	def load_ngs_table(self):
 		self.ngs_tests = []
+		ngsTable = ''
+		try:
+			ngsTable = self.driver.find_element_by_id('ngs_table')
+		except NoSuchElementException:
+			pass
 		ngsTable = self.driver.find_element_by_id('ngs_table')
 		rows = ngsTable.find_elements_by_class_name('table_row')
 		labInfo = [] # add text from each header row to values list

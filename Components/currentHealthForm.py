@@ -17,6 +17,11 @@ class CurrentHealthForm():
 		for i, question in enumerate(self.question_elements):
 			self.load_question(self.question_elements[i])
 
+		tooltips = self.form.find_elements_by_tag_name('img')
+		self.blood_pressure_tooltip = tooltips[0]
+		self.blood_clot_tooltip = tooltips[1]
+		self.neuropathy_tooltip = tooltips[2]
+
 		self.continue_button = self.form.find_element_by_class_name('submitForm')
 		self.validate(expectedValues)
 		return True
@@ -156,7 +161,24 @@ class CurrentHealthForm():
 			return False
 		return True
 
+	def tooltip(self):
+		p = self.form.find_elements_by_class_name('tooltip-p')
+		self.blood_pressure_tooltip.click()
+		if p[0].text != 'Blood pressure is the pressure exerted on walls of the blood vessels by circulating blood. Along with body temperature, respiratory rate, and pulse rate, blood pressure is one of the four main vital signs monitored by medical professionals.':
+			print('tooltip not clicked correctly:' + str(p[0].text))
+			raw_input('first tooltip worked?')
+			return False
 
+		self.blood_clot_tooltip.click()
+		if p[1].text != 'Deep vein thrombosis (DVT) occurs when a blood clot (thrombus) forms in one or more of the deep veins in your body, usually in your legs. Deep vein thrombosis can cause leg pain or swelling, but also can occur with no symptoms.':
+			print('tooltip not clicked correctly:' + str(p[1].text))
+			return False
+			
+		self.neuropathy_tooltip.click()
+		if p[2].text != 'Neuropathy is gradual onset of numbness, prickling or tingling in your feet or hands, which can spread upward into your legs and arms.':
+			print('tooltip not clicked correctly:' + str(p[2].text))
+			return False
+		return True
 
 
 

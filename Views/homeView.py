@@ -11,6 +11,8 @@ class HomeView(view.View):
 		try:
 			# Crap on left
 			self.signInForm = signInForm.SignInForm(self.driver)
+			self.terms_of_service_link = self.driver.find_elements_by_tag_name('a')[0]
+			self.privacy_policy_link = self.driver.find_elements_by_tag_name('a')[1]
 			self.createAccount_link = self.driver.find_elements_by_tag_name('a')[2]
 			self.validate()
 			return True
@@ -73,7 +75,11 @@ class HomeView(view.View):
 		return False
 
 	def click_link(self, link):
-		if link == 'create account':
+		if link == 'terms of service':
+			self.terms_of_service_link.click()
+		elif link == 'privacy policy':
+			self.privacy_policy_link.click()
+		elif link == 'create account':
 			self.createAccount_link.click()
 		elif link == 'forgot password':
 			self.signInForm.forgotPassword_link.click()

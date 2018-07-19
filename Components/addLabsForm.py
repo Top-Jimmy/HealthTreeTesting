@@ -46,7 +46,6 @@ class AddLabsForm():
 	
 	def submit(self, labInfo, action='save'):
 		if labInfo:
-			self.dobd_input.clear()
 			self.dobd_input.send_keys(labInfo['dobd'])
 			
 			self.monoclonal_input.clear()

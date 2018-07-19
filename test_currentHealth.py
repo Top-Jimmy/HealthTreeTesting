@@ -182,3 +182,17 @@ class TestCurrentHealth(unittest.TestCase):
 		# Reset to default answers (I don't know for everything)
 		self.assertTrue(currentHealthView.submit(defaultFormInfo))
 
+	def test_tooltip(self):
+		'''CurrentHealth : CurrentHealth . test_tooltip'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		currentHealthView = self.andrew.currentHealthView
+		
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Current Health')
+		self.assertTrue(currentHealthView.on())
+		currentHealthView.currentHealthForm.tooltip()
+
