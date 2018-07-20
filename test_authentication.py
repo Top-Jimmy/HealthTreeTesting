@@ -31,10 +31,10 @@ class TestCreateAccount(unittest.TestCase):
 
 		self.assertTrue(createAcctView.go())
 
-
 	def test_success(self):
 		'''Authentication : CreateAcct . test_success'''
 		pass
+
 	def test_create_account(self):
 		'''Authentication : CreateAcct . test_create_account'''
 		homeView = self.andrew.homeView

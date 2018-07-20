@@ -61,9 +61,9 @@ class AboutMeForm():
 				failures.append('AboutMeForm: Expecting zip code "' + expectedValues['zip_code'] + '", got"' + self.zipcode_input.get_attribute('value') + '"')
 
 			if expectedValues['gender'] == 'male' and not self.male_radio.get_attribute('checked'):
-				failures.append('AboutMeForm: Expecting gender "male"')
+				failures.append('AboutMeForm: Expecting gender "male". Male radio loaded: ' + str(self.male_radio.get_attribute('checked')))
 			elif expectedValues['gender'] == 'female' and not self.female_radio.get_attribute('checked'):
-				failures.append('AboutMeForm: Expecting gender "female"')
+				failures.append('AboutMeForm: Expecting gender "female". Female radio loaded: ' + str(self.female_radio.get_attribute('checked')))
 
 			if expectedValues['assisted'] == 'no' and not self.cancerCareNo_radio.get_attribute('checked'):
 				failures.append('AboutMeForm: Expecting "no" to family assistance')
@@ -71,13 +71,14 @@ class AboutMeForm():
 				failures.append('AboutMeForm: Expecting "yes" to family assistance')
 
 			if expectedValues['terms'] != self.termsprivacy_checkbox.get_attribute('checked'):
-				failures.append('AboutMeForm: Expecting "' + str(expectedValues['terms']) + '" Terms and Conditions')
+				failures.append('AboutMeForm: Expecting "' + str(expectedValues['terms']) + '" Terms and Conditions. Loaded ' + str(self.termsprivacy_checkbox.get_attribute('checked')))
 
 			if expectedValues['sparkCures'] != self.SparkCuresterms_checkbox.get_attribute('checked'):
-				failures.append('AboutMeForm: Expecting "' + str(expectedValues['sparkCures']) + '" Terms and Conditions')
+				failures.append('AboutMeForm: Expecting "' + str(expectedValues['sparkCures']) + '" SparkCures. Loaded ' + str(self.SparkCuresterms_checkbox.get_attribute('checked')))
 
 		if len(failures) > 0:
-			print(failures)
+			for failure in failures:
+				print(failure)
 			raise NoSuchElementException('Failed to load AboutMeForm')
 
 	def read_warnings(self):
