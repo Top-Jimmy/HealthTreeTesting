@@ -14,6 +14,10 @@ class AddLabsForm():
 
 	def load(self):
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+		cont = self.driver.find_element_by_class_name('myeloma-labs-row')
+		self.get_my_labs_button = cont.find_element_by_tag_name('button')
+
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		inputs = self.form.find_elements_by_tag_name('input')
 		self.footer = self.driver.find_element_by_class_name('modal-footer')
@@ -21,7 +25,7 @@ class AddLabsForm():
 		# self.close_button = buttons[5]
 		cont = self.driver.find_element_by_class_name('date-picker-icon-div')
 		self.dobd_input = cont.find_element_by_tag_name('input')
-		
+
 
 		self.monoclonal_input = inputs[0]
 		self.kappa_free_input = inputs[1]
@@ -43,11 +47,11 @@ class AddLabsForm():
 		self.cancel_button = buttons[1]
 
 		return True
-	
+
 	def submit(self, labInfo, action='save'):
 		if labInfo:
 			self.dobd_input.send_keys(labInfo['dobd'])
-			
+
 			self.monoclonal_input.clear()
 			self.monoclonal_input.send_keys(labInfo['monoclonal'])
 

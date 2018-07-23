@@ -1,6 +1,7 @@
 
 __all__ = [
 	'aboutMeView',
+	'consentFormView',
 	'createAcctView',
 	'currentHealthView',
 	'fitLvlView',
@@ -10,6 +11,8 @@ __all__ = [
 	'myelDiagView',
 	'myelomaGeneticsView',
 	'myelomaLabsView',
+	'myLabsAddFacilityView',
+	'myLabsFacilitiesView',
 	'settingsView',
 	'surveysView',
 	'treatmentsOutcomesView',

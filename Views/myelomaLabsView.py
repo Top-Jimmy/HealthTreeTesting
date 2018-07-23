@@ -18,7 +18,7 @@ class MyelomaLabsView(view.View):
 		try:
 			# Crap on left
 			WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
-			
+
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 			self.form = self.driver.find_element_by_id('page-content-wrapper')
@@ -54,7 +54,7 @@ class MyelomaLabsView(view.View):
 		failures = []
 		if self.add_new_button.text != 'Add New Labs':
 			failure.append('AddLabsView: Unexpected add new labs button text')
-		
+
 
 	def load_table(self):
 		self.clinical_tables = []
@@ -75,8 +75,13 @@ class MyelomaLabsView(view.View):
 			if rowInfo:
 				self.clinical_tables.append(rowInfo)
 
+	def get_my_labs(self):
+		self.add_new_button.click()
+		self.addLabsForm = addLabsForm.AddLabsForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.addLabsForm.load())
+		self.addLabsForm.get_my_labs_button.click() # Should now be on /my-labs-facilities
 
-	def add_new_lab(self, labInfo, action='save'):	
+	def add_new_lab(self, labInfo, action='save'):
 		self.add_new_button.click()
 		self.addLabsForm = addLabsForm.AddLabsForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.addLabsForm.load())

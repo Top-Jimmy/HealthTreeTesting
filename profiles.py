@@ -19,6 +19,13 @@ class Profile:
 		self.fullHealthView = fullHealthView.FullHealthView(driver)
 		self.myelomaGeneticsView = myelomaGeneticsView.MyelomaGeneticsView(driver)
 		self.treatmentsOutcomesView = treatmentsOutcomesView.TreatmentsOutcomesView(driver)
+
+		# Myeloma Labs
 		self.myelomaLabsView = myelomaLabsView.MyelomaLabsView(driver)
+		self.myLabsFacilitiesView = myLabsFacilitiesView.MyLabsFacilitiesView(driver)
+		self.myLabsAddFacilityView = myLabsAddFacilityView.MyLabsAddFacilityView(driver)
+		self.consentFormView = consentFormView.ConsentFormView(driver)
+
 		self.settingsView = settingsView.SettingsView(driver)
 		self.surveysView = surveysView.SurveysView(driver)
+

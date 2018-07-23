@@ -39,40 +39,40 @@ class TestMyelomaGenetics(unittest.TestCase):
 		fishInfo = {
 			'test_fish_date': '06/2018',
 			'gene_additions': {
-				'1q21': False, 
+				'1q21': False,
 			},
 			'gene_deletions': {
-				'deletion_1p': False, 
-				'deletion_17p': True, 
-				'deletion_13q': False, 
+				'deletion_1p': False,
+				'deletion_17p': True,
+				'deletion_13q': False,
 				'deletion_16q': True
 			},
 			'gene_translocations': {
-				'trans_FGFR3': True, 
-				'trans_CCND3': True, 
-				'trans_CCND1': False, 
-				'trans_cMAF': True, 
-				'trans_MAFB': False, 
+				'trans_FGFR3': True,
+				'trans_CCND3': True,
+				'trans_CCND1': False,
+				'trans_cMAF': True,
+				'trans_MAFB': False,
 				'trans_ETV6': True,
 			},
 			'trisomies': {
-				'tri_3': True, 
-				'tri_5': False, 
-				'tri_7': True, 
-				'tri_9': True, 
-				'tri_11': False, 
-				'tri_15': True, 
-				'tri_17': True, 
+				'tri_3': True,
+				'tri_5': False,
+				'tri_7': True,
+				'tri_9': True,
+				'tri_11': False,
+				'tri_15': True,
+				'tri_17': True,
 				'tri_19': True,
 			},
 		'tetrasomies': {
-				'tetra_3': True, 
-				'tetra_5': False, 
-				'tetra_7': False, 
-				'tetra_9': False, 
-				'tetra_11': True, 
-				'tetra_15': True, 
-				'tetra_17': False, 
+				'tetra_3': True,
+				'tetra_5': False,
+				'tetra_7': False,
+				'tetra_9': False,
+				'tetra_11': True,
+				'tetra_15': True,
+				'tetra_17': False,
 				'tetra_19': True,
 			},
 		}
@@ -90,6 +90,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		self.assertTrue(myelomaGeneticsView.on())
 
 		myelomaGeneticsView.edit_test('fish', -1, fishInfo, 'delete', 'confirm')
+
 	# @unittest.skip("Needs modifications")
 	def test_add_gep(self):
 		'''MyelomaGenetics : MyelomaGenetics . test_add_gep'''
@@ -109,7 +110,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Genetics')
 		self.assertTrue(myelomaGeneticsView.on())
 
-		myelomaGeneticsView.add_gep_test(gepInfo, 'cancel')
+		myelomaGeneticsView.add_gep_test(gepInfo, 'save')
 
 		self.assertTrue(myelomaGeneticsView.on())
 
