@@ -261,6 +261,7 @@ class MyelomaDiagnosisSavedForm():
 
 		print('#: ' + str(length))
 		for i in xrange(length):
+			# print('deleting: ' + str(i))
 			if index != 'all':
 				dataList[index]['delete'].click()
 			else:
@@ -282,6 +283,7 @@ class MyelomaDiagnosisSavedForm():
 				if not clicked:
 					print('Failed to click delete')
 					return False
+
 
 
 			self.popUpForm = popUpForm.PopUpForm(self.driver)

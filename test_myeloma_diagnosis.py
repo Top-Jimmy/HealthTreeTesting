@@ -115,6 +115,12 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 
+		# Test Code
+		# self.assertTrue(myelDiagView.on())
+		# myelDiagView.delete('physician', 'all')
+		# raw_input('no physicians?')
+		# End test code
+
 		self.assertTrue(myelDiagView.on('fresh'))
 		self.assertTrue(myelDiagView.submitFreshForm(formInfo))
 

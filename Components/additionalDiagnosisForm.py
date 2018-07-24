@@ -27,8 +27,10 @@ class AdditionalDiagnosisForm():
 		self.submit_button = self.buttons[1]
 		self.cancel_button = self.buttons[2]
 
-		# self.dateDiagnosis_cont = self.cont.find_element_by_class_name('mnth-datepicker')
-		# self.dateDiagnosis_input = self.dateDiagnosis_cont.find_element_by_tag_name('input')
+		self.lesions0 = self.cont.find_element_by_id('0')
+		self.lesions1 = self.cont.find_element_by_id('1')
+		self.lesions2 = self.cont.find_element_by_id('2')
+		self.lesions3 = self.cont.find_element_by_id('3')
 
 		self.lesions0 = self.cont.find_element_by_id('0')
 		self.lesions1 = self.cont.find_element_by_id('1')
@@ -100,10 +102,9 @@ class AdditionalDiagnosisForm():
 
 	def submit(self, formInfo):
 		if formInfo:
-
 			# Date
 			if formInfo['date'] is not None:
-				picker = datePicker.DatePicker(self.driver, self.rows[0])
+				picker = datePicker.DatePicker(self.driver, self.dateDiagnosis_cont)
 				dateSet = False
 				while not dateSet:
 					try:
