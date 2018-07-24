@@ -67,7 +67,7 @@ class TestCurrentHealth(unittest.TestCase):
 		self.driver.quit()
 
 	def test_navigate(self):
-		'''CurrentHealth : CurrentHealth . test_navigate'''
+		'''test_currentHealth.py:TestCurrentHealth.test_navigate '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		currentHealthView = self.andrew.currentHealthView
@@ -79,7 +79,7 @@ class TestCurrentHealth(unittest.TestCase):
 		self.assertTrue(currentHealthView.on())
 
 	def test_non_recent_diagnosis(self):
-		'''CurrentHealth : CurrentHealth . test_non_recent_diagnosis'''
+		'''test_currentHealth.py:TestCurrentHealth.test_non_recent_diagnosis '''
 		# Andrew: 'Current Health' should no longer have 3 extra questions for non-recent diagnoses (Not for MGUS or smoldering)
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -121,7 +121,7 @@ class TestCurrentHealth(unittest.TestCase):
 		myelDiagView.delete('diagnosis', 0)
 
 	def test_secondary_questions(self):
-		'''CurrentHealth : CurrentHealth . test_secondary_questions'''
+		'''test_currentHealth.py:TestCurrentHealth.test_secondary_questions '''
 		# CurrentHealth should be able to set and read correct values for secondary questions
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -183,11 +183,11 @@ class TestCurrentHealth(unittest.TestCase):
 		self.assertTrue(currentHealthView.submit(defaultFormInfo))
 
 	def test_tooltip(self):
-		'''CurrentHealth : CurrentHealth . test_tooltip'''
+		'''test_currentHealth.py:TestCurrentHealth.test_tooltip '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		currentHealthView = self.andrew.currentHealthView
-		
+
 		self.assertTrue(homeView.go())
 		self.assertTrue(homeView.login(self.andrew.credentials))
 

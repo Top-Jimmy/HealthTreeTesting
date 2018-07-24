@@ -14,7 +14,7 @@ class TestAboutMe(unittest.TestCase):
 		self.driver.quit()
 
 	def test_navigate(self):
-		'''AboutMe : AboutMe . test_navigate'''
+		'''test_aboutMe.py:TestAboutMe.test_navigate '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		self.assertTrue(homeView.go())
@@ -24,7 +24,7 @@ class TestAboutMe(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Diagnosis')
 
 	def test_validate(self):
-		'''AboutMe : AboutMe . test_validate'''
+		'''test_aboutMe.py:TestAboutMe.test_validate '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 
@@ -34,7 +34,7 @@ class TestAboutMe(unittest.TestCase):
 		self.assertTrue(aboutMeView.on(self.andrew.credentials['about_me_data']))
 
 	def test_warnings(self):
-		'''AboutMe : AboutMe . test_warnings'''
+		'''test_aboutMe.py:TestAboutMe.test_warnings '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		about_me_data = self.andrew.credentials['about_me_data']
@@ -47,10 +47,10 @@ class TestAboutMe(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 
 	def test_tooltip(self):
-		'''AboutMe: AboutMe . test_tooltip'''
+		'''test_aboutMe.py:TestAboutMe.test_tooltip '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
-		
+
 		self.assertTrue(homeView.go())
 		self.assertTrue(homeView.login(self.andrew.credentials))
 

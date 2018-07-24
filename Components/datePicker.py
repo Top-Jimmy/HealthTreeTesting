@@ -23,8 +23,8 @@ class DatePicker():
       if len(dropdownConts) < 2:
         print('not enough dropdown containers')
         return False
-      self.year_cont = dropdownConts[0]
-      self.month_cont = dropdownConts[1]
+      self.month_cont = dropdownConts[0]
+      self.year_cont = dropdownConts[1]
 
       return True
     except (NoSuchElementException, StaleElementReferenceException) as e:
@@ -50,8 +50,8 @@ class DatePicker():
     # print('setting date')
     # print(month)
     # print(year)
-    WDW(self.driver, 10).until(lambda x: self.set_dropdown(self.year_cont, year))
     WDW(self.driver, 10).until(lambda x: self.set_dropdown(self.month_cont, month))
+    WDW(self.driver, 10).until(lambda x: self.set_dropdown(self.year_cont, year))
 
     # Wait for datepicker to disappear
     time.sleep(.4)

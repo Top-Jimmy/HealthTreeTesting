@@ -27,7 +27,7 @@ class TestChemotherapy(unittest.TestCase):
 		self.driver.quit()
 
 	def test_current_chemotherapy(self):
-		'''AddTreatment : TestChemotherapy . test_chemotherapy'''
+		''' test_add_treatment.py:TestChemotherapy.test_current_chemotherapy '''
 		# Different flows depending on how you answer question[2] (Are you currently taking chemotherapy)
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -154,7 +154,7 @@ class TestChemotherapy(unittest.TestCase):
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
 	def test_changed_chemotherapy(self):
-		'''AddTreatment : TestChemotherapy . test_chemotherapy'''
+		''' test_add_treatment.py:TestChemotherapy.test_changed_chemotherapy '''
 		# Different flows depending on whether medications were added/removed during treatment
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -257,7 +257,7 @@ class TestRadiation(unittest.TestCase):
 		self.driver.quit()
 
 	def test_add_radiation(self):
-		'''AddTreatment : TestRadiation . test_add_radiation'''
+		''' test_add_treatment.py:TestRadiation.test_add_radiation '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -366,7 +366,7 @@ class TestExtra(unittest.TestCase):
 		self.driver.quit()
 
 	def test_bone_strengthener(self):
-		'''AddTreatment : TestExtra . test_bone_strengthener'''
+		''' test_add_treatment.py:TestExtra.test_bone_strengthener '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -454,7 +454,7 @@ class TestExtra(unittest.TestCase):
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
 	def test_antibiotics(self):
-		'''AddTreatment : TestExtra . test_antibiotics'''
+		''' test_add_treatment.py:TestExtra.test_antibiotics '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -533,7 +533,7 @@ class TestExtra(unittest.TestCase):
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
 	def test_antifungal(self):
-		'''AddTreatment : TestExtra . test_antifungal'''
+		''' test_add_treatment.py:TestExtra.test_antifungal '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -645,7 +645,7 @@ class TestStemCell(unittest.TestCase):
 		self.driver.quit()
 
 	def test_basic(self):
-		"""test_add_treatment.py:TestStemCell.test_basic"""
+		''' test_add_treatment.py:TestStemCell.test_basic '''
 		# Only 8 questions. Not induction theraapy, not maintenance therapy
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView

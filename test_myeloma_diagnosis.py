@@ -17,7 +17,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.driver.quit()
 
 	def test_additional_diagnoses(self):
-		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_diagnoses'''
+		''' test_myeloma_diagnosis.py:TestMyelomaDiagnosis.test_additional_diagnoses'''
 		# Fresh and Saved form: Test adding, editing and deleting multiple diagnoses
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -68,7 +68,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		myelDiagView.delete('diagnosis', 'all')
 
 	def test_additional_physicians(self):
-		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_physicians'''
+		''' test_myeloma_diagnosis.py:TestMyelomaDiagnosis.test_additional_physicians'''
 		# Fresh and Saved form: Test adding and deleting multiple physicians
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -136,7 +136,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(myelDiagView.delete('diagnosis', 'all'))
 
 	def test_fresh_form(self):
-		'''MyelomaDiagnosis : MyelomaDiagnosis . test_fresh_form'''
+		''' test_myeloma_diagnosis.py:TestMyelomaDiagnosis.test_fresh_form'''
 		# User submits fresh form, then verifies saved form loads and has expectedValues
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -199,7 +199,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		myelDiagView.delete('diagnosis', 0)
 
 	def test_saved_form(self):
-		'''MyelomaDiagnosis : MyelomaDiagnosis . test_saved_form'''
+		''' test_myeloma_diagnosis.py:TestMyelomaDiagnosis.test_saved_form'''
 		# User already has fresh form submitted. Saved form loads and has expectedValues
 		homeView = self.elliot.homeView
 		aboutMeView = self.elliot.aboutMeView
@@ -244,7 +244,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(myelDiagView.on('saved', default_diagnosis))
 
 	def test_typeahead(self):
-		'''MyelomaDiagnosis : MyelomaDiagosis . test_typeahead'''
+		''' test_myeloma_diagnosis.py:TestMyelomaDiagnosis.test_typeahead'''
 		# Physician name field will suggest options as user types. Tab will autofill physician fields
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -266,7 +266,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		myelDiagView.myelomaDiagnosisFreshForm.add_physician_typeahead('Dav', 'David Avigan', physicianInfo)
 
 	def test_cancel_physician(self):
-		'''MyelomaDiagnosis : MyelomaDiagnosis . test_cancel_physician'''
+		''' test_myeloma_diagnosis.py:TestMyelomaDiagnosis.test_cancel_physician'''
 		# Cancel adding a physician using the delete button
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -289,7 +289,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		self.assertTrue(myelDiagView.on('fresh'))
 
 	def test_tooltip(self):
-		'''MyelomaDiagnosis : MyelomaDiagnosis . test_tooltip'''
+		''' test_myeloma_diagnosis.py:TestMyelomaDiagnosis.test_tooltip'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView
@@ -304,7 +304,7 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 		myelDiagView.myelomaDiagnosisFreshForm.tooltip()
 
 	def test_additional_questions(self):
-		'''MyelomaDiagnosis : MyelomaDiagnosis . test_additional_questions'''
+		''' test_myeloma_diagnosis.py:TestMyelomaDiagnosis.test_additional_questions'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelDiagView = self.andrew.myelomaDiagnosisView

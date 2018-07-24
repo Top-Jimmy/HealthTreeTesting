@@ -260,7 +260,7 @@ class TreatmentsOutcomesView(view.View):
 	def compare_end_date(self, savedVal, test, testType):
 		if testType == 'radiation':
 			expectedVal = test['questions'][3]['text']
-		elif testTye == 'chemo':
+		elif testType == 'chemo':
 			expectedVal = 'current treatment'
 			if test['questions'][3]['type'] == 'date':
 				expectedVal = test['questions'][3]['text']
