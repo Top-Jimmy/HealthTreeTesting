@@ -22,6 +22,17 @@ class AboutMeForm():
 		self.female_radio = labels[0]
 		self.male_radio = labels[1]
 
+		self.gender_values = []
+		value = None
+		for i, label in enumerate(labels):
+			classes = label.get_attribute('class')
+			if 'active' in classes:
+				if i == 0:
+					value = 'female'
+				if i == 1:
+					value = 'male'
+		self.gender_values.append(value)
+
 		dob_cont = self.driver.find_element_by_class_name('mui-select')
 		self.dob_input = dob_cont.find_element_by_tag_name('input')
 
@@ -60,10 +71,8 @@ class AboutMeForm():
 			if self.zipcode_input.get_attribute('value') != expectedValues['zip_code']:
 				failures.append('AboutMeForm: Expecting zip code "' + expectedValues['zip_code'] + '", got"' + self.zipcode_input.get_attribute('value') + '"')
 
-			if expectedValues['gender'] == 'male' and not self.male_radio.get_attribute('checked'):
-				failures.append('AboutMeForm: Expecting gender "male". Male radio loaded: ' + str(self.male_radio.get_attribute('checked')))
-			elif expectedValues['gender'] == 'female' and not self.female_radio.get_attribute('checked'):
-				failures.append('AboutMeForm: Expecting gender "female". Female radio loaded: ' + str(self.female_radio.get_attribute('checked')))
+			if expectedValues['gender'] != self.gender_values[0]:
+				failures.append('AboutMeForm: Expecting gender "' + str(expectedValues['gender']) + '". Radio loaded: ' + str(self.gender_values[0]))
 
 			if expectedValues['assisted'] == 'no' and not self.cancerCareNo_radio.get_attribute('checked'):
 				failures.append('AboutMeForm: Expecting "no" to family assistance')

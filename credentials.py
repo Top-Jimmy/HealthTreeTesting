@@ -15,8 +15,8 @@ andrew = {
 			'phone': '999-999-9999',
 			'email': 'buttkiss1@gmail.com',
 		},
-		'terms': True,
-		'sparkCures': True,
+		'terms': 'true',
+		'sparkCures': 'true',
 	},
 	'myel_diag_data': {
 		# 'newly_diagnosed': 'no',
