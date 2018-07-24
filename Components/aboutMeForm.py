@@ -21,7 +21,7 @@ class AboutMeForm():
 		labels = container.find_elements_by_tag_name('label')
 		self.female_radio = labels[0]
 		self.male_radio = labels[1]
-
+		
 		self.gender_values = []
 		value = None
 		for i, label in enumerate(labels):

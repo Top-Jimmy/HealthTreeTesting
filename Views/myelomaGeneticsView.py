@@ -38,6 +38,14 @@ class MyelomaGeneticsView(view.View):
 			self.load_gep_table()
 			self.load_ngs_table()
 			self.load_highRisk_table()
+
+			self.container = self.driver.find_element_by_id('page-content-wrapper')
+			tooltips = self.container.find_elements_by_tag_name('img')
+			self.fish_tooltip = tooltips[0]
+			self.gep_tooltip = tooltips[1]
+			self.ngs_tooltip = tooltips[2]
+			self.high_risk_tooltip = tooltips[3]
+
 				
 
 			# When user hasn't filled anything out
@@ -314,6 +322,26 @@ class MyelomaGeneticsView(view.View):
 			return self.ngs_tests[testIndex]
 		else:
 			return self.highRisk_tests
+
+	def tooltip(self):
+		p = self.container.find_elements_by_class_name('tooltip-p')
+		index = p[0].text.find(' ')
+		if p[0].text[:index] != 'FISH':
+			return False
+
+		if p[1].text != 'Gene Expression Profiling (GEP) is the measurement of the activity, or expression, of thousands of genes at once. This test can help identify standard risk and high risk genomic features of the myeloma cells in more depth.':
+			print('tooltip not clicked correctly: ' + str(p[1].text))
+			return False
+
+		if p[2].text != 'Next Generation Sequencing looks at the myeloma DNA and RNA and identifies how the mutations are functioning, how the myeloma cells are evolving and how your myeloma may respond to treatment. Currently, NGS testing is typically performed at myeloma academic centers only.':
+			print('tooltip not clicked correctly: ' + str(p[2].text))
+			return False
+
+		if p[3].text != 'Risk in myeloma is tied to disease stage, chromosomal abnormalities, disease biology, and gene expression.  In the Myeloma Genetics page we will gather more details about risk.':
+			print('tooltip not clicked correctly: ' + str(p[3].text))
+			return False
+		return True
+
 
 
 

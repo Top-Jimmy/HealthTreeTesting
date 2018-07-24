@@ -25,6 +25,7 @@ class SurveysView(view.View):
 		self.continue_button = self.form.find_element_by_tag_name('a')
 
 		self.load_surveys()
+		print(self.surveys)
 
 		# self.validate()
 		return True
@@ -46,7 +47,7 @@ class SurveysView(view.View):
 
 
 	def conditions_survey(self, conditionsInfo, action='cancel'):
-		self.precursor_button.click()
+		self.surveys[0]['pre-cursor conditions to multiple myeloma (mgus and smoldering myeloma) in families'].click()
 		self.conditionsSurveyForm = conditionsSurveyForm.ConditionsSurveyForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.conditionsSurveyForm.load())
 		self.conditionsSurveyForm.submit(conditionsInfo, action)
@@ -54,7 +55,7 @@ class SurveysView(view.View):
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def molecular_survey(self, myelomaInfo, action='cancel'):
-		self.genetic_button.click()
+		self.surveys[0]['multiple myeloma genetic (molecular) testing'].click()
 		self.multipleMyelomaSurveyForm = multipleMyelomaSurveyForm.MultipleMyelomaSurveyForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.multipleMyelomaSurveyForm.load())
 		self.multipleMyelomaSurveyForm.submit(myelomaInfo, action)
@@ -62,7 +63,7 @@ class SurveysView(view.View):
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def imaging_survey(self, imagingInfo, action='cancel'):
-		self.imaging_button.click()
+		self.surveys[0]['imaging tests you have had performed (x-ray, mri, pet, etc.)'].click()
 		self.imagingSurveyForm = imagingSurveyForm.ImagingSurveyForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.imagingSurveyForm.load())
 		self.imagingSurveyForm.submit(imagingInfo, action)

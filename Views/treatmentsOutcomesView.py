@@ -21,6 +21,7 @@ class TreatmentsOutcomesView(view.View):
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 			self.state = self.load_state()
+			self.tutorial_button = self.driver.find_element_by_class_name('videobtn')
 			if expectedState and expectedState != self.state:
 				print('Wrong state! Expected ' + str(expectedState) + ', got ' + str(self.state))
 				return False
@@ -30,6 +31,8 @@ class TreatmentsOutcomesView(view.View):
 				# todo: need new account to get this state
 				pass
 			else:
+				self.tutorial_button = self.driver.find_element_by_class_name('videobtn')
+				self.view_options_button = self.driver.find_element_by_class_name('treatment_op_btn')
 				buttonCont = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
 				self.add_treatments_button = buttonCont.find_elements_by_tag_name('button')[0]
 				self.saved_tests = self.driver.find_elements_by_class_name('table_container')
@@ -458,6 +461,13 @@ class TreatmentsOutcomesView(view.View):
 				'treatments': links[0],
 				'delete': links[1],
 			}
+
+	def view_options(self):
+		self.view_options_button.click()
+		url = self.driver.current_url
+		if '/treatment-options' not in url:
+			return False
+			
 
 
 

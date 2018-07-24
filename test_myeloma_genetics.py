@@ -193,7 +193,19 @@ class TestMyelomaGenetics(unittest.TestCase):
 
 		self.assertTrue(myelomaGeneticsView.on())
 
+	def test_tooltip(self):
+		'''MyelomaGenetics : MyelomaGenetics . test_tooltip'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		myelomaGeneticsView = self.andrew.myelomaGeneticsView
+		
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
 
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Myeloma Genetics')
+		self.assertTrue(myelomaGeneticsView.on())
+		myelomaGeneticsView.tooltip()
 
 
 

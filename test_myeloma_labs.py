@@ -59,7 +59,7 @@ class TestMyelomaLabs(unittest.TestCase):
 
 		self.assertTrue(myelomaLabsView.on())
 
-		myelomaLabsView.edit_delete_lab(-1, 'delete', 'confirm')
+		myelomaLabsView.edit_delete_lab(-1, None, 'delete', 'confirm')
 
 	def test_edit_lab(self):
 		'''MyelomaLabs : MyelomaLabs . test_edit_lab'''
@@ -86,6 +86,7 @@ class TestMyelomaLabs(unittest.TestCase):
 		}
 
 		revisedLabInfo = {
+			'dobd': '12/14/2017',
 			'monoclonal': '19',
 			'kappa': '234',
 			'lambda': '457',
@@ -114,3 +115,5 @@ class TestMyelomaLabs(unittest.TestCase):
 		self.assertTrue(myelomaLabsView.on())
 
 		myelomaLabsView.edit_delete_lab(-1, revisedLabInfo, 'edit')
+
+

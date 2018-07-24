@@ -610,6 +610,20 @@ class TestExtra(unittest.TestCase):
 		self.assertTrue(toView.add_treatment(treatment2, 'save'))
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
+	def test_view_treatment_options(self):
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		toView = self.andrew.treatmentsOutcomesView
+		treatmentOptionsView = self.andrew.treatmentOptionsView
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Treatments & Outcomes')
+		self.assertTrue(toView.on())
+		toView.view_options()
+		self.assertTrue(treatmentOptionsView.on())
+
 class TestStemCell(unittest.TestCase):
 	# 1. Treatment Type
 	# 2. Stemcell Type
