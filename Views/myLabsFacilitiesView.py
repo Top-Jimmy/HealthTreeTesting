@@ -20,7 +20,7 @@ class MyLabsFacilitiesView(view.View):
 			self.container = self.driver.find_element_by_id('page-content-wrapper')
 			self.add_facility_button = self.container.find_element_by_class_name('addDiagnoisisButton')
 
-			# 0: Back, 1: Continue
+			# Not in order displayed (float right)
 			self.action_buttons = self.container.find_elements_by_class_name('green-hvr-bounce-to-top')
 			self.facilities = self.load_facilities()
 

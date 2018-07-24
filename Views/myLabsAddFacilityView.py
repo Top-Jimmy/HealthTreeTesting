@@ -20,10 +20,10 @@ class MyLabsAddFacilityView(view.View):
 			self.container = self.driver.find_element_by_id('page-content-wrapper')
 			self.facility_input = self.driver.find_element_by_id('facility_name')
 
-			# 0: Back, 1: Continue
+			# Buttons not in order displayed (float right)
 			buttons = self.container.find_elements_by_class_name('green-hvr-bounce-to-top')
-			self.back_button = buttons[0]
-			self.continue_button = buttons[1]
+			self.continue_button = buttons[0]
+			self.back_button = buttons[1]
 
 			return self.validate(expectedInfo)
 		except (NoSuchElementException, StaleElementReferenceException,
@@ -45,7 +45,7 @@ class MyLabsAddFacilityView(view.View):
 				return False
 		return True
 
-	def enter_facility(self, facilityName):
+	def set_facility(self, facilityName):
 		self.facility_input.clear()
 		self.facility_input.send_keys(facilityName)
 		self.continue_button.click()
