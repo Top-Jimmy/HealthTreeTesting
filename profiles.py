@@ -28,4 +28,3 @@ class Profile:
 
 		self.settingsView = settingsView.SettingsView(driver)
 		self.surveysView = surveysView.SurveysView(driver)
-

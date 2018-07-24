@@ -49,7 +49,9 @@ class AddLabsForm():
 		return True
 
 	def submit(self, labInfo, action='save'):
+		time.sleep(3)
 		if labInfo:
+			self.dobd_input.clear()
 			self.dobd_input.send_keys(labInfo['dobd'])
 
 			self.monoclonal_input.clear()
@@ -102,6 +104,4 @@ class AddLabsForm():
 				self.close_button.click()
 			return True
 		return False
-
-
 

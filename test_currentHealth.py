@@ -196,3 +196,114 @@ class TestCurrentHealth(unittest.TestCase):
 		self.assertTrue(currentHealthView.on())
 		currentHealthView.currentHealthForm.tooltip()
 
+	def test_additional_checkboxes(self):
+		'''CurrentHealth : CurrentHealth . test_additional_checkboxes'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		currentHealthView = self.andrew.currentHealthView
+
+		defaultFormInfo = {
+			'questions': self.defaultQuestions,
+			'meta': {'num_questions': 8},
+		}
+
+		heartConditions = {
+			'name': 'Heart Conditions',
+			'value': 'yes',
+			'secondaryQuestions': [
+				{'Heart disease but not heart failure': False},
+				{'History of heart failure but well controlled': False},
+				{'Ongoing heart failure': True}
+			]
+		}
+		lungConditions = {
+			'name': 'Lung Conditions',
+			'value': 'yes',
+			'secondaryQuestions': [
+				{'Known lung disease and difficulty breathing when exercising': True},
+				{'Known lung disease and difficulty breathing when resting': False}
+			]
+		}
+		kidneyConditions = {
+			'name': 'Kidney Conditions',
+			'value': 'yes',
+			'secondaryQuestions': [
+				{'Mild kidney problems (renal impairment)': True},
+				{'Severe kidney problems or on dialysis': True}
+			]
+		}
+		diabetesConditions = {
+			'name': 'Diabetes Conditions',
+			'value': 'yes',
+			'secondaryQuestions': [
+				{'Pre-diabetic': True},
+				{'Active Type I or Type II Diabetes': False}
+			]
+		}
+		bloodPressureConditions = {
+			'name': 'Blood Pressure Conditions',
+			'value': 'yes',
+			'secondaryQuestions': [
+				{'High blood pressure but under control': False},
+				{'Difficult to control blood pressure': True}
+			]
+		}
+		bloodClotConditions = {
+			'name': 'Blood Clot (DVT) Conditions',
+			'value': 'yes',
+			'secondaryQuestions': [
+				{'History of Deep Vein Thrombosis but now off anti-coagulation': True},
+				{'Currently on anti-coagulation for Deep Vein Thrombosis': True}
+			]
+		}
+		neuropathyConditions = {
+			'name': 'Neuropathy Conditions',
+			'value': 'yes',
+			'secondaryQuestions': [
+				{'Mild neuropathy': True},
+				{'Moderate to Severe Neuropathy': False}
+			]
+		}
+		otherConditions = {
+			'name': 'Other Health Conditions',
+			'value': 'yes',
+			'secondaryQuestions': [
+				{'History of anxiety or mania': True},
+				{'Active infection': False}
+			]
+		}
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+
+		self.assertTrue(aboutMeView.on())
+		aboutMeView.menu.go_to('Current Health')
+		self.assertTrue(currentHealthView.on())
+
+		updatedQuestions = copy.deepcopy(self.defaultQuestions)
+		updatedQuestions[0] = heartConditions
+		updatedQuestions[1] = lungConditions
+		updatedQuestions[2] = kidneyConditions
+		updatedQuestions[3] = diabetesConditions
+		updatedQuestions[4] = bloodPressureConditions
+		updatedQuestions[5] = bloodClotConditions
+		updatedQuestions[6] = neuropathyConditions
+		updatedQuestions[7] = otherConditions
+		updatedFormInfo = {
+			'questions': updatedQuestions,
+			'meta': {'num_questions': 8},
+		}
+
+		currentHealthView.currentHealthForm.answer_question(0, heartConditions)
+		currentHealthView.currentHealthForm.answer_question(1, lungConditions)
+		currentHealthView.currentHealthForm.answer_question(2, kidneyConditions)
+		currentHealthView.currentHealthForm.answer_question(3, diabetesConditions)
+		currentHealthView.currentHealthForm.answer_question(4, bloodPressureConditions)
+		currentHealthView.currentHealthForm.answer_question(5, bloodClotConditions)
+		currentHealthView.currentHealthForm.answer_question(6, neuropathyConditions)
+		currentHealthView.currentHealthForm.answer_question(7, otherConditions)
+		self.assertTrue(currentHealthView.on(updatedFormInfo))
+
+		self.assertTrue(currentHealthView.submit(defaultFormInfo))
+
+
+
