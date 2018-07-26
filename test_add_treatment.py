@@ -16,7 +16,7 @@ import form_info
 # 	test_antifungal: 									Question[4] still taking antifungal?
 # TestStemCell
 # 	test_basic_stem_cell
-
+@unittest.skip('Add treatment crap')
 class TestChemotherapy(unittest.TestCase):
 
 	def setUp(self):
@@ -246,7 +246,7 @@ class TestChemotherapy(unittest.TestCase):
 		# self.assertTrue(toView.on({'tests': [treatment1] }))
 		self.assertTrue(toView.add_treatment(treatment1))
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
-
+@unittest.skip('Add treatment crap')
 class TestRadiation(unittest.TestCase):
 
 	def setUp(self):
@@ -354,7 +354,7 @@ class TestRadiation(unittest.TestCase):
 		toView.edit(1, 'delete', {'meta': {'num_treatments': 1}})
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
-
+@unittest.skip('Add treatment crap')
 class TestExtra(unittest.TestCase):
 	# Tests treatments for: Bone strengtheners, antibiotics, antifungals
 
@@ -623,7 +623,7 @@ class TestExtra(unittest.TestCase):
 		self.assertTrue(toView.on())
 		toView.view_options()
 		self.assertTrue(treatmentOptionsView.on())
-
+@unittest.skip('Add treatment crap')
 class TestStemCell(unittest.TestCase):
 	# 1. Treatment Type
 	# 2. Stemcell Type

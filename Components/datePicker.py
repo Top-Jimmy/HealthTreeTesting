@@ -23,8 +23,10 @@ class DatePicker():
       if len(dropdownConts) < 2:
         print('not enough dropdown containers')
         return False
+
       self.month_cont = dropdownConts[0]
       self.year_cont = dropdownConts[1]
+
 
       return True
     except (NoSuchElementException, StaleElementReferenceException) as e:

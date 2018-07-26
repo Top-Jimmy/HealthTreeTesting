@@ -17,6 +17,7 @@ class SurveysView(view.View):
 	post_url = 'surveys'
 
 	def load(self):
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.menu = menu.Menu(self.driver)
 		self.header = header.AuthHeader(self.driver)
 
@@ -25,7 +26,6 @@ class SurveysView(view.View):
 		self.continue_button = self.form.find_element_by_tag_name('a')
 
 		self.load_surveys()
-		print(self.surveys)
 
 		# self.validate()
 		return True

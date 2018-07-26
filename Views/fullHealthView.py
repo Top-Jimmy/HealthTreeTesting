@@ -78,3 +78,6 @@ class FullHealthView(view.View):
 			return True
 		except KeyError:
 			print('fullHealthView: No tab named: ' + str(tabName))
+
+	# def submit(self, formInfo):
+		

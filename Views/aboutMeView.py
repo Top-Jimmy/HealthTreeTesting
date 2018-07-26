@@ -2,6 +2,7 @@ from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError, WarningError
 from Components import aboutMeForm
+from Components import feedbackForm
 from Components import menu
 from Components import header
 from Views import view
@@ -98,5 +99,9 @@ class AboutMeView(view.View):
 	# 	elif link == 'forgot password':
 	# 		self.signInForm.forgotPassword_link.click()
 
+	def feedback(self, feedbackText, action='cancel'):
+		self.header.feedback_button.click()
+		self.feedbackForm = feedbackForm.FeedbackForm(self.driver)
+		self.feedbackForm.submit(feedbackText, action)
 
 

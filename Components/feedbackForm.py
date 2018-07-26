@@ -12,9 +12,11 @@ class FeedbackForm():
 		self.form = self.driver.find_element_by_class_name('editroll')
 		buttons = self.form.find_elements_by_tag_name('button')
 
+		self.close_button = buttons[0]
+
 		self.feedback_input = self.form.find_element_by_tag_name('textarea')
-		self.submit_button = self.buttons[0]
-		self.cancel_button = self.buttons[1]
+		self.submit_button = buttons[1]
+		self.cancel_button = buttons[2]
 		self.validate()
 		return True
 
@@ -23,8 +25,10 @@ class FeedbackForm():
 		if self.feedback_input.get_attribute('placeholder') != 'Your highly valuable feedback goes here...':
 			failures.append('FeedbackForm: Unexpected textarea placeholder')
 		if self.submit_button.text != 'Submit':
+			raw_input('submit button failing?')
 			failures.append('FeedbackForm: Unexpected submit button text: ' + self.submit_button.text)
 		if self.cancel_button.text != 'Cancel':
+			raw_input('cancel button failed?')
 			failures.append('FeedbackForm: Unexpected cancel button text ' + self.cancel_button.text)
 		if len(failures) > 0:
 			print(failures)

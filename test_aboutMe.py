@@ -57,3 +57,8 @@ class TestAboutMe(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 		aboutMeView.aboutMeForm.tooltip()
 
+		feedbackText = 'Pancakes'
+
+		aboutMeView.feedback(feedbackText, 'cancel')
+		self.assertTrue(aboutMeView.on())
+

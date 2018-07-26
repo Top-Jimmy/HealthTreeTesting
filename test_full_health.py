@@ -37,3 +37,26 @@ class TestFullHealth(unittest.TestCase):
 		self.assertTrue(fullHealthView.select_tab('quality of life'))
 
 		self.assertTrue(fullHealthView.select_tab('full health profile summary'))
+
+
+	def test_myeloma_form(self):
+		'''Full Health Profile : Full Health Profile . test_myeloma_form'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		fullHealthView = self.andrew.fullHealthView
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Full Health Profile')
+		
+		self.assertTrue(fullHealthView.on('my myeloma'))
+
+		form_data = [
+			[{'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}],
+			[{'yes'}, {'yes'}, {'yes'}],
+			[{'yes'}],
+			[{'IgA Lambda'}, {'yes'}, {'no'}]
+		]
+
+		assertTrue(fullHealthView.submit(form_data))
