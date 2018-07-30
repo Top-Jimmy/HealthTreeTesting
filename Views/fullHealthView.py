@@ -91,6 +91,7 @@ class FullHealthView(view.View):
 	def submit(self, formInfo):
 		for sectionIndex, section in enumerate(formInfo):
 			loadedSection = self.loadedData[sectionIndex]
+			print(self.loadedData)
 
 			# section: [{'option': 'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}]
 			# [

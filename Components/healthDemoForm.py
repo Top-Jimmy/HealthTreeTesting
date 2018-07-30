@@ -30,7 +30,7 @@ class HealthDemoForm():
 		self.rows = self.sectionContainers.find_elements_by_class_name('row')
 		print('# rows: ' + str(len(self.rows)))
 		for row in self.rows:
-			self.sections.append(self.load_questions(row))
+			self.sections.append([self.load_questions(row)])
 
 	def load_questions(self, row):
 		rowInfo = {}
