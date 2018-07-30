@@ -2,6 +2,9 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class HealthDemoForm():
 
@@ -10,11 +13,13 @@ class HealthDemoForm():
 		self.load()
 
 	def load(self):
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		
+		self.dropdowns = self.form.find_elements_by_class_name('dynamic-text-area')
 		self.load_sections()
 		self.save_button = self.form.find_element_by_tag_name('button')
-		# print('sections: ' + str(self.sections))
+		raw_input('sections: ' + str(self.sections))
 
 		# self.validate()
 		return True
@@ -66,46 +71,72 @@ class HealthDemoForm():
 
 		return rowInfo
 
-	# def validate(self):
-	# 	failures = []
-	# 	if expectedValues:
-	# 		if expectedValues['race'] == 'white' and not self.race_white_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expected "white" for race')
-	# 		elif expectedValues['race'] == 'American Indian' and not self.race_amer_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expected "American Indian for race')
-	# 		elif expectedValues['race'] == 'asian' and not self.race_asian_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expected "asian" for race')
-	# 		elif expectedValues['race'] == 'black' and not self.race_black_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expected "black" for race')
-	# 		elif expectedValues['race'] == 'native' and not self.race_native_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expected "native" for race')
+	def set_dropdown(self, cont, value):
+		# find right container given index (class='Select-control')
+		# conts = self.driver.find_elements_by_class_name('Select-control')
+		# cont = conts[dropdownIndex]
 
-	# 		if expectedValues['ethnicity'] == 'not Hispanic' and not self.ethn_hispanicno_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expected "not Hispanic" for ethnicity')
-	# 		elif expectedValues['ethnicity'] == 'Hispanic' and not self.ethn_hispanicyes_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expected "Hispanic for ethnicity')
+		# Figure out if you need to click 'Select-value-label' or 'Select-placeholder' element
+		dropdown_preSet = False
+		try:
+			dropdown_value = cont.find_element_by_class_name('Select-value-label')
+			dropdown_placeholder = None
+			dropdown_preSet = True
+		except NoSuchElementException:
+			dropdown_value = None
+			dropdown_placeholder = cont.find_element_by_class_name('Select-placeholder')
 
-	# 		if self.city_born_input.get_attribute('value') != expectedValues['city_born']:
-	# 			failure.append('HealthDemoForm: Expecting city where born "' + expectedValues['city_born'] + '", got "' + self.city_born_input.get_attribute('value') + '"')
+		# click it
+		if dropdown_preSet:
+			dropdown_value.click()
+		else:
+			dropdown_placeholder.click()
+		# load options in dropdown
+		options = {}
+		try:
+			menu = self.form.find_element_by_class_name('Select-menu-outer')
+			divs = menu.find_elements_by_tag_name('div')
+			for i, div in enumerate(divs):
+				if i != 0:
+					options[div.text.lower()] = divs[i]
+		except NoSuchElementException:
+			print('Unable to find dropdown items for first diagnosis')
 
-	# 		if self.city_grow_input.get_attribute('value') != expectedValues['city_grow']:
-	# 			failure.append('HealthDemoForm: Expecting city where grew up "' + expectedValues['city_grow'] + '", got "' + self.city_grow_input.get_attribute('value') + '"')
+		# click option
+		try:
+			option = options[value.lower()]
+			option.click()
 
-	# 		if self.city_adult_input.get_attribute('value') != expectedValues['city_adult']:
-	# 			failure.append('HealthDemoForm: Expecting city where you live "' + expectedValues['city_adult'] + '", got "' + self.city_adult_input.get_attribute('value') + '"')
+		except (IndexError, KeyError) as e:
+			print('invalid index: ' + value)
+			for option in options:
+				print(option)
 
-	# 		if expectedValues['health_ins'] == 'no' and not self.health_insno_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expecting "no" to having healht insurance')
-	# 		elif expectedValues['health_ins'] == 'yes' and not self.health_insyes_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expecting "yes" to having health insurance')
+	# def load_ethnic_background_dropdown(self):
+	# 	self.ethnic_background_cont = self.dropdowns[0]
 
-	# 		if expectedValues['military'] == 'no' and not self.militaryno_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expecting "no" to having served in the military')
-	# 		elif expectedValues['military'] == 'yes' and not self.militaryyes_radio.get_attribute('checked'):
-	# 			failure.append('HealthDemoForm: Expecting "yes" to having served in the military')
+	# 	# Is value already set? Should have either value or placeholder element
+	# 	self.ethnic_background_preSet = False
+	# 	try:
+	# 		self.ethnic_background_value = self.ethnic_background_cont.find_element_by_class_name('Select-value-label')
+	# 		self.ethnic_background_placeholder = None
+	# 		self.ethnic_background_preSet = True
+	# 	except NoSuchElementException:
+	# 		self.ethnic_background_value = None
+	# 		# 'Select diagnosis' placeholder
+	# 		self.ethnic_background_placeholder = self.ethnic_background_cont.find_element_by_class_name('Select-placeholder')
 
-	# 	if len(failures) > 0:
-	# 		print(failures)
-	# 		raise NoSuchElementException('Failed to load CreateAcctForm')
+	# def load_ethnic_background_dropdown(self):
+	# 	self.country_cont = self.dropdowns[0]
 
+	# 	# Is value already set? Should have either value or placeholder element
+	# 	self.country_preSet = False
+	# 	try:
+	# 		self.country_value = self.country_cont.find_element_by_class_name('Select-value-label')
+	# 		self.country_placeholder = None
+	# 		self.country_preSet = True
+	# 	except NoSuchElementException:
+	# 		self.country_value = None
+	# 		# 'Select diagnosis' placeholder
+	# 		self.country_placeholder = self.country_cont.find_element_by_class_name('Select-placeholder')
 	

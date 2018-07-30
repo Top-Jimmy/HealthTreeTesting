@@ -8,6 +8,7 @@ from Views import view
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import time
 
 class FullHealthView(view.View):
 
@@ -25,19 +26,27 @@ class FullHealthView(view.View):
 				print('Full Health Profile: Expected state: "' + expectedTab + '", got state: "' + self.selectedTab + '"')
 			else: 
 				if expectedTab == 'my myeloma':
-					self.fullHealthMyelomaForm = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
+					self.form = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
+					# self.loadedData = self.form.sections
 				elif expectedTab == 'demographics':
-					self.healthDemoForm = healthDemoForm.HealthDemoForm(self.driver)
+					self.form = healthDemoForm.HealthDemoForm(self.driver)
+					# self.loadedData = self.form.sections
+
 				elif expectedTab == 'full health history':
-					self.healthHistForm = healthHistForm.HealthHistForm(self.driver)
+					self.form = healthHistForm.HealthHistForm(self.driver)
+					# self.loadedData = self.form.sections
 				elif expectedTab == 'family history':
-					self.famHistForm = famHistForm.FamHistForm(self.driver)
+					self.form = famHistForm.FamHistForm(self.driver)
+					# self.loadedData = self.form.sections
 				elif expectedTab == 'lifestyle':
-					self.healthLifestyleForm = healthLifestyleForm.HealthLifestyleForm(self.driver)
+					self.form = healthLifestyleForm.HealthLifestyleForm(self.driver)
+					# self.loadedData = self.form.sections
 				elif expectedTab == 'quality of life':
-					self.healthQualityForm = healthQualityForm.HealthQualityForm(self.driver)
+					self.form = healthQualityForm.HealthQualityForm(self.driver)
+					# self.loadedData = self.form.sections
 				else:
-					self.healthSummaryForm = healthSummaryForm.HealthSummaryForm(self.driver)
+					self.form = healthSummaryForm.HealthSummaryForm(self.driver)
+				self.loadedData = self.form.sections
 
 
 			self.myeloma_tab = self.menu_tabs.find_element_by_id('tab-0')
@@ -79,5 +88,37 @@ class FullHealthView(view.View):
 		except KeyError:
 			print('fullHealthView: No tab named: ' + str(tabName))
 
-	# def submit(self, formInfo):
-		
+	def submit(self, formInfo):
+		for sectionIndex, section in enumerate(formInfo):
+			loadedSection = self.loadedData[sectionIndex]
+
+			# section: [{'option': 'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}]
+			# [
+			# 	{u'1': [
+			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
+			# 	]}, 
+			# 	{u'2': [
+			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
+			# 	]}, 
+			# 	{u'3': [
+			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
+			# 	]}
+			# ]
+			for questionIndex, question in enumerate(section):
+				# question: {'option': 'yes'}
+				loadedQuestion = loadedSection[questionIndex]
+				# raw_input(loadedQuestion)
+				# {u'1': [
+				# 	{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
+				# ]}
+				questionKey = str(questionIndex + 1)
+				questionOptions = loadedQuestion[questionKey][0]['options']
+
+				# raw_input(questionOptions)
+				# {u'Yes': 'webElement', u'No': 'webElement'}
+				inputEl = questionOptions[question['option']]
+				inputEl.click()
+				time.sleep(1)
+
+		return True
+

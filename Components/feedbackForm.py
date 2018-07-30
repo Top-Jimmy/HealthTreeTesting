@@ -6,7 +6,6 @@ class FeedbackForm():
 
 	def __init__(self, driver):
 		self.driver = driver
-		self.load()
 
 	def load(self):
 		self.form = self.driver.find_element_by_class_name('editroll')
@@ -17,22 +16,22 @@ class FeedbackForm():
 		self.feedback_input = self.form.find_element_by_tag_name('textarea')
 		self.submit_button = buttons[1]
 		self.cancel_button = buttons[2]
-		self.validate()
-		return True
+		return self.validate()
+		
 
 	def validate(self):
 		failures = []
 		if self.feedback_input.get_attribute('placeholder') != 'Your highly valuable feedback goes here...':
 			failures.append('FeedbackForm: Unexpected textarea placeholder')
-		if self.submit_button.text != 'Submit':
-			raw_input('submit button failing?')
-			failures.append('FeedbackForm: Unexpected submit button text: ' + self.submit_button.text)
-		if self.cancel_button.text != 'Cancel':
-			raw_input('cancel button failed?')
-			failures.append('FeedbackForm: Unexpected cancel button text ' + self.cancel_button.text)
+		if self.submit_button.text.lower() != 'submit':
+			failures.append('FeedbackForm: Unexpected submit button text: "' + self.submit_button.text.lower() + '" does not equal submit')
+		if self.cancel_button.text.lower() != 'cancel':
+			failures.append('FeedbackForm: Unexpected cancel button text ' + self.cancel_button.text.lower())
 		if len(failures) > 0:
 			print(failures)
 			raise NoSuchElementException('Failed to load FeedbackForm')
+			return False
+		return True
 
 	# def read_warning(self):
 	# 	inputs = ['Sign In', 'Password']
@@ -64,9 +63,9 @@ class FeedbackForm():
 	# 	}
 
 	def submit(self, feedbackText, action='submit'):
-		if feedback:
-			self.feedback_input.clear()
-			self.feedback_input.send_keys(feedback)
+		
+		self.feedback_input.clear()
+		self.feedback_input.send_keys(feedbackText)
 		if action == 'submit':
 			self.submit_button.click()
 		else:

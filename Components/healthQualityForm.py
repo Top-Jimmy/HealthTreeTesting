@@ -24,9 +24,11 @@ class HealthQualityForm():
 		self.sections = []
 		for section in self.sectionConts:
 			self.rows = section.find_elements_by_class_name('row')
+			section = []
 			for row in self.rows:
 				# Row contains at least 1 question, might also have 1 or more subquestion
-				self.sections.append(self.load_questions(row))
+				section.append(self.load_questions(row))
+			self.sections.append(section)
 
 	def load_questions(self, row):
 		rowInfo = {}
@@ -45,7 +47,7 @@ class HealthQualityForm():
 				for radioCont in radioContainers:
 					inputs = radioCont.find_elements_by_tag_name('input')
 					spans = radioCont.find_elements_by_tag_name('span')
-					optionName = spans[0].text
+					optionName = spans[0].text.lower()
 					options[optionName] = inputs[0]
 			if options:
 				questionInfo['options'] = options

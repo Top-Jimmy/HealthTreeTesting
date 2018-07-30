@@ -6,6 +6,9 @@ from Components import feedbackForm
 from Components import menu
 from Components import header
 from Views import view
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class AboutMeView(view.View):
 	post_url = 'about-me'
@@ -102,6 +105,7 @@ class AboutMeView(view.View):
 	def feedback(self, feedbackText, action='cancel'):
 		self.header.feedback_button.click()
 		self.feedbackForm = feedbackForm.FeedbackForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.feedbackForm.load())
 		self.feedbackForm.submit(feedbackText, action)
 
 
