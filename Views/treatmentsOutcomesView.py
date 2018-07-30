@@ -292,7 +292,7 @@ class TreatmentsOutcomesView(view.View):
 			maintenanceIndex = 3
 			if test['questions'][3]['type'] == 'date':
 				# Is a current treatment. Maintenance is index 4
-				maintenanceIndex = 3
+				maintenanceIndex = 4
 
 			isMaintenance = False
 			for key in test['questions'][maintenanceIndex]['options']:
@@ -331,7 +331,7 @@ class TreatmentsOutcomesView(view.View):
 			for key in test['questions'][-1]['options']:
 				expectedVal = key.lower()
 		else:
-			expectedVal == 'na'
+			expectedVal = 'na'
 
 		if savedVal != expectedVal:
 			self.failures.append('T&Outcomes: Expected frequency ' + str(expectedVal) + ', loaded ' + str(savedVal))
@@ -344,8 +344,9 @@ class TreatmentsOutcomesView(view.View):
 		index = -2
 		if testType == 'stem cell':
 			index = -3
-		for key in test['questions'][index]['options']:
-			expectedOutcomes.append(key.lower())
+		options = test['questions'][index]['options']
+		for optionName, value in options.iteritems():
+			expectedOutcomes.append(optionName.lower())
 
 		# 'options': {
 		# 	'I discontinued this treatment': {
@@ -356,8 +357,8 @@ class TreatmentsOutcomesView(view.View):
 		# 		},
 		# 	}
 		if expectedOutcomes[0] == 'i discontinued this treatment':
-			# Get options for subquestion
-			suboptions = test['questions'][-2][initialOutcome]['options']
+			# There's subquestions. Get expected options for subquestion
+			suboptions = options['I discontinued this treatment']['options']
 			for suboption, value in suboptions.iteritems():
 				expectedOutcomes.append(suboption.lower())
 				# Get comment if 'other' is selected
@@ -428,6 +429,24 @@ class TreatmentsOutcomesView(view.View):
 					return True
 		return True
 
+	def delete_all_treatments(self, newInfo=None):
+		if self.state == 'saved':
+			for i, saved_test in enumerate(self.saved_tests):
+				actions = self.load_actions(saved_test.find_elements_by_tag_name('tr')[-1])
+				try:
+					actions['delete'].click()
+				except KeyError:
+					print('"delete" Is not a valid treatment option')
+					raise KeyError('Not a valid treatment option')
+				self.delete_treatment()
+
+		WDW(self.driver, 10).until(lambda x: self.load(newInfo))
+
+	def delete_treatment(self):
+		self.popUpForm = popUpForm.PopUpForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+		self.popUpForm.confirm('confirm')
+
 	def edit(self, treatmentIndex, editType, newInfo=None, popupAction='confirm'):
 		if self.state == 'saved':
 			table = self.saved_tests[treatmentIndex]
@@ -441,9 +460,7 @@ class TreatmentsOutcomesView(view.View):
 				raise KeyError('Not a valid treatment option')
 
 			if editType == 'delete':
-				self.popUpForm = popUpForm.PopUpForm(self.driver)
-				WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
-				self.popUpForm.confirm(popupAction)
+				self.delete_treatment()
 
 			WDW(self.driver, 10).until(lambda x: self.load(newInfo))
 
@@ -467,7 +484,7 @@ class TreatmentsOutcomesView(view.View):
 		url = self.driver.current_url
 		if '/treatment-options' not in url:
 			return False
-			
+
 
 
 

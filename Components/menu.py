@@ -57,5 +57,5 @@ class Menu():
 				self.menu_items.append(lists[i].text)
 
 		print(self.menu_items)
-				
+
 

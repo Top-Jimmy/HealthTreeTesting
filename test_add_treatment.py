@@ -16,7 +16,9 @@ import form_info
 # 	test_antifungal: 									Question[4] still taking antifungal?
 # TestStemCell
 # 	test_basic_stem_cell
-@unittest.skip('Add treatment crap')
+
+
+# @unittest.skip('Add treatment crap')
 class TestChemotherapy(unittest.TestCase):
 
 	def setUp(self):
@@ -38,6 +40,7 @@ class TestChemotherapy(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
+		toView.delete_all_treatments()
 
 		# Chemo: Currently taking
 		# Should have 8 questions (base amount)
@@ -60,15 +63,14 @@ class TestChemotherapy(unittest.TestCase):
 						'Yes': {},
 					},
 				},
-				{'type': 'complex', # 4: Chemo treatment options
+				{'type': 'popup', # 4: Chemo treatment options
 					'options': {
 						'chemotherapies': {
 		    			'Melphalan': None,
 		    			'Adriamycin': None,
 		    		},
-		    		'clinical trial drugs or other': {
-		    			'venclexta (venetoclax)': None,
-		    			'Other': {'comment': 'Chemo Treatment X'},
+		    		'proteasome inhibitors': {
+		    			'kyprolis (carfilzomib)': None,
 		    		},
 		    	}
 				},
@@ -82,7 +84,7 @@ class TestChemotherapy(unittest.TestCase):
 						'The treatment did not reduce my myeloma': {},
 					},
 				},
-				{'type': 'complex', # 7: Side effects
+				{'type': 'popup', # 7: Side effects
 					'options': {
 						'cardiovascular/circulatory system': {
 		    			'blood clots': {'intensity': 9},
@@ -116,15 +118,14 @@ class TestChemotherapy(unittest.TestCase):
 						'No': {},
 					},
 				},
-				{'type': 'complex', # 5: Chemo treatment options
+				{'type': 'popup', # 5: Chemo treatment options
 					'options': {
 						'chemotherapies': {
 		    			'Melphalan': None,
 		    			'Adriamycin': None,
 		    		},
-		    		'clinical trial drugs or other': {
-		    			'venclexta (venetoclax)': None,
-		    			'Other': {'comment': 'Chemo Treatment X'},
+		    		'proteasome inhibitors': {
+		    			'kyprolis (carfilzomib)': None,
 		    		},
 		    	}
 				},
@@ -138,7 +139,7 @@ class TestChemotherapy(unittest.TestCase):
 						'The treatment did not reduce my myeloma': {},
 					},
 				},
-				{'type': 'complex', # 8: Side effects
+				{'type': 'popup', # 8: Side effects
 					'options': {
 						'cardiovascular/circulatory system': {
 		    			'blood clots': {'intensity': 9},
@@ -153,6 +154,7 @@ class TestChemotherapy(unittest.TestCase):
 		toView.edit(1, 'delete', {'meta': {'num_treatments': 1}})
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
+	# Fails on question[6] ()
 	def test_changed_chemotherapy(self):
 		''' test_add_treatment.py:TestChemotherapy.test_changed_chemotherapy '''
 		# Different flows depending on whether medications were added/removed during treatment
@@ -165,6 +167,7 @@ class TestChemotherapy(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
+		toView.delete_all_treatments()
 
 		# Chemo: Medications were added and removed
 		# Should have 10 questions: 8 (base amount) +1 (added) +1 (removed)
@@ -187,7 +190,7 @@ class TestChemotherapy(unittest.TestCase):
 						'Yes': {},
 					},
 				},
-				{'type': 'complex', # 4: Chemo treatment options
+				{'type': 'popup', # 4: Chemo treatment options
 					'options': {
 						'chemotherapies': {
 		    			'Adriamycin': None,
@@ -246,7 +249,9 @@ class TestChemotherapy(unittest.TestCase):
 		# self.assertTrue(toView.on({'tests': [treatment1] }))
 		self.assertTrue(toView.add_treatment(treatment1))
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
-@unittest.skip('Add treatment crap')
+
+
+# @unittest.skip('Add treatment crap')
 class TestRadiation(unittest.TestCase):
 
 	def setUp(self):
@@ -267,6 +272,7 @@ class TestRadiation(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
+		toView.delete_all_treatments()
 
 		treatment1 = {
 			'testMeta': {'type': 'radiation'},
@@ -297,7 +303,7 @@ class TestRadiation(unittest.TestCase):
 					},
 					'actions': 'continue',
 				},
-				{'type': 'complex', 								# 5: Side effects
+				{'type': 'popup', 								# 5: Side effects
 					'options': {
 						'cardiovascular/circulatory system': {
 		    			'blood clots': {'intensity': 9},
@@ -338,7 +344,7 @@ class TestRadiation(unittest.TestCase):
 					},
 					'actions': 'continue',
 				},
-				{'type': 'complex', 										# 5: Side effects
+				{'type': 'popup', 										# 5: Side effects
 					'options': {
 						'cardiovascular/circulatory system': {
 		    			'low potassium': {'intensity': 2},
@@ -354,7 +360,6 @@ class TestRadiation(unittest.TestCase):
 		toView.edit(1, 'delete', {'meta': {'num_treatments': 1}})
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
-@unittest.skip('Add treatment crap')
 class TestExtra(unittest.TestCase):
 	# Tests treatments for: Bone strengtheners, antibiotics, antifungals
 
@@ -376,6 +381,7 @@ class TestExtra(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
+		toView.delete_all_treatments()
 
 		# Not currently taking bone strengtheners
 		treatment1 = {
@@ -464,6 +470,7 @@ class TestExtra(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
+		toView.delete_all_treatments()
 
 		# Not currently taking antibiotics
 		treatment1 = {
@@ -543,6 +550,7 @@ class TestExtra(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
+		toView.delete_all_treatments()
 		# Not currently taking antibiotics
 		treatment1 = {
 			'testMeta': {'type': 'antifungal'},
@@ -611,6 +619,7 @@ class TestExtra(unittest.TestCase):
 		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
 	def test_view_treatment_options(self):
+		''' test_add_treatment.py:TestExtra.test_view_treatment_options '''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -623,7 +632,9 @@ class TestExtra(unittest.TestCase):
 		self.assertTrue(toView.on())
 		toView.view_options()
 		self.assertTrue(treatmentOptionsView.on())
-@unittest.skip('Add treatment crap')
+
+
+# @unittest.skip('Add treatment crap')
 class TestStemCell(unittest.TestCase):
 	# 1. Treatment Type
 	# 2. Stemcell Type
@@ -670,6 +681,7 @@ class TestStemCell(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
+		toView.delete_all_treatments()
 
 		stemCellBasic = {
 			'testMeta': {'type': 'stem cell'},
@@ -703,7 +715,7 @@ class TestStemCell(unittest.TestCase):
 						'The treatment did not reduce my myeloma': {},
 					},
 				},
-				{'type': 'complex', 										# 6: Side effects
+				{'type': 'popup', 										# 6: Side effects
 					'options': {}
 				},
 				{'type': 'single',										# 7. Maintenance Therapy?
@@ -714,8 +726,8 @@ class TestStemCell(unittest.TestCase):
 			]
 		}
 		# self.assertTrue(toView.on({'tests': [stemCellBasic]}))
-		# self.assertTrue(toView.add_treatment(stemCellBasic, 'save'))
-		# toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		self.assertTrue(toView.add_treatment(stemCellBasic, 'save'))
+		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
 
 		# Still taking induction (yes to question[4])
 		# No drugs added/removed
@@ -745,7 +757,7 @@ class TestStemCell(unittest.TestCase):
 						'Yes': {},
 					},
 				},
-				{'type': 'complex', 										# 5: Induction: therapy treatments
+				{'type': 'popup', 										# 5: Induction: therapy treatments
 					'options': {
 						'chemotherapies': {
 							'melphalan': {},
@@ -762,7 +774,7 @@ class TestStemCell(unittest.TestCase):
 						'The treatment did not reduce my myeloma': {},
 					},
 				},
-				{'type': 'complex', 									# 8: Induction side effects
+				{'type': 'popup', 									# 8: Induction side effects
 					'options': {
 						'musculoskeletal system': {
 		    			'Back pain': {},
@@ -785,7 +797,7 @@ class TestStemCell(unittest.TestCase):
 						'The treatment did not reduce my myeloma': {},
 					},
 				},
-				{'type': 'complex', 										# 12: Side effects
+				{'type': 'popup', 										# 12: Side effects
 					'options': {}
 				},
 				{'type': 'single',										# 13. Maintenance Therapy?
@@ -829,7 +841,7 @@ class TestStemCell(unittest.TestCase):
 				{'type': 'date', 											# 3. Induction End date
 					'text': '03/2018'
 				},
-				{'type': 'complex', 										# 5: Induction therapy treatments
+				{'type': 'popup', 										# 5: Induction therapy treatments
 					'options': {
 						'chemotherapies': {
 							'melphalan': {},
@@ -850,7 +862,7 @@ class TestStemCell(unittest.TestCase):
 						'The treatment did not reduce my myeloma': {},
 					},
 				},
-				{'type': 'complex', 										# 9: Side effects
+				{'type': 'popup', 										# 9: Side effects
 					'options': {}
 				},
 				{'type': 'single',										# 10. Maintenance Therapy?

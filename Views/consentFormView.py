@@ -1,12 +1,14 @@
 from selenium.common.exceptions import (NoSuchElementException,
-		StaleElementReferenceException)
+		StaleElementReferenceException, ElementNotVisibleException)
 from Components import popUpForm
 from Components import menu
 from Components import header
+from Components import singleDatePicker
 from Views import view
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import time
 
 class ConsentFormView(view.View):
 	post_url = 'consent-form'
@@ -104,7 +106,7 @@ class ConsentFormView(view.View):
 				selected_preferences.append(inputEl.get_attribute('id'))
 		return selected_preferences
 
-	def set_patient_info(self, info):
+	def set_patient_info(self, info, dateType='typed'):
 		# Patient
 		if 'first name' in info:
 			self.first_name.clear()
@@ -123,8 +125,13 @@ class ConsentFormView(view.View):
 
 		# Date
 		if 'date' in info:
-			self.date_input.clear()
-			self.date_input.send_keys(info['date'])
+			if dateType == 'typed':
+				self.date_input.clear()
+				self.date_input.send_keys(info['date'])
+			elif dateType == 'picker':
+				self.date_input.click()
+				picker = singleDatePicker.SingleDatePicker(self.driver)
+				picker.set_date(info['date'])
 
 	def get_patient_info(self):
 		patient_info = {}

@@ -41,11 +41,65 @@ class MyLabsFacilitiesView(view.View):
 		if len(failures) > 0:
 			for failure in failures:
 				print(failure)
-				return False
+			return False
 		return True
 
-	def load_facilities(self):
-		pass
+	def num_facilities(self):
+		if self.facilities:
+			return len(self.facilities)
+		return 0
 
+	def load_facilities(self):
+		facilities = []
+		try:
+			self.table = self.driver.find_element_by_id('facilities_table')
+		except NoSuchElementException:
+			self.table = None
+
+		if self.table:
+			rows = self.table.find_elements_by_tag_name('tr')
+			for rowIndex, row in enumerate(rows):
+				if rowIndex != 0: # Ignore table header
+					facility = {}
+					tds = row.find_elements_by_tag_name('td')
+					for tdIndex, td in enumerate(tds):
+						if tdIndex == 0:
+							facility['name'] = td.text
+						elif tdIndex == 1:
+							buttons = td.find_elements_by_tag_name('button')
+							facility['edit'] = buttons[0]
+							facility['delete'] = buttons[1]
+					facilities.append(facility)
+		return facilities
+
+################################# Test Functions #################################
+
+	def manage_facility(self, facilityIndex, action):
+		if action != 'delete' and action != 'edit':
+			print('Invalid facility action: ' + str(action))
+			return False
+
+		facility = None
+		try:
+			facility = self.facilities[facilityIndex]
+		except IndexError:
+			print('Invalid facility index')
+			return False
+
+		if facility:
+			facility[action].click()
+
+			if action == 'delete':
+				self.popUpForm = popUpForm.PopUpForm(self.driver)
+				WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+				self.popUpForm.confirm('confirm')
+				# Wait for confirm popup and loading overlay to disappear
+				WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'react-confirm-alert')))
+				WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+			return True
+
+	def delete_all(self):
+		for i, facility in enumerate(self.facilities):
+			self.manage_facility(i, 'delete')
 
 
