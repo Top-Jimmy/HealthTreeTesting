@@ -15,7 +15,7 @@ class HealthDemoForm():
 	def load(self):
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
-		
+
 		self.dropdowns = self.form.find_elements_by_class_name('dynamic-text-area')
 		self.load_sections()
 		self.save_button = self.form.find_element_by_tag_name('button')
@@ -26,11 +26,15 @@ class HealthDemoForm():
 
 	def load_sections(self):
 		self.sections = []
-		self.sectionContainers = self.form.find_element_by_class_name('after-head-row')
-		self.rows = self.sectionContainers.find_elements_by_class_name('row')
-		print('# rows: ' + str(len(self.rows)))
-		for row in self.rows:
-			self.sections.append([self.load_questions(row)])
+		# Form should only have 1 section
+		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
+		for section in self.sectionConts:
+			self.rows = section.find_elements_by_class_name('row')
+			section = []
+			for row in self.rows:
+				# Row contains at least 1 question, might also have 1 or more subquestion
+				section.append(self.load_questions(row))
+			self.sections.append(section)
 
 	def load_questions(self, row):
 		rowInfo = {}
@@ -139,4 +143,3 @@ class HealthDemoForm():
 	# 		self.country_value = None
 	# 		# 'Select diagnosis' placeholder
 	# 		self.country_placeholder = self.country_cont.find_element_by_class_name('Select-placeholder')
-	
