@@ -79,7 +79,6 @@ class NgsTestForm():
 				self.mutate_fgfr3_checkbox.click()
 			if ngsInfo['mutate_atm'] != self.mutate_atm_checkbox.is_selected():
 				self.mutate_atm_checkbox.click()
-				raw_input('Is info entered')
 
 			if action == 'save':
 				self.save_button.click()

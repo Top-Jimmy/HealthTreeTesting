@@ -20,6 +20,7 @@ class FullHealthView(view.View):
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 
+
 			self.load_tabs()
 			self.selectedTab = self.selected_tab()
 			if expectedTab and expectedTab != self.selectedTab:
@@ -56,6 +57,8 @@ class FullHealthView(view.View):
 			self.lifestyle_tab = self.menu_tabs.find_element_by_id('tab-4')
 			self.quality_tab = self.menu_tabs.find_element_by_id('tab-5')
 			self.summary_tab = self.menu_tabs.find_element_by_id('tab-6')
+
+			
 			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
@@ -91,7 +94,6 @@ class FullHealthView(view.View):
 	def submit(self, formInfo):
 		for sectionIndex, section in enumerate(formInfo):
 			loadedSection = self.loadedData[sectionIndex]
-			print(self.loadedData)
 
 			# section: [{'option': 'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}]
 			# [

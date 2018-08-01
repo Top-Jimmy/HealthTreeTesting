@@ -157,7 +157,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		myelomaGeneticsView = self.andrew.myelomaGeneticsView
 
 		riskInfo = {
-			'high_b2m': 'no',
+			'high_b2m': 'No',
 			'high_ldh': 'I dont know',
 			'low_albumin': 'I dont know',
 		}
@@ -167,7 +167,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 
 		aboutMeView.menu.go_to('Myeloma Genetics')
-		self.assertTrue(myelomaGeneticsView.on())
+		self.assertTrue(myelomaGeneticsView.on(riskInfo))
 
 		# WDW(self.driver, 10).until(lambda x: self.myelomaGeneticsView.load())
 

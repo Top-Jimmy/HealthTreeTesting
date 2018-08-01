@@ -19,7 +19,6 @@ class HealthDemoForm():
 		self.dropdowns = self.form.find_elements_by_class_name('dynamic-text-area')
 		self.load_sections()
 		self.save_button = self.form.find_element_by_tag_name('button')
-		raw_input('sections: ' + str(self.sections))
 
 		# self.validate()
 		return True
@@ -51,7 +50,7 @@ class HealthDemoForm():
 			radioContainers = question.find_elements_by_class_name('dynamic-radio') # Container with the text (span) and input
 			dropdownContainers = question.find_elements_by_class_name('Select-control')
 			if dropdownContainers:
-				questionInfo['dropdown'] = dropdownContainers[0]
+				questionInfo['dropdowns'] = dropdownContainers[0]
 			if radioContainers:
 				for radioCont in radioContainers:
 					inputs = radioCont.find_elements_by_tag_name('input')

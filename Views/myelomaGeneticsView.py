@@ -13,11 +13,12 @@ from Views import view
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import time
 
 class MyelomaGeneticsView(view.View):
 	post_url = 'myeloma-genetics'
 
-	def load(self, formInfo=None):
+	def load(self, riskInfo=None):
 		try:
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
@@ -50,8 +51,6 @@ class MyelomaGeneticsView(view.View):
 
 			# When user hasn't filled anything out
 				# todo
-
-			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
@@ -158,11 +157,11 @@ class MyelomaGeneticsView(view.View):
 			self.ngs_tests.append(labResult)
 
 	def load_highRisk_table(self):
-		highRiskTable = self.driver.find_element_by_id('yesno_table')
-		rows = highRiskTable.find_elements_by_class_name('table_row')
+		self.highRiskTable = self.driver.find_element_by_id('yesno_table')
+		rows = self.highRiskTable.find_elements_by_class_name('table_row')
 		labInfo = []
 		self.highRisk_tests = {}
-		self.highRisk_tests['edit'] = highRiskTable.find_element_by_class_name('edit-treatment-icon')
+		self.highRisk_tests['edit'] = self.highRiskTable.find_element_by_class_name('edit-treatment-icon')
 		# {'High Beta-2 Microglobulin': 'Yes',
 		# 	'High Lactate Dehydrogenase': 'I dont know',
 		# 	'Low albumin': 'I dont know',
@@ -178,61 +177,58 @@ class MyelomaGeneticsView(view.View):
 						value = td.text
 				self.highRisk_tests[name] = value
 
-	def validate(self):
+	# def validate_fish_test(self, fishInfo):
+	# 	loadedInfo = self.fish_tests[-1]
+
+	# 	if loadedInfo['date of genetics test'] != fishInfo['']
+
+	def validate_gep_test(self, gepInfo):
 		failures = []
-		if self.continue_button.text != 'Continue':
-			failure.append('MyelomaGeneticsView: Unexpected text "' + self.continue_button.text + '"')
+		loadedInfo = self.gep_tests[-1]
+		if loadedInfo:
+			if self.convert_date(loadedInfo['date'].lower()) != gepInfo['test_gep_date']:
+				failures.append('GEP Table: Expecting ' + '"' + str(gepInfo['test_gep_date']) + '"' + ', got ' + '"' + str(self.convert_date(loadedInfo['date'].lower())) + '"')
+			if loadedInfo['comment'] != gepInfo['gep_comment']:
+				failures.append('GEP Table: Expecting ' + '"' + str(gepInfo['gep_comment']) + '"' + ', got ' + '"' + str(loadedInfo['comment']) + '"')
 
-	# def submit(self, formInfo, expectedError=None, expectedWarnings=None):
-	# 	try:
-	# 		if self.aboutMeForm.enter_info(formInfo):
-	# 			# Should be on myeloma diagnosis page
-	# 			url = self.driver.current_url
-	# 			if '/myeloma-genetics' not in url:
-	# 				self.error = self.readErrors()
-	# 				self.warnings = self.aboutMeForm.read_warnings()
-	# 				if self.error:
-	# 					raise MsgError('Login Error')
-	# 				elif self.warnings:
-	# 					raise WarningError('Submission warning')
-	# 		return True
-	# 	except MsgError:
-	# 		# Is login expected to fail?
-	# 		errorType = self.error['errorType']
-	# 		if expectedError and errorType.lower() == expectedError.lower():
-	# 			return True
-	# 		print(self.error['errorMsg'])
-	# 		if errorType == 'undefined':
-	# 			print('Undefined error: ' + self.error['errorText'])
-	# 	except WarningError:
-	# 		# Is form submission expected to have warning?
-	# 		unexpectedWarnings = []
-	# 		if expectedWarnings:
-	# 			# Go through self.warnings and check each warningType matches an expectedWarning
-	# 			# Append warnings that aren't expected to unexpectedWarnings
-	# 			for i, warning in enumerate(self.warnings):
-	# 				expected = False
-	# 				warningType = warning['type']
-	# 				for expectedWarning in expectedWarnings:
-	# 					if expectedWarning == warningType:
-	# 						expected = True
-	# 				if not expected:
-	# 					unexpectedWarnings.append(self.warnings[i])
+			if len(failures) > 0:
+				for failure in failures:
+					print(failure)
+				raise NoSuchElementException('Failed to load myelomaGeneticsView')
 
-	# 			if unexpectedWarnings:
-	# 				for unexpected in unexpectedWarnings:
-	# 						print(unexpected['msg'])
-	# 						if warningType == 'undefined':
-	# 							print('Undefined warning: ' + unexpected['text'])
-	# 			else:
-	# 				return True
-	# 	return False
 
-	# def click_link(self, link):
-	# 	if link == 'create account':
-	# 		self.createAccount_link.click()
-	# 	elif link == 'forgot password':
-	# 		self.signInForm.forgotPassword_link.click()
+	def validate_risk_table(self, riskInfo):
+		failures = []
+		if riskInfo:
+			rows = self.highRiskTable.find_elements_by_class_name('table_row')
+			for i, row in enumerate(rows):
+				tds = row.find_elements_by_tag_name('td')
+				if i == 0:
+					if tds[0].text != 'Test':
+						failures.append('High Risk Table: Expecting text "Test", got ' + '"' + str(tds[0].text) + '"')
+					if tds[1].text != 'Answer':
+						failures.append('High Risk Table: Expecting text "Answer", got ' + '"' + str(tds[1].text) + '"')
+				if i == 1:
+					if tds[0].text != 'High Beta-2 Microglobulin':
+						failures.append('High Risk Table: Expecting text "High Beta-2 Microglobulin", got' + '"' + str(tds[0].text) + '"')
+					if tds[1].text.replace("'", '') != riskInfo['high_b2m']:
+						failures.append('High Risk Table: Expecting text ' + '"' + str(riskInfo['high_b2m']) + '"' + ' got ' + '"' + str(tds[1].text) + '"')
+				if i == 2:
+					if tds[0].text != 'High Lactate Dehydrogenase':
+						failures.append('High Risk Table: Expecting text "High Lactate Dehydrogenase", got' + '"' + str(tds[0].text) + '"')
+					if tds[1].text.replace("'", '') != riskInfo['high_ldh']:
+						failures.append('High Risk Table: Expecting text ' + '"' + str(riskInfo['high_ldh']) + '"' + ' got ' + '"' + str(tds[1].text) + '"')
+				if i == 3:
+					if tds[0].text != 'Low albumin':
+						failures.append('High Risk Table: Expecting text "Low albumin", got ' + '"' + str(tds[0].text) + '"')
+					if tds[1].text.replace("'", '') != riskInfo['low_albumin']:
+						failures.append('High Risk Table: Expecting text ' + '"' + str(riskInfo['low_albumin']) + '"' + ' got ' + '"' + str(tds[1].text) + '"')
+
+			if len(failures) > 0:
+				for failure in failures:
+					print(failure)
+				raise NoSuchElementException('Failed to load myelomaGeneticsView')
+
 	def add_fish_test(self, fishInfo, action='save'):
 		self.add_fish_button.click()
 		self.fishTestForm = fishTestForm.FishTestForm(self.driver)
@@ -240,6 +236,8 @@ class MyelomaGeneticsView(view.View):
 		self.fishTestForm.submit(fishInfo, action)
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		self.load()
+		self.validate_fish_test(fishInfo)
 
 	def add_gep_test(self, gepInfo, action='cancel'):
 		self.add_gep_button.click()
@@ -248,6 +246,8 @@ class MyelomaGeneticsView(view.View):
 		self.gepTestForm.submit(gepInfo, action)
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		self.load()
+		self.validate_gep_test(gepInfo)
 
 	def add_ngs_test(self, ngsInfo, action='save'):
 		self.add_ngs_button.click()
@@ -303,6 +303,7 @@ class MyelomaGeneticsView(view.View):
 		self.editHighRiskForm.submit(riskInfo, action)
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		self.validate_risk_table(riskInfo)
 
 	def upload_file(self, action='cancel'):
 		self.upload_file_button.click()
@@ -341,6 +342,21 @@ class MyelomaGeneticsView(view.View):
 			print('tooltip not clicked correctly: ' + str(p[3].text))
 			return False
 		return True
+
+	def convert_date(self, dateStr):
+		# Input: 'mmm yyyy', Output; 'mm/yyyy'
+		spaceIndex = dateStr.find(' ') # Should always be 3
+		if spaceIndex == 3:
+			months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+			monthName = dateStr[:3]
+			year = dateStr[4:]
+
+			month = str(months.index(monthName) + 1).zfill(2)
+			return month + '/' + str(year)
+		else:
+			if dateStr != 'current treatment':
+				print('Unexpected date format: ' + str(dateStr))
+			return dateStr
 
 
 

@@ -56,23 +56,23 @@ class EditHighRiskForm():
 
 	def submit(self, riskInfo, action='save'):
 		if riskInfo:
-			if riskInfo['high_b2m'] == 'yes':
+			if riskInfo['high_b2m'] == 'Yes':
 				self.high_b2m_yes_radio.click()
-			elif riskInfo['high_b2m'] == 'no':
+			elif riskInfo['high_b2m'] == 'No':
 				self.high_b2m_no_radio.click()
 			else:
 				self.high_b2m_idk_radio.click()
 
-			if riskInfo['high_ldh'] == 'yes':
+			if riskInfo['high_ldh'] == 'Yes':
 				self.high_ldh_yes_radio.click()
-			elif riskInfo['high_ldh'] == 'no':
+			elif riskInfo['high_ldh'] == 'No':
 				self.high_ldh_no_radio.click()
 			else:
 				self.high_ldh_idk_radio.click()
 
-			if riskInfo['low_albumin'] == 'yes':
+			if riskInfo['low_albumin'] == 'Yes':
 				self.low_albumin_yes_radio.click()
-			elif riskInfo['low_albumin'] == 'no':
+			elif riskInfo['low_albumin'] == 'No':
 				self.low_albumin_no_radio.click()
 			else:
 				self.low_albumin_idk_radio.click()

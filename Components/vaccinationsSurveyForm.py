@@ -27,7 +27,6 @@ class VaccinationsSurveyForm():
 			self.study_no_input.click()
 
 		# WDW(self.driver, 10).until(lambda x: self.conditionsSurveyForm.load())
-		raw_input('is info there?')
 
 		if action == 'save':
 			self.save_button.click()
