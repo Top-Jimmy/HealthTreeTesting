@@ -16,7 +16,7 @@ class FullHealthView(view.View):
 		try:
 			# Crap on left
 			self.menu_tabs = self.driver.find_element_by_class_name('RRT__tabs')
-			self.fullHealthMyelomaForm = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
+			# self.fullHealthMyelomaForm = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 
@@ -24,8 +24,8 @@ class FullHealthView(view.View):
 			self.load_tabs()
 			self.selectedTab = self.selected_tab()
 			if expectedTab and expectedTab != self.selectedTab:
-				print('Full Health Profile: Expected state: "' + expectedTab + '", got state: "' + self.selectedTab + '"')
-			else: 
+				print('Full Health Profile: Expected state: "' + str(expectedTab) + '", got state: "' + str(self.selectedTab) + '"')
+			else:
 				if expectedTab == 'my myeloma':
 					self.form = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
 					# self.loadedData = self.form.sections
@@ -57,7 +57,7 @@ class FullHealthView(view.View):
 			self.quality_tab = self.menu_tabs.find_element_by_id('tab-5')
 			self.summary_tab = self.menu_tabs.find_element_by_id('tab-6')
 
-			
+
 			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
@@ -92,31 +92,33 @@ class FullHealthView(view.View):
 
 	def submit(self, formInfo):
 		for sectionIndex, section in enumerate(formInfo):
+			print('answering section: ' + str(sectionIndex))
 			loadedSection = self.loadedData[sectionIndex]
 
 			# section: [{'option': 'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}]
 			# [
 			# 	{u'1': [
 			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
-			# 	]}, 
+			# 	]},
 			# 	{u'2': [
 			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
-			# 	]}, 
+			# 	]},
 			# 	{u'3': [
 			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
 			# 	]}
 			# ]
 			for questionIndex, question in enumerate(section):
+				print('answering question: ' + str(questionIndex))
 				# question: {'option': 'yes'}
 				loadedQuestion = loadedSection[questionIndex]
 				# {u'1': [
 				# 	{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
 				# ]}
 				questionOptions = loadedQuestion.get('options', None)
+				# raw_input('loadedOptions: ' + str(questionOptions))
 				textarea = loadedQuestion.get('textInput', None)
 				secondary_questions = loadedQuestion.get('secondary_questions', None)
 
-				# raw_input(questionOptions)
 				# {u'Yes': 'webElement', u'No': 'webElement'}
 				if questionOptions:
 					inputEl = questionOptions[question['option']]

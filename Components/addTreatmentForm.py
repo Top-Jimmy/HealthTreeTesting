@@ -280,6 +280,8 @@ class AddTreatmentForm():
 			if qType == 'date':
 				# Container should always be 1st (latest questions are on top of page)
 				self.set_date(self.questionConts[0], question['text'])
+			elif qType == 'input':
+				self.set_input(self.questionConts[0], question['text'])
 			elif qType == 'table':
 				self.set_table(question)
 			else:
@@ -346,6 +348,23 @@ class AddTreatmentForm():
 		if count == 3:
 			print('Failed to set date')
 			return False
+
+	def set_input(self, container, info):
+		inputEl = None
+		try:
+			inputEl = container.find_element_by_tag_name('textarea')
+		except NoSuchElementException:
+			print('AddTreatment: could not find textarea')
+			try:
+				inputEl = container.find_element_by_tag_name('input')
+			except NoSuchElementException:
+				print('AddTreatment: could not find input')
+
+		if inputEl:
+			inputEl.clear()
+			inputEl.send_keys(info)
+		else:
+			print('unable to set input')
 
 	def answer_question(self, optionName, optionInfo, subOptionName=None):
 		comment = optionInfo.get('comment', None)

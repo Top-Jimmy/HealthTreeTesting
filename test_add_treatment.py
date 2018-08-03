@@ -6,8 +6,10 @@ import form_info
 # import copy # copy.deepcopy(object)
 
 # TestChemotherapy
-# 	test_current_chemotherapy					Question[2] Are you currently taking chemotherapy?
-# 	test_changed_chemotherapy: 				Question[5] Medications were added/removed during treatment?
+# 	test_current_chemotherapy					Edit treatment/outcomes (side effects)
+# 	test_changed_chemotherapy:
+# TestClinical
+#   test_clinical_basic								Edit treatment, outcomes (side effects)
 # TestRadiation
 # 	test_add_radiation
 # TestExtra
@@ -15,10 +17,9 @@ import form_info
 # 	test_antibiotics: 								Question[4] Still taking antibiotics?
 # 	test_antifungal: 									Question[4] still taking antifungal?
 # TestStemCell
-# 	test_basic_stem_cell
+# 	test_basic
 
 
-# @unittest.skip('Add treatment crap')
 class TestChemotherapy(unittest.TestCase):
 
 	def setUp(self):
@@ -81,7 +82,7 @@ class TestChemotherapy(unittest.TestCase):
 				},
 				{'type': 'single',	# 6: Best response?
 					'options': {
-						'The treatment did not reduce my myeloma': {},
+						'I am currently on this treatment and my response is unknown': {},
 					},
 				},
 				{'type': 'popup', # 7: Side effects
@@ -95,6 +96,85 @@ class TestChemotherapy(unittest.TestCase):
 			]
 		}
 		self.assertTrue(toView.add_treatment(treatment1))
+
+		editValues = [
+			{'num_questions': 9},
+			{'index': 1, 'date': '11/2016'},
+			{'index': 2, 'option': 'Yes'},
+			{'index': 3, 'date': '03/2018'},
+			{'index': 5, 'complex': {
+				'chemotherapies': {
+    			'Melphalan': None,
+    			'D-PACE': None,
+    		},
+    		'proteasome inhibitors': {
+    			'Ninlaro (ixazomib)': None,
+    		},
+			}},
+			{'index': -1, 'complex': {
+				'cardiovascular/circulatory system': {
+    			'blood clots': {'intensity': 7},
+    			'irregular/rapid heartbeat': {'intensity': 5},
+    		}
+			}},
+		]
+		treatment1Edited = {
+			'testMeta': {'type': 'chemo'},
+			'questions': [
+				{'type': 'single',	# 0: Treatment Type
+					'options': {
+						'Chemotherapy/Myeloma Therapy': {},
+					},
+				},
+				{'type': 'date', 'text': '11/2016' }, # 1: Start date
+				{'type': 'single',										# 2: Currently taking?
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'date', 'text': '03/2018' }, # 3: Start date
+				{'type': 'single',	# 4: Maintenance therapy? (don't think it matters how you answer this question)
+					'options': {
+						'Yes': {},
+					},
+				},
+				{'type': 'popup', # 5: Chemo treatment options
+					'options': {
+						'chemotherapies': {
+		    			'Melphalan': None,
+		    			'D-PACE': None,
+		    		},
+		    		'proteasome inhibitors': {
+		    			'Ninlaro (ixazomib)': None,
+		    		},
+		    	}
+				},
+				{'type': 'single',	# 6: Changes to treatment?
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'single',	# 7: Best response?
+					'options': {
+						'I am currently on this treatment and my response is unknown': {},
+					},
+				},
+				{'type': 'popup', # 8: Side effects
+					'options': {
+						'cardiovascular/circulatory system': {
+		    			'blood clots': {'intensity': 7},
+		    			'irregular/rapid heartbeat': {'intensity': 5},
+		    		}
+		    	}
+				},
+			]
+		}
+		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
+
+		new_outcome = {'The treatment did not reduce my myeloma': {}}
+		edited_outcome = {'options': new_outcome}
+		treatment1Edited['questions'][7]['options'] = new_outcome
+		toView.edit_treatment(0, 'outcomes', treatment1Edited, edited_outcome)
 
 		# Chemo: Stopped taking
 		# Should have 9 questions (+1 for stop date)
@@ -149,10 +229,11 @@ class TestChemotherapy(unittest.TestCase):
 				},
 			]
 		}
-		self.assertTrue(toView.add_treatment(treatment2))
+		# Tests should be in order of recency
+		self.assertTrue(toView.add_treatment(treatment2, [treatment2, treatment1Edited]))
 
-		toView.edit(1, 'delete', {'meta': {'num_treatments': 1}})
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		toView.edit_treatment(1, 'delete', {'meta': {'num_treatments': 1}})
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 	# Fails on question[6] ()
 	def test_changed_chemotherapy(self):
@@ -233,7 +314,7 @@ class TestChemotherapy(unittest.TestCase):
 				},
 				{'type': 'single',	# 8: Best response?
 					'options': {
-						'The treatment did not reduce my myeloma': {},
+						'The treatment initially reduced my myeloma but my myeloma began to increase and required a treatment change': {},
 					},
 				},
 				{'type': 'complex', # 9: Side effects
@@ -248,10 +329,178 @@ class TestChemotherapy(unittest.TestCase):
 		}
 		# self.assertTrue(toView.on({'tests': [treatment1] }))
 		self.assertTrue(toView.add_treatment(treatment1))
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 
-# @unittest.skip('Add treatment crap')
+class TestClinical(unittest.TestCase):
+
+	def setUp(self):
+		self.driver = initDriver.start(main.browser)
+		self.andrew = profiles.Profile(self.driver, 'andrew')
+
+	def tearDown(self):
+		self.driver.quit()
+
+	def test_clinical_basic(self):
+		''' test_add_treatment.py:TestClinical.test_clinical_basic '''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		toView = self.andrew.treatmentsOutcomesView
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Treatments & Outcomes')
+		self.assertTrue(toView.on())
+		toView.delete_all_treatments()
+
+		# Not on trial anymore
+		treatment1 = {
+			'testMeta': {'type': 'clinical'},
+			'questions': [
+				{'type': 'single', 		# 0: Treatment Type
+					'options': {
+						'Clinical Trials': {},
+					},
+				},
+				{'type': 'input', 		# 1: NCT number
+					'text': 'NCT00000419',
+					'actions': 'continue',
+				},
+				{'type': 'date', 'text': '10/2017' },	# 2: Start Date
+				{'type': 'single',										# 3: Still on trial?
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'date', 'text': '02/2018' }, # 4: Stop Date
+				{'type': 'input', 										# 5: Main treatment
+					'text': 'Test Treatment',
+					'actions': 'continue',
+				},
+				{'type': 'single',										# 6: Best response?
+					'options': {
+						'The treatment reduced my myeloma and kept my myeloma under control': {},
+					},
+				},
+				{'type': 'popup', 								# 7: Side effects
+					'options': {
+						'cardiovascular/circulatory system': {
+		    			'blood clots': {'intensity': 9},
+		    			'irregular/rapid heartbeat': {'intensity': 2},
+		    		}
+		    	}
+				},
+			],
+		}
+		# self.assertTrue(toView.on({'tests': [treatment1]}))
+		self.assertTrue(toView.add_treatment(treatment1))
+		editValues = [
+			{'num_questions': 8},
+			{'index': 1, 'date': '10/2015'},
+			{'index': 3, 'date': '03/2017'},
+			{'index': 4, 'text': 'NCT00000421'},
+	    {'index': 5, 'text': 'Test Treatment X'},
+	    {'index': -1, 'complex': {
+				'lymphatic/immune system': {
+    			'fatigue/tired': {'intensity': 5},
+    			'mouth sores': {'intensity': 4},
+    		}
+	    }},
+		]
+		treatment1Edited = {
+			'testMeta': {'type': 'clinical'},
+			'questions': [
+				{'type': 'single', 		# 0: Treatment Type
+					'options': {
+						'Clinical Trials': {},
+					},
+				},
+				{'type': 'input', 		# 1: NCT number
+					'text': 'NCT00000421',
+					'actions': 'continue',
+				},
+				{'type': 'date', 'text': '10/2015' },	# 2: Start Date
+				{'type': 'single',										# 3: Still on trial?
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'date', 'text': '03/2017' }, # 4: Stop Date
+				{'type': 'input', 										# 5: Main treatment
+					'text': 'Test Treatment X',
+					'actions': 'continue',
+				},
+				{'type': 'single',										# 6: Best response?
+					'options': {
+						'The treatment reduced my myeloma and kept my myeloma under control': {},
+					},
+				},
+				{'type': 'popup', 								# 7: Side effects
+					'options': {
+						'lymphatic/immune system': {
+			    		'fatigue/tired': {'intensity': 5},
+			    		'mouth sores': {'intensity': 4},
+		    		}
+		    	}
+				},
+			],
+		}
+		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
+
+		new_outcome = {'The treatment did not reduce my myeloma': {}}
+		edited_outcome = {'options': new_outcome}
+		treatment1Edited['questions'][7]['options'] = new_outcome
+		toView.edit_treatment(0, 'outcomes', treatment1Edited, edited_outcome)
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
+
+		# Still on trial
+		treatment2 = {
+			'testMeta': {'type': 'clinical'},
+			'questions': [
+				{'type': 'single', 		# 0: Treatment Type
+					'options': {
+						'Clinical Trials': {},
+					},
+				},
+				{'type': 'input', 		# 1: NCT number
+					'text': 'NCT00000419',
+					'actions': 'continue',
+				},
+				{'type': 'date', 'text': '10/2017' },	# 2: Start Date
+				{'type': 'single',										# 3: Still on trial?
+					'options': {
+						'Yes': {},
+					},
+				},
+				{'type': 'input', 										# 4: Main treatment
+					'text': 'Test Treatment',
+					'actions': 'continue',
+				},
+				{'type': 'single',										# 5: Best response?
+					'options': {
+						'My myeloma is now undetectable': {
+							'type': 'single',
+							'options': {
+								'I had a complete response (CR) to the treatment': {},
+							},
+						},
+					},
+				},
+				{'type': 'popup', 								# 6: Side effects
+					'options': {
+						'cardiovascular/circulatory system': {
+		    			'blood clots': {'intensity': 9},
+		    			'irregular/rapid heartbeat': {'intensity': 2},
+		    		}
+		    	}
+				},
+			],
+		}
+		# self.assertTrue(toView.on({'tests': [treatment1]}))
+		self.assertTrue(toView.add_treatment(treatment2))
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
+
 class TestRadiation(unittest.TestCase):
 
 	def setUp(self):
@@ -272,7 +521,7 @@ class TestRadiation(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
-		toView.delete_all_treatments()
+		# toView.delete_all_treatments()
 
 		treatment1 = {
 			'testMeta': {'type': 'radiation'},
@@ -295,8 +544,8 @@ class TestRadiation(unittest.TestCase):
 						'I discontinued this treatment': {
 							'type': 'select-all',
 							'options': {
+								'Severity of the side effects': {},
 								'Cost of the treatment': {},
-								'Too much travel': {},
 								'Other': {'comment': 'Discontinued because Y'},
 							},
 						}
@@ -313,7 +562,70 @@ class TestRadiation(unittest.TestCase):
 				},
 			],
 		}
-		self.assertTrue(toView.add_treatment(treatment1, 'save'))
+		# self.assertTrue(toView.add_treatment(treatment1))
+
+		editValues = [
+			{'num_questions': 6},
+			{'index': 1, 'option': {
+					'Other': {'comment': 'Radiation treatment Y'},
+				},
+			},
+			{'index': 2, 'date': '08/2017'},
+			{'index': 3, 'date': '01/2018'},
+			{'index': -1, 'complex': {
+				'cardiovascular/circulatory system': {
+    			'low blood pressure': {'intensity': 7},
+    			'low potassium': {'intensity': 5},
+    		}
+	    }},
+		]
+		treatment1Edited = {
+			'testMeta': {'type': 'radiation'},
+			'questions': [
+				{'type': 'single', 		# 0: Treatment Type
+					'options': {
+						'Radiation': {},
+					},
+				},
+				{'type': 'single', 		# 1: Radiation Type
+					'options': {
+						'Other': {'comment': 'Radiation treatment Y'},
+					},
+					'actions': 'continue',
+				},
+				{'type': 'date', 'text': '08/2017' },	# 2: Start Date
+				{'type': 'date', 'text': '01/2018' }, # 3: Stop Date
+				{'type': 'single',										# 4: Best Response
+					'options': {
+						'I discontinued this treatment': {
+							'type': 'select-all',
+							'options': {
+								'Severity of the side effects': {},
+								'Cost of the treatment': {},
+								'Other': {'comment': 'Discontinued because Y'},
+							},
+						}
+					},
+					'actions': 'continue',
+				},
+				{'type': 'popup', 								# 5: Side effects
+					'options': {
+						'cardiovascular/circulatory system': {
+		    			'low blood pressure': {'intensity': 7},
+		    			'low potassium': {'intensity': 5},
+		    		}
+		    	}
+				},
+			],
+		}
+		# toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
+
+		new_outcome = {'My myeloma is now undetectable': {
+			'I dont know the details of my response': {},
+		}}
+		edited_outcome = {'options': new_outcome}
+		treatment1Edited['questions'][4]['options'] = new_outcome
+		toView.edit_treatment(0, 'outcomes', treatment1Edited, edited_outcome)
 
 		treatment2 = {
 			'testMeta': {'type': 'radiation'},
@@ -338,6 +650,7 @@ class TestRadiation(unittest.TestCase):
 							'type': 'select-all',
 							'options': {
 								'Too much travel': {},
+								'Too much time in the clinic': {},
 								'Other': {'comment': 'Discontinued comment: Treatment2'},
 							},
 						}
@@ -356,9 +669,8 @@ class TestRadiation(unittest.TestCase):
 		}
 
 		# Reset: Delete treatments
-		self.assertTrue(toView.add_treatment(treatment2, 'save'))
-		toView.edit(1, 'delete', {'meta': {'num_treatments': 1}})
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		self.assertTrue(toView.add_treatment(treatment2))
+		toView.delete_all_treatments()
 
 class TestExtra(unittest.TestCase):
 	# Tests treatments for: Bone strengtheners, antibiotics, antifungals
@@ -418,9 +730,51 @@ class TestExtra(unittest.TestCase):
 				},
 			]
 		}
+		self.assertTrue(toView.add_treatment(treatment1))
 
-		self.assertTrue(toView.add_treatment(treatment1, 'save'))
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		editValues = [
+			{'num_questions': 6},
+			{'index': 1, 'option': 'Zometa'},
+			{'index': 2, 'date': '11/2017'},
+			{'index': 4, 'date': '03/2018'},
+			{'index': 5, 'option': 'Once every 6 months'},
+		]
+		treatment1Edited = {
+			'testMeta': {'type': 'bone strengtheners'},
+			'questions': [
+				{'type': 'single', 			# 0: Treatment Type
+					'options': {
+						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
+					},
+				},
+				{'type': 'single', 			# 1. Supportive Care Type
+					'options': {
+						'Bone Strengthener': {},
+					},
+					'actions': 'continue',
+				},
+				{'type': 'single', 			# 2. Bone strengthener Type
+					'options': {
+						'Zometa': {},
+					},
+				},
+				{'type': 'date', 'text': '11/2017' }, # 3. Start date
+				{'type': 'single',										# 4. Bone Strengtheners: Same Frequency
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'date', 'text': '03/2018' }, # 5. Stop date
+				{'type': 'single', 										# 6. Bone Strengtheners: Frequency
+					'options': {
+						'Once every 6 months': {},
+					},
+					'actions': 'continue',
+				},
+			]
+		}
+		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 		# Currently taking bone strengtheners
 		treatment2 = {
@@ -456,8 +810,8 @@ class TestExtra(unittest.TestCase):
 				},
 			]
 		}
-		self.assertTrue(toView.add_treatment(treatment2, 'save'))
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		self.assertTrue(toView.add_treatment(treatment2))
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 	def test_antibiotics(self):
 		''' test_add_treatment.py:TestExtra.test_antibiotics '''
@@ -504,8 +858,47 @@ class TestExtra(unittest.TestCase):
 				},
 			]
 		}
-		self.assertTrue(toView.add_treatment(treatment1, 'save'))
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		self.assertTrue(toView.add_treatment(treatment1))
+
+		editValues = [
+			{'num_questions': 5},
+			{'index': 1, 'option': 'Levaquin (levofloxacin)'},
+			{'index': 2, 'date': '11/2017'},
+			{'index': 4, 'date': '04/2018'},
+		]
+		treatment1Edited = {
+			'testMeta': {'type': 'antibiotics'},
+			'questions': [
+				{'type': 'single', 									# 0. Treatment Type
+					'options': {
+						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
+					},
+				},
+				{'type': 'single',									# 1. Supportive Care Type
+					'options': {
+						'Antibiotics': {},
+					},
+					'actions': 'continue',
+				},
+				{'type': 'single',									# 2. Antibiotics Type
+					'options': {
+						'Levaquin (levofloxacin)': {},
+					},
+				},
+				{'type': 'date', 'text': '11/2017' }, # 3. Start date
+				{'type': 'single', 										# 4. Still taking antibiotics?
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'date', 											# 5. Stop date
+					'text': '04/2018',
+					'actions': 'continue',
+				},
+			]
+		}
+		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 		# Still taking antibiotics
 		treatment2 = {
@@ -536,8 +929,8 @@ class TestExtra(unittest.TestCase):
 				}
 			]
 		}
-		self.assertTrue(toView.add_treatment(treatment2, 'save'))
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		self.assertTrue(toView.add_treatment(treatment2))
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 	def test_antifungal(self):
 		''' test_add_treatment.py:TestExtra.test_antifungal '''
@@ -551,7 +944,8 @@ class TestExtra(unittest.TestCase):
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
 		toView.delete_all_treatments()
-		# Not currently taking antibiotics
+
+		# Not currently taking antifungal
 		treatment1 = {
 			'testMeta': {'type': 'antifungal'},
 			'questions': [
@@ -583,10 +977,49 @@ class TestExtra(unittest.TestCase):
 				},
 			]
 		}
-		self.assertTrue(toView.add_treatment(treatment1, 'save'))
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		self.assertTrue(toView.add_treatment(treatment1))
 
-		# Still taking antibiotics
+		editValues = [
+			{'num_questions': 5},
+			{'index': 1, 'option': 'Itraconazole'},
+			{'index': 2, 'date': '12/2017'},
+			{'index': 4, 'date': '05/2018'},
+		]
+		treatment1Edited = {
+			'testMeta': {'type': 'antifungal'},
+			'questions': [
+				{'type': 'single', 							# 0. Treatment Type
+					'options': {
+						'Bone Strengtheners, Antibiotics and Anti Fungals (Optional)': {},
+					},
+				},
+				{'type': 'single',							# 1. Supportive Care Type
+					'options': {
+						'Anti-Fungal': {},
+					},
+					'actions': 'continue',
+				},
+				{'type': 'single',							# 2. Anti-fungal Type
+					'options': {
+						'Itraconazole': {},
+					},
+				},
+				{'type': 'date', 'text': '12/2017' }, # 3. Start date
+				{'type': 'single',										# 4. Still taking antifungals?
+					'options': {
+						'No': {},
+					},
+				},
+				{'type': 'date', 											# 5. Stop date
+					'text': '05/2018',
+					'actions': 'continue',
+				},
+			]
+		}
+		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
+
+		# Still taking antifungal
 		treatment2 = {
 			'testMeta': {'type': 'antifungal'},
 			'questions': [
@@ -615,8 +1048,8 @@ class TestExtra(unittest.TestCase):
 				},
 			]
 		}
-		self.assertTrue(toView.add_treatment(treatment2, 'save'))
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		self.assertTrue(toView.add_treatment(treatment2))
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 	def test_view_treatment_options(self):
 		''' test_add_treatment.py:TestExtra.test_view_treatment_options '''
@@ -634,7 +1067,6 @@ class TestExtra(unittest.TestCase):
 		self.assertTrue(treatmentOptionsView.on())
 
 
-# @unittest.skip('Add treatment crap')
 class TestStemCell(unittest.TestCase):
 	# 1. Treatment Type
 	# 2. Stemcell Type
@@ -726,8 +1158,8 @@ class TestStemCell(unittest.TestCase):
 			]
 		}
 		# self.assertTrue(toView.on({'tests': [stemCellBasic]}))
-		self.assertTrue(toView.add_treatment(stemCellBasic, 'save'))
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		self.assertTrue(toView.add_treatment(stemCellBasic))
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 		# Still taking induction (yes to question[4])
 		# No drugs added/removed
@@ -807,8 +1239,8 @@ class TestStemCell(unittest.TestCase):
 				},
 			]
 		}
-		self.assertTrue(toView.add_treatment(stemCellInduction, 'save'))
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		self.assertTrue(toView.add_treatment(stemCellInduction))
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 		# Still taking induction (no to question[4])
 		# No drugs added/removed
@@ -838,39 +1270,39 @@ class TestStemCell(unittest.TestCase):
 						'No': {},
 					},
 				},
-				{'type': 'date', 											# 3. Induction End date
+				{'type': 'date', 											# 5. Induction End date
 					'text': '03/2018'
 				},
-				{'type': 'popup', 										# 5: Induction therapy treatments
+				{'type': 'popup', 										# 6: Induction therapy treatments
 					'options': {
 						'chemotherapies': {
 							'melphalan': {},
 						}
 					}
 				},
-				{'name': 'transplant start date',								# 6. Transplant Start date
+				{'name': 'transplant start date',								# 7. Transplant Start date
 					'type': 'date',
 					'text': '01/2018'
 				},
-				{'type': 'single',										# 7. Melphalan dose
+				{'type': 'single',										# 8. Melphalan dose
 					'options': {
 						'No': {},
 					},
 				},
-				{'type': 'single',										# 8. Response
+				{'type': 'single',										# 9. Response
 					'options': {
 						'The treatment did not reduce my myeloma': {},
 					},
 				},
-				{'type': 'popup', 										# 9: Side effects
+				{'type': 'popup', 										# 10: Side effects
 					'options': {}
 				},
-				{'type': 'single',										# 10. Maintenance Therapy?
+				{'type': 'single',										# 11. Maintenance Therapy?
 					'options': {
 						'No': {},
 					},
 				},
 			]
 		}
-		self.assertTrue(toView.add_treatment(stemCellInduction, 'save'))
-		toView.edit(0, 'delete', {'meta': {'num_treatments': 0}})
+		self.assertTrue(toView.add_treatment(stemCellInduction))
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})

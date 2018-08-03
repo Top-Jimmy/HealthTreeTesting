@@ -34,12 +34,14 @@ class FullHealthMyelomaForm():
 
 	def load_sections(self):
 		self.sections = []
-		for section in self.sectionConts:
+		for i, section in enumerate(self.sectionConts):
+			# print('loading section: ' + str(i))
 			# Contains primary and any visible secondary questions
 			self.questionContainers = section.find_elements_by_class_name('ques_group_cls')
 			self.subQuestionIndices = []
 			questionList = []
 			for questionIndex, questionContainer in enumerate(self.questionContainers):
+				# print('loading question: ' + str(questionIndex))
 				# Primary or secondary question?
 				subquestions = questionContainer.find_elements_by_class_name('ques_group_cls')
 				if len(subquestions) > 0:
@@ -51,7 +53,7 @@ class FullHealthMyelomaForm():
 				if questionIndex not in self.subQuestionIndices:
 					# Primary question
 					questionList.append(self.load_questions(questionContainer))
-				self.sections.append(questionList)
+			self.sections.append(questionList)
 
 	def load_questions(self, questionContainer):
 		question = {}

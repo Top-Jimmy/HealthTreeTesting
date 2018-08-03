@@ -23,7 +23,7 @@ class TestFullHealth(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 
 		aboutMeView.menu.go_to('Full Health Profile')
-		
+
 		self.assertTrue(fullHealthView.on('my myeloma'))
 
 		self.assertTrue(fullHealthView.select_tab('demographics'))
@@ -49,7 +49,7 @@ class TestFullHealth(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 
 		aboutMeView.menu.go_to('Full Health Profile')
-			
+
 		self.assertTrue(fullHealthView.on('my myeloma'))
 
 		form_data = [
@@ -93,7 +93,7 @@ class TestFullHealth(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 
 		aboutMeView.menu.go_to('Full Health Profile')
-		
+
 		self.assertTrue(fullHealthView.on('my myeloma'))
 
 		self.assertTrue(fullHealthView.select_tab('full health history'))
@@ -117,7 +117,7 @@ class TestFullHealth(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 
 		aboutMeView.menu.go_to('Full Health Profile')
-		
+
 		self.assertTrue(fullHealthView.on('my myeloma'))
 
 		form_data = [

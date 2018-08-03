@@ -1,5 +1,7 @@
 from viewExceptions import MsgError, WarningError
 from Components import addTreatmentForm
+from Components import editTreatmentForm
+from Components import editTreatmentPopup
 from Components import menu
 from Components import header
 from Components import popUpForm
@@ -65,8 +67,11 @@ class TreatmentsOutcomesView(view.View):
 			meta = expectedValues.get('meta', None)
 			if meta:
 				for key, value in meta.iteritems():
-					if key == 'num_treatments' and value != len(self.saved_tests):
-						self.failures.append('Treatments&Outcomes Meta: Expected ' + str(value) + ' treatments. Form has ' + str(len(self.saved_tests)))
+					if key == 'num_treatments':
+						if value != len(self.saved_tests):
+							self.failures.append('Treatments&Outcomes Meta: Expected ' + str(value) + ' treatments. Form has ' + str(len(self.saved_tests)))
+						else:
+							print('correct number of treatents: ' + str(value))
 
 			elif self.state == 'fresh':
 				# todo: Validate text on 'fresh' popup
@@ -92,9 +97,13 @@ class TreatmentsOutcomesView(view.View):
 						# raw_input('savedTest: ' + str(savedTest))
 						savedData = savedTest['testData']
 
-						# All treatment types have treatments and therapy type
-						self.compare_therapy_type(savedData['therapy type'], test, testType)
-						self.compare_treatments(savedData['treatments'], test, testType)
+						if testType == 'clinical':
+							self.compare_nct(savedData['nct #'], test, testType)
+							self.compare_treatments(savedData['treatment type'], test, testType)
+						else:
+							# All other treatment types have treatments and therapy type
+							self.compare_therapy_type(savedData['therapy type'], test, testType)
+							self.compare_treatments(savedData['treatments'], test, testType)
 						if testType == 'stem cell':
 							self.compare_start_date(self.convert_date(savedData['transplant date']), test, testType)
 						else:
@@ -152,6 +161,9 @@ class TreatmentsOutcomesView(view.View):
 						for treatment in items:
 							treatmentText = treatment.text.lower()
 							treatments.append(treatmentText)
+						# Clinical doesn't have items (just text)
+						if not items:
+							treatments.append(td.text)
 						testData[key] = treatments
 
 					elif tdIndex == len(tds)-1: # Last row: index=4 (3 for stem cell)
@@ -219,12 +231,10 @@ class TreatmentsOutcomesView(view.View):
 			# 'irregular/rapid heartbeat': {'intensity': 2},
 			# 'blood clots': {'intensity': 9}}
 		# }
-
 		# converted to...
 		# {u'irregular/rapid heartbeat': {'intensity': u'2'},
 		# 	u'blood clots': {'intensity': u'9'}
 		# }
-
 		sideEffects = {}
 		if info:
 			for category in info:
@@ -239,7 +249,6 @@ class TreatmentsOutcomesView(view.View):
 			for key in test['questions'][2]['options']:
 				if key.lower() == 'yes':
 					index = 8
-			# print('index: ' + str(index))
 			return index
 
 	def compare_start_date(self, savedVal, test, testType):
@@ -250,6 +259,7 @@ class TreatmentsOutcomesView(view.View):
 			'bone strengtheners': 3,
 			'antibiotics': 3,
 			'antifungal': 3,
+			'clinical': 2,
 		}
 
 		# Start Date (universal treatment option)
@@ -267,13 +277,16 @@ class TreatmentsOutcomesView(view.View):
 			expectedVal = 'current treatment'
 			if test['questions'][3]['type'] == 'date':
 				expectedVal = test['questions'][3]['text']
+		elif testType == 'clinical':
+			expectedVal = 'current treatment'
+			if test['questions'][4]['type'] == 'date':
+				expectedVal = test['questions'][4]['text']
 		else:
 			try:
 				expectedVal = test['questions'][5]['text'] # If no question[5] it's 'current treatment'
 			except (IndexError, KeyError) as e:
 				# No end date
 				expectedVal = 'current treatment'
-
 
 		if savedVal != expectedVal:
 			self.failures.append('T&Outcomes: Expected end date ' + str(expectedVal) + ', loaded ' + str(savedVal))
@@ -322,8 +335,26 @@ class TreatmentsOutcomesView(view.View):
 		else:
 			print('correct side effects')
 
-	def compare_treatments(self, savedData, test, testType):
-		pass
+	def compare_treatments(self, savedVal, test, testType):
+		# SavedVal should be a list with all the treatment options
+		expectedVal = None
+		if testType == 'clinical':
+			# Clinical shouldn't have multiple 'options', just text from question 4/5
+			# question[4] might be stop date
+			if test['questions'][4].get('type', None) == 'input':
+				expectedVal = test['questions'][4].get('text', None)
+			else:
+				expectedVal = test['questions'][5].get('text', None)
+			if expectedVal:
+				expectedVal = ['Clinical Trial: ' + expectedVal]
+		else:
+			print('Not evaluating treatments for testType: ' + str(testType))
+
+		if expectedVal:
+			if savedVal != expectedVal:
+				self.failures.append('T&Outcomes: Expected treatment ' + str(expectedVal) + ', loaded ' + str(savedVal))
+			else:
+				print('correct treatment')
 
 	def compare_frequency(self, savedVal, test, testType):
 		# Only for Bone strengthener, antibiotics, antifungal
@@ -337,6 +368,16 @@ class TreatmentsOutcomesView(view.View):
 			self.failures.append('T&Outcomes: Expected frequency ' + str(expectedVal) + ', loaded ' + str(savedVal))
 		else:
 			print('correct frequency')
+
+	def compare_nct(self, savedVal, test, testType):
+		expectedVal = None
+		if testType == 'clinical':
+			expectedVal = test['questions'][1]['text'].lower()
+
+		if expectedVal and savedVal != expectedVal:
+			self.failures.append('T&Outcomes: Expected NCT# ' + str(expectedVal) + ', loaded ' + str(savedVal))
+		else:
+			print('correct nct')
 
 	def compare_outcome(self, savedVal, test, testType):
 		# Only for chemo, radiation, stem cell
@@ -378,10 +419,54 @@ class TreatmentsOutcomesView(view.View):
 		if not hasError:
 			print('correct outcome')
 
+############################ Utility Functions ###############################
+
+	def delete_treatment(self):
+		self.popUpForm = popUpForm.PopUpForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+		self.popUpForm.confirm('confirm')
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+	def edit_treatments(self, editInfo, expectedInfo):
+		self.editTreatmentForm = editTreatmentForm.EditTreatmentForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.editTreatmentForm.load())
+		if self.editTreatmentForm.edit_treatment(editInfo):
+			WDW(self.driver, 10).until(lambda x: self.load({'tests': [expectedInfo]}, 'saved'))
+
+	def edit_outcomes(self, editInfo, expectedInfo):
+		self.popUpEditor = editTreatmentPopup.EditTreatmentPopup(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.popUpEditor.load())
+		if self.popUpEditor.edit_treatment(editInfo, 'outcomes'):
+			WDW(self.driver, 10).until(lambda x: self.load({'tests': [expectedInfo]}, 'saved'))
+
+	def edit_side_effects(self, editInfo, expectedInfo):
+		self.popUpEditor = editTreatmentPopup.EditTreatmentPopup(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.popUpEditor.load())
+		if self.popUpEditor.edit_treatment(editInfo, 'side effects'):
+			WDW(self.driver, 10).until(lambda x: self.load({'tests': [expectedInfo]}, 'saved'))
+
+	def load_actions(self, tableContainer):
+		lastRow = tableContainer.find_elements_by_tag_name('tr')[-1]
+		links = lastRow.find_elements_by_tag_name('a')
+		if len(links) == 4:
+			return {
+				'treatments': links[0],
+				'outcomes': links[1],
+				'side effects': links[2],
+				'delete': links[3],
+			}
+		elif len(links) == 2: # Bone Strengtheners, Antibiotics, Anti Fungals
+			return {
+				'treatments': links[0],
+				'delete': links[1],
+			}
 
 ############################### Test Functions. ####################################
 
-	def add_treatment(self, treatmentInfo, expectedError=None, expectedWarnings=None):
+	def add_treatment(self, treatmentInfo, expectedInfo=None, expectedError=None, expectedWarnings=None):
+		# ExpectedInfo should be list of expected tests
+		if expectedInfo is None:
+			expectedInfo = [treatmentInfo]
 		try:
 			# print(self.state)
 			if self.state == 'normal' or self.state == 'saved':
@@ -389,7 +474,7 @@ class TreatmentsOutcomesView(view.View):
 				self.addTreatmentForm = addTreatmentForm.AddTreatmentForm(self.driver)
 				WDW(self.driver, 10).until(lambda x: self.addTreatmentForm.load())
 				if self.addTreatmentForm.add_treatment(treatmentInfo):
-					WDW(self.driver, 10).until(lambda x: self.load({'tests': [treatmentInfo]}, 'saved'))
+					WDW(self.driver, 10).until(lambda x: self.load({'tests': expectedInfo}, 'saved'))
 				else:
 					print('Failed to add treatment')
 
@@ -429,28 +514,9 @@ class TreatmentsOutcomesView(view.View):
 					return True
 		return True
 
-	def delete_all_treatments(self, newInfo=None):
+	def edit_treatment(self, treatmentIndex, editType, expectedInfo=None, editInfo=None, popupAction='confirm'):
 		if self.state == 'saved':
-			for i, saved_test in enumerate(self.saved_tests):
-				actions = self.load_actions(saved_test.find_elements_by_tag_name('tr')[-1])
-				try:
-					actions['delete'].click()
-				except KeyError:
-					print('"delete" Is not a valid treatment option')
-					raise KeyError('Not a valid treatment option')
-				self.delete_treatment()
-
-		WDW(self.driver, 10).until(lambda x: self.load(newInfo))
-
-	def delete_treatment(self):
-		self.popUpForm = popUpForm.PopUpForm(self.driver)
-		WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
-		self.popUpForm.confirm('confirm')
-
-	def edit(self, treatmentIndex, editType, newInfo=None, popupAction='confirm'):
-		if self.state == 'saved':
-			table = self.saved_tests[treatmentIndex]
-			actions = self.load_actions(table.find_elements_by_tag_name('tr')[-1])
+			actions = self.load_actions(self.saved_tests[treatmentIndex])
 
 			try:
 				action = actions[editType]
@@ -461,29 +527,35 @@ class TreatmentsOutcomesView(view.View):
 
 			if editType == 'delete':
 				self.delete_treatment()
+			elif editType == 'treatments':
+				self.edit_treatments(editInfo, expectedInfo)
+			elif editType == 'outcomes':
+				self.edit_outcomes(editInfo, expectedInfo)
+			elif editType == 'side effects':
+				self.edit_side_effects(editInfo, expectedInfo)
 
-			WDW(self.driver, 10).until(lambda x: self.load(newInfo))
-
-	def load_actions(self, lastRow):
-		links = lastRow.find_elements_by_tag_name('a')
-		if len(links) == 4: #
-			return {
-				'treatments': links[0],
-				'outcomes': links[1],
-				'sideEffects': links[2],
-				'delete': links[3],
-			}
-		elif len(links) == 2: # Bone Strengtheners, Antibiotics, Anti Fungals
-			return {
-				'treatments': links[0],
-				'delete': links[1],
-			}
+	def delete_all_treatments(self):
+		if self.state == 'saved':
+			num_treatments = len(self.saved_tests)
+			for i, saved_test in enumerate(self.saved_tests):
+				print('deleting treatment #' + str(i))
+				actions = self.load_actions(self.saved_tests[0])
+				try:
+					actions['delete'].click()
+				except KeyError:
+					print('"delete" Is not a valid treatment option')
+					raise KeyError('Not a valid treatment option')
+				self.delete_treatment()
+				# Should be 1 less treatment
+				WDW(self.driver, 10).until(lambda x: self.load({'meta': {'num_treatments': num_treatments - (i+1)}}))
 
 	def view_options(self):
 		self.view_options_button.click()
 		url = self.driver.current_url
 		if '/treatment-options' not in url:
 			return False
+
+
 
 
 
