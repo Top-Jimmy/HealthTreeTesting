@@ -35,44 +35,58 @@ class FullHealthMyelomaForm():
 	def load_sections(self):
 		self.sections = []
 		for section in self.sectionConts:
-			self.rows = section.find_elements_by_class_name('row')
-			section = []
-			for row in self.rows:
-				# Row contains at least 1 question, might also have 1 or more subquestion
-				section.append(self.load_questions(row))
-			self.sections.append(section)
+			# Contains primary and any visible secondary questions
+			self.questionContainers = section.find_elements_by_class_name('ques_group_cls')
+			self.subQuestionIndices = []
+			questionList = []
+			for questionIndex, questionContainer in enumerate(self.questionContainers):
+				# Primary or secondary question?
+				subquestions = questionContainer.find_elements_by_class_name('ques_group_cls')
+				if len(subquestions) > 0:
+					for subquestionIndex in xrange(len(subquestions)):
+						subIndex = questionIndex+1 + subquestionIndex
+						print('subquestion: ' + str(subIndex))
+						self.subQuestionIndices.append(subIndex)
 
-	def load_questions(self, row):
-		rowInfo = {} # {questionIndex: [{questionInfo1}, {questionInfo2}]}
-		questionList = []
+				if questionIndex not in self.subQuestionIndices:
+					# Primary question
+					questionList.append(self.load_questions(questionContainer))
+				self.sections.append(questionList)
+
+	def load_questions(self, questionContainer):
+		question = {}
 		questionIndex = None
-		questionConts = row.find_elements_by_class_name('cls_survey_question')
+		# First is primary. Any additional ones are secondary
+		questionConts = questionContainer.find_elements_by_class_name('cls_survey_question')
 
-		for i, question in enumerate(questionConts):
-			questionInfo = {}
-			if i == 0: # Load question index (use as key for individual questions w/in each row)
-				label = question.find_element_by_tag_name('label')
-				questionIndex = label.text[:1]
-				# raw_input('questionIndex: ' + str(questionIndex))
+		for i, questionCont in enumerate(questionConts):
+			textInput = None
+			radioOptions = None
 			options = {}
-			radioContainers = question.find_elements_by_class_name('dynamic-radio') # Div containing input and span (text)
-			dateContainer = None
-			if len(radioContainers) == 0: # No radio buttons? Check for date input
-				dateInput = question.find_element_by_tag_name('input')
-				questionInfo['date'] = dateInput
-			for radioCont in radioContainers:
-				inputs = radioCont.find_elements_by_tag_name('input')
-				spans = radioCont.find_elements_by_tag_name('span')
-				optionName = spans[0].text.lower()
-				options[optionName] = inputs[0]
-				# options[optionName] = 'webElement'
+			secondary_questions = []
+			if i == 0: # Primary
+				try:
+					# look for radio options
+					radioContainers = questionCont.find_elements_by_class_name('dynamic-radio')
+					for radioCont in radioContainers:
+						inputs = radioCont.find_elements_by_tag_name('input')
+						spans = radioCont.find_elements_by_tag_name('span')
+						optionName = spans[0].text.lower()
+						options[optionName] = inputs[0]
+					if len(radioContainers) == 0:
+						textInput = question.find_element_by_tag_name('input')
+				except NoSuchElementException:
+					pass
 
+				# Look for an input
+
+			else: # secondary
+				secondary_questions.append(self.load_questions(questionCont))
 			if options:
-				questionInfo['options'] = options
+				question['options'] = options
+			if textInput:
+				question['textInput'] = textInput
+			if secondary_questions:
+				question['secondary_questions'] = secondary_questions
 
-			questionList.append(questionInfo)
-
-		rowInfo[questionIndex] = questionList
-
-		return rowInfo
-
+		return question

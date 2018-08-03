@@ -31,17 +31,18 @@ class AddLabsForm():
 		self.kappa_free_input = inputs[1]
 		self.lambda_free_input = inputs[2]
 		self.ratio_input = inputs[3]
-		self.blood_input = inputs[4]
+		self.marrow_input = inputs[4]
+		self.blood_input = inputs[5]
 
-		self.calcium_input = inputs[5]
-		self.platelets_input = inputs[6]
-		self.blood_cell_input = inputs[7]
-		self.hemoglobin_input = inputs[8]
-		self.lactate_input = inputs[9]
-		self.immuno_g_input = inputs[10]
-		self.immuno_a_input = inputs[11]
-		self.immuno_m_input = inputs[12]
-		self.albumin_input = inputs[13]
+		self.calcium_input = inputs[6]
+		self.platelets_input = inputs[7]
+		self.blood_cell_input = inputs[8]
+		self.hemoglobin_input = inputs[9]
+		self.lactate_input = inputs[10]
+		self.immuno_g_input = inputs[11]
+		self.immuno_a_input = inputs[12]
+		self.immuno_m_input = inputs[13]
+		self.albumin_input = inputs[14]
 
 		self.save_button = buttons[0]
 		self.cancel_button = buttons[1]
@@ -65,6 +66,9 @@ class AddLabsForm():
 
 			self.ratio_input.clear()
 			self.ratio_input.send_keys(labInfo['ratio'])
+
+			self.marrow_input.clear()
+			self.marrow_input.send_keys(labInfo['bone_marrow'])
 
 			self.blood_input.clear()
 			self.blood_input.send_keys(labInfo['blood'])

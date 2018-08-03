@@ -49,7 +49,6 @@ class FullHealthView(view.View):
 					self.form = healthSummaryForm.HealthSummaryForm(self.driver)
 				self.loadedData = self.form.sections
 
-
 			self.myeloma_tab = self.menu_tabs.find_element_by_id('tab-0')
 			self.demographics_tab = self.menu_tabs.find_element_by_id('tab-1')
 			self.health_history_tab = self.menu_tabs.find_element_by_id('tab-2')
@@ -110,17 +109,25 @@ class FullHealthView(view.View):
 			for questionIndex, question in enumerate(section):
 				# question: {'option': 'yes'}
 				loadedQuestion = loadedSection[questionIndex]
-				# raw_input(loadedQuestion)
 				# {u'1': [
 				# 	{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
 				# ]}
-				questionKey = str(questionIndex + 1)
-				questionOptions = loadedQuestion[questionKey][0]['options']
+				questionOptions = loadedQuestion.get('options', None)
+				textarea = loadedQuestion.get('textInput', None)
+				secondary_questions = loadedQuestion.get('secondary_questions', None)
 
 				# raw_input(questionOptions)
 				# {u'Yes': 'webElement', u'No': 'webElement'}
-				inputEl = questionOptions[question['option']]
-				inputEl.click()
+				if questionOptions:
+					inputEl = questionOptions[question['option']]
+					inputEl.click()
+				if textarea:
+					textareaEl = questionOptions[question['textInput']]
+					textareaEl.send_keys(form_data['textInput'])
+				if secondary_questions:
+					secondaryQuestionEl = questionOptions[question['secondary_questions']]
+					secondaryQuestionEl.send_keys(form_data['secondary_question'])
+
 				time.sleep(1)
 
 		return True

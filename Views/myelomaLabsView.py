@@ -43,6 +43,7 @@ class MyelomaLabsView(view.View):
 			self.to_date_input = inputs[1]
 
 			self.load_table()
+			print(self.clinical_tables	)
 
 			self.validate()
 			return True
@@ -60,7 +61,7 @@ class MyelomaLabsView(view.View):
 		self.clinical_tables = []
 		clinical_table = self.form.find_element_by_id('clinical_table')
 		rows = clinical_table.find_elements_by_class_name('table_row')
-		keys = ['actions', 'dobd', 'monoclonal', 'kappa', 'lambda', 'ratio', 'blood', 'blood_cell', 'hemoglobin',  'lactate', 'albumin', 'immuno_g', 'immuno_a', 'immuno_m', 'calcium', 'platelets']
+		keys = ['actions', 'dobd', 'monoclonal', 'kappa', 'lambda', 'ratio', 'bone_marrow', 'blood', 'blood_cell', 'hemoglobin',  'lactate', 'albumin', 'immuno_g', 'immuno_a', 'immuno_m', 'calcium', 'platelets']
 		for rowIndex, row in enumerate(rows):
 			rowInfo = {} # Info for an individual test
 			if rowIndex != 0:
@@ -74,6 +75,9 @@ class MyelomaLabsView(view.View):
 						rowInfo[keys[tdIndex]] = td.text.lower()
 			if rowInfo:
 				self.clinical_tables.append(rowInfo)
+
+	# def validate_table(self):
+		
 
 	def get_my_labs(self):
 		self.add_new_button.click()
