@@ -16,7 +16,7 @@ class FullHealthView(view.View):
 		try:
 			# Crap on left
 			self.menu_tabs = self.driver.find_element_by_class_name('RRT__tabs')
-			# self.fullHealthMyelomaForm = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
+
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 
@@ -25,6 +25,7 @@ class FullHealthView(view.View):
 			self.selectedTab = self.selected_tab()
 			if expectedTab and expectedTab != self.selectedTab:
 				print('Full Health Profile: Expected state: "' + str(expectedTab) + '", got state: "' + str(self.selectedTab) + '"')
+				
 			else:
 				if expectedTab == 'my myeloma':
 					self.form = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
@@ -131,6 +132,5 @@ class FullHealthView(view.View):
 					secondaryQuestionEl.send_keys(form_data['secondary_question'])
 
 				time.sleep(1)
-
 		return True
 

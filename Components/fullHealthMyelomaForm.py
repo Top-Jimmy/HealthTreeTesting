@@ -83,6 +83,7 @@ class FullHealthMyelomaForm():
 				# Look for an input
 
 			else: # secondary
+				if len(radioContainers)
 				secondary_questions.append(self.load_questions(questionCont))
 			if options:
 				question['options'] = options

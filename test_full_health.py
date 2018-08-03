@@ -54,12 +54,14 @@ class TestFullHealth(unittest.TestCase):
 
 		form_data = [
 			[{'option': 'iga lambda'}, {'option': 'yes'}, {'option': 'no'}],
-			[{'option': 'yes'}],
-			[{'option': 'yes'}, {'option': 'yes'}, {'option': 'yes'}, {'option': 'yes'}, {'option': 'yes'}, {'option': 'yes'}],
-			[{'option': 'yes'}, {'option': 'yes'}, {'option': 'yes'}],
+			[{'option': 'no'}],
+			[{'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'yes'}, {'option': 'no'}, {'option': 'no'}],
+			[{'option': 'no'}, {'option': 'no'}, {'option': 'no'}],
 		]
 
 		self.assertTrue(fullHealthView.submit(form_data))
+
+		self.assertTrue(fullHealthView.on('my myeloma'))
 
 	def test_demographics_form(self):
 		''' test_full_health.py:TestFullHealth.test_demographics_form '''
