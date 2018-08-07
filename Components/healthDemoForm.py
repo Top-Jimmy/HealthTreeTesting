@@ -16,7 +16,7 @@ class HealthDemoForm():
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 
-		self.dropdowns = self.form.find_elements_by_class_name('dynamic-text-area')
+		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
 		self.load_sections()
 		self.save_button = self.form.find_element_by_tag_name('button')
 
@@ -25,75 +25,90 @@ class HealthDemoForm():
 
 	def load_sections(self):
 		self.sections = []
-		# Form should only have 1 section
-		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
-		for section in self.sectionConts:
-			self.rows = section.find_elements_by_class_name('row')
-			section = []
-			for row in self.rows:
-				# Row contains at least 1 question, might also have 1 or more subquestion
-				section.append(self.load_questions(row))
-			self.sections.append(section)
+		for i, section in enumerate(self.sectionConts):
+			# print('loading section: ' + str(i))
+			# Contains primary and any visible secondary questions
+			self.questionContainers = section.find_elements_by_class_name('ques_group_cls')
+			self.subQuestionIndices = []
+			questionList = []
+			for questionIndex, questionContainer in enumerate(self.questionContainers):
+				# print('loading question: ' + str(questionIndex))
+				# Primary or secondary question?
+				subquestions = questionContainer.find_elements_by_class_name('ques_group_cls')
+				if len(subquestions) > 0:
+					for subquestionIndex in xrange(len(subquestions)):
+						subIndex = questionIndex+1 + subquestionIndex
+						print('subquestion: ' + str(subIndex))
+						self.subQuestionIndices.append(subIndex)
 
-	def load_questions(self, row):
-		rowInfo = {}
-		questionList = []
+				if questionIndex not in self.subQuestionIndices:
+					# Primary question
+					questionList.append(self.load_questions(questionContainer))
+			self.sections.append(questionList)
+
+	def load_questions(self, questionContainer, isSecondary=False):
+		question = {}
 		questionIndex = None
-		questionConts = row.find_elements_by_class_name('cls_survey_question')
-		for i, question in enumerate(questionConts):
-			questionInfo = {}
-			if i == 0: # Grab the question number for the index
-				labels = question.find_elements_by_tag_name('label')
-				index = labels[0].text.find('.')
-				questionIndex = labels[0].text[:index]
+		# First is primary. Any additional ones are secondary
+		questionConts = questionContainer.find_elements_by_class_name('cls_survey_question')
+		if isSecondary:
+			questionConts = [questionContainer]
+
+		for i, questionCont in enumerate(questionConts):
+			textInput = None
+			radioOptions = None
 			options = {}
-			radioContainers = question.find_elements_by_class_name('dynamic-radio') # Container with the text (span) and input
-			dropdownContainers = question.find_elements_by_class_name('Select-control')
-			if dropdownContainers:
-				questionInfo['dropdowns'] = dropdownContainers[0]
-			if radioContainers:
-				for radioCont in radioContainers:
-					inputs = radioCont.find_elements_by_tag_name('input')
-					spans = radioCont.find_elements_by_tag_name('span')
-					optionName = spans[0].text
-					options[optionName] = inputs[0]
+			secondary_questions = []
+			if i == 0: # Primary
+				try:
+					# look for radio options
+					radioContainers = questionCont.find_elements_by_class_name('dynamic-radio')
+					dropdownContainers = questionCont.find_elements_by_class_name('is-clearable')
+					for radioCont in radioContainers:
+						inputs = radioCont.find_elements_by_tag_name('input')
+						spans = radioCont.find_elements_by_tag_name('span')
+						optionName = spans[0].text.lower()
+						options[optionName] = inputs[0]
+					if dropdownContainers:
+						question['dropdowns'] = dropdownContainers
 
-			if len(radioContainers) == 0 and len(dropdownContainers) == 0: # Non-dropdown inputs
-				cityInput = question.find_element_by_tag_name('input')
-				questionInfo['city'] = cityInput
+					if len(radioContainers) == 0 and len(dropdownContainers) == 0:
+						textInput = questionCont.find_element_by_tag_name('input')
+				except NoSuchElementException:
+					pass
 
+				# Look for an input
+
+			else: # secondary
+				secondary_questions.append(self.load_questions(questionCont, True))
+			question['container'] = questionCont
 			if options:
-				questionInfo['options'] = options
+				question['options'] = options
+			if textInput:
+				question['textInput'] = textInput
+			if secondary_questions:
+				question['secondary_questions'] = secondary_questions
 
-			questionList.append(questionInfo)
+		return question
 
-			if questionIndex == None:
-				print('i: ' + str(i))
-
-		rowInfo[questionIndex] = questionList
-
-		return rowInfo
-
-	def set_dropdown(self, cont, value):
-		# find right container given index (class='Select-control')
-		# conts = self.driver.find_elements_by_class_name('Select-control')
-		# cont = conts[dropdownIndex]
-
-		# Figure out if you need to click 'Select-value-label' or 'Select-placeholder' element
+	def set_dropdown(self, container, value):
+	# Figure out if you need to click 'Select-value-label' or 'Select-placeholder' element
 		dropdown_preSet = False
 		try:
-			dropdown_value = cont.find_element_by_class_name('Select-value-label')
+			print(container)
+			dropdown_value = container.find_element_by_class_name('Select-value-label')
 			dropdown_placeholder = None
 			dropdown_preSet = True
 		except NoSuchElementException:
 			dropdown_value = None
-			dropdown_placeholder = cont.find_element_by_class_name('Select-placeholder')
+			dropdown_placeholder = container.find_element_by_class_name('Select-placeholder')
 
 		# click it
 		if dropdown_preSet:
 			dropdown_value.click()
 		else:
 			dropdown_placeholder.click()
+
 		# load options in dropdown
 		options = {}
 		try:
@@ -109,36 +124,7 @@ class HealthDemoForm():
 		try:
 			option = options[value.lower()]
 			option.click()
-
 		except (IndexError, KeyError) as e:
 			print('invalid index: ' + value)
 			for option in options:
 				print(option)
-
-	# def load_ethnic_background_dropdown(self):
-	# 	self.ethnic_background_cont = self.dropdowns[0]
-
-	# 	# Is value already set? Should have either value or placeholder element
-	# 	self.ethnic_background_preSet = False
-	# 	try:
-	# 		self.ethnic_background_value = self.ethnic_background_cont.find_element_by_class_name('Select-value-label')
-	# 		self.ethnic_background_placeholder = None
-	# 		self.ethnic_background_preSet = True
-	# 	except NoSuchElementException:
-	# 		self.ethnic_background_value = None
-	# 		# 'Select diagnosis' placeholder
-	# 		self.ethnic_background_placeholder = self.ethnic_background_cont.find_element_by_class_name('Select-placeholder')
-
-	# def load_ethnic_background_dropdown(self):
-	# 	self.country_cont = self.dropdowns[0]
-
-	# 	# Is value already set? Should have either value or placeholder element
-	# 	self.country_preSet = False
-	# 	try:
-	# 		self.country_value = self.country_cont.find_element_by_class_name('Select-value-label')
-	# 		self.country_placeholder = None
-	# 		self.country_preSet = True
-	# 	except NoSuchElementException:
-	# 		self.country_value = None
-	# 		# 'Select diagnosis' placeholder
-	# 		self.country_placeholder = self.country_cont.find_element_by_class_name('Select-placeholder')

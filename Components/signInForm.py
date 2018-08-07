@@ -40,7 +40,7 @@ class SignInForm():
 		failures = []
 		if self.signIn_button.text != 'Sign In':
 			failures.append('1. Sign In button. Expecting text "Sign In", got "' + self.signIn_button.text + '"')
-		if self.forgotPassword_link.text != 'Forgot password':
+		if self.forgotPassword_link.text != 'Forgot Password':
 			failures.append('2. Forgot Password. Expecting text "Forgot Password", got "' + self.forgotPassword_link.text + '"')
 		if len(failures) > 0:
 			print(failures)

@@ -25,7 +25,7 @@ class FullHealthView(view.View):
 			self.selectedTab = self.selected_tab()
 			if expectedTab and expectedTab != self.selectedTab:
 				print('Full Health Profile: Expected state: "' + str(expectedTab) + '", got state: "' + str(self.selectedTab) + '"')
-				
+
 			else:
 				if expectedTab == 'my myeloma':
 					self.form = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
@@ -91,7 +91,7 @@ class FullHealthView(view.View):
 		except KeyError:
 			print('fullHealthView: No tab named: ' + str(tabName))
 
-	def submit(self, formInfo):
+	def submit(self, formInfo, tabName):
 		for sectionIndex, section in enumerate(formInfo):
 			print('answering section: ' + str(sectionIndex))
 			loadedSection = self.loadedData[sectionIndex]
@@ -115,21 +115,43 @@ class FullHealthView(view.View):
 				# {u'1': [
 				# 	{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
 				# ]}
+				secondaryInfo = question.get('secondary', None)
 				questionOptions = loadedQuestion.get('options', None)
-				# raw_input('loadedOptions: ' + str(questionOptions))
 				textarea = loadedQuestion.get('textInput', None)
-				secondary_questions = loadedQuestion.get('secondary_questions', None)
+				dropdowns = loadedQuestion.get('dropdowns', None)
 
 				# {u'Yes': 'webElement', u'No': 'webElement'}
 				if questionOptions:
 					inputEl = questionOptions[question['option']]
 					inputEl.click()
+					# self.load('my myeloma')
+
 				if textarea:
-					textareaEl = questionOptions[question['textInput']]
-					textareaEl.send_keys(form_data['textInput'])
-				if secondary_questions:
-					secondaryQuestionEl = questionOptions[question['secondary_questions']]
-					secondaryQuestionEl.send_keys(form_data['secondary_question'])
+					textareaEl = textarea[question['textInput']]
+					textareaEl.send_keys()
+
+				if dropdowns:
+					self.form.set_dropdown(dropdowns, question.get('dropdown', None))
+
+				if secondaryInfo: # Question has secondary response
+					# Reload question and get loadedInfo for secondary question
+					WDW(self.driver, 20).until(lambda x: self.load(tabName))
+					loadedSecondaryInfo = self.loadedData[sectionIndex][questionIndex].get('secondary_questions', None)
+
+					secondaryText = secondaryInfo.get('text', None)
+					secondaryOptions = secondaryInfo.get('options', None)
+					if secondaryText:
+						print(loadedSecondaryInfo)
+						textInput = loadedSecondaryInfo[0]['textInput']
+						if textInput:
+							textInput.clear()
+							textInput.send_keys(secondaryText)
+						else:
+							print('could not find textarea for question[' + str(questionIndex) + ']')
+					else:
+						radioOptions = loadedSecondaryInfo[0]['options']
+						radioOptions[secondaryOptions].click()
+
 
 				time.sleep(1)
 		return True

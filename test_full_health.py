@@ -53,13 +53,13 @@ class TestFullHealth(unittest.TestCase):
 		self.assertTrue(fullHealthView.on('my myeloma'))
 
 		form_data = [
-			[{'option': 'iga lambda'}, {'option': 'yes'}, {'option': 'no'}],
-			[{'option': 'no'}],
-			[{'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'yes'}, {'option': 'no'}, {'option': 'no'}],
+			[{'option': 'no'}, {'option': 'iga lambda'}, {'option': 'no'}, {'option': 'no'}],
+			[{'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'yes', 'secondary': {'text': 'Hello'}}, 
+			 {'option': 'no'}, {'option': 'no'}],
 			[{'option': 'no'}, {'option': 'no'}, {'option': 'no'}],
 		]
 
-		self.assertTrue(fullHealthView.submit(form_data))
+		self.assertTrue(fullHealthView.submit(form_data, 'my myeloma'))
 
 		self.assertTrue(fullHealthView.on('my myeloma'))
 
@@ -77,12 +77,12 @@ class TestFullHealth(unittest.TestCase):
 		self.assertTrue(fullHealthView.on('my myeloma'))
 
 		form_data = [
-			[{'option': 'White (Original ancestry from Europe, Middle East, North Africa)'}, {'option': 'Hispanic or Latino'}, {'dropdown': 'Cuban'}, {'dropdown': 'Albania'}, {'option': 'Gilford'}, {'option': 'Sandy'}, {'option': 'Sandy'}, {'dropdown': 'None'}, {'dropdown': 'Married'}, {'dropdown': 'Some grade school'}, {'dropdown': 'Disabled'}, {'option': 'yes'}, {'option': 'yes'}]
+			[{'option': 'white (original ancestry from europe, middle east, north africa)'}, {'option': 'hispanic or latino'}, {'dropdown': 'Cuban'}, {'dropdown': 'Albania'}, {'option': 'gilford'}, {'option': 'sandy'}, {'option': 'sandy'}, {'dropdown': 'None'}, {'dropdown': 'Married'}, {'dropdown': 'Some grade school'}, {'dropdown': 'Disabled'}, {'option': 'yes'}, {'option': 'yes'}]
 		]
 
 		self.assertTrue(fullHealthView.select_tab('demographics'))
 
-		self.assertTrue(fullHealthView.submit(form_data))
+		self.assertTrue(fullHealthView.submit(form_data, 'demographics'))
 
 
 	def test_health_history_form(self):
@@ -101,12 +101,12 @@ class TestFullHealth(unittest.TestCase):
 		self.assertTrue(fullHealthView.select_tab('full health history'))
 
 		form_data = [
-			[{'option': 'wheat'}, {'option': 'no'}, {'option': 'household pest'}, {'option': 'bandages'}, {'option': 'indoor molds'}, {'option': 'cats'}, {'option': 'grass'}],
+			[{'option': 'eggs'}, {'option': 'no'}, {'option': 'household pest'}, {'option': 'other', 'secondary': {'text': 'cheezits'}}, {'option': 'indoor molds'}, {'option': 'cats'}, {'option': 'grass'}],
 			[{'option': 'liver'}],
 			[{'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}]
 		]
 
-		self.assertTrue(fullHealthView.submit(form_data))
+		self.assertTrue(fullHealthView.submit(form_data, 'full health history'))
 
 
 	def test_quality_form(self):
@@ -128,9 +128,9 @@ class TestFullHealth(unittest.TestCase):
 			[{'option': 'quite a bit'}, {'option': 'not at all'}, {'option': 'not at all'}, {'option': 'a little bit'}, {'option': 'somewhat'}, {'option': 'very much'}],
 			[{'option': 'quite a bit'}, {'option': 'not at all'}, {'option': 'not at all'}, {'option': 'a little bit'}, {'option': 'somewhat'}, {'option': 'very much'}],
 			[{'option': 'quite a bit'}, {'option': 'not at all'}, {'option': 'not at all'}, {'option': 'a little bit'}, {'option': 'somewhat'}, {'option': 'very much'}, {'option': 'quite a bit'}, {'option': 'not at all'}, {'option': 'not at all'}, {'option': 'a little bit'}, {'option': 'somewhat'}],
-			[{'option': 'no'}]
+			[{'option': 'yes', 'secondary': {'options': 'loss of income'}}]
 		]
 		self.assertTrue(fullHealthView.select_tab('quality of life'))
 
-		self.assertTrue(fullHealthView.submit(form_data))
+		self.assertTrue(fullHealthView.submit(form_data, 'quality of life'))
 

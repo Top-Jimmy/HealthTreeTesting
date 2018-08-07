@@ -55,11 +55,13 @@ class FullHealthMyelomaForm():
 					questionList.append(self.load_questions(questionContainer))
 			self.sections.append(questionList)
 
-	def load_questions(self, questionContainer):
+	def load_questions(self, questionContainer, isSecondary=False):
 		question = {}
 		questionIndex = None
 		# First is primary. Any additional ones are secondary
 		questionConts = questionContainer.find_elements_by_class_name('cls_survey_question')
+		if isSecondary:
+			questionConts = [questionContainer]
 
 		for i, questionCont in enumerate(questionConts):
 			textInput = None
@@ -76,15 +78,15 @@ class FullHealthMyelomaForm():
 						optionName = spans[0].text.lower()
 						options[optionName] = inputs[0]
 					if len(radioContainers) == 0:
-						textInput = question.find_element_by_tag_name('input')
+						textInput = questionCont.find_element_by_tag_name('input')
 				except NoSuchElementException:
 					pass
 
 				# Look for an input
 
 			else: # secondary
-				if len(radioContainers)
-				secondary_questions.append(self.load_questions(questionCont))
+				secondary_questions.append(self.load_questions(questionCont, True))
+			question['container'] = questionCont
 			if options:
 				question['options'] = options
 			if textInput:

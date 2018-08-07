@@ -74,6 +74,7 @@ class TestMyelomaLabs(unittest.TestCase):
 			'kappa': '234',
 			'lambda': '457',
 			'ratio': '2',
+			'bone_marrow': '15',
 			'blood': '8435',
 			'calcium': '78345',
 			'platelets': '3',
