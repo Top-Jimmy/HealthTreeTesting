@@ -18,7 +18,7 @@ class EditTreatmentForm():
 		self.driver = driver
 
 	def load(self, expectedValues=None):
-		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.load_question_containers()
 		return self.validate(expectedValues)
 
@@ -62,9 +62,9 @@ class EditTreatmentForm():
 
 		return {'state': state, 'editButton': editButton, 'actionButtons': actionButtons}
 
-	def set_question(self, newInfo):
+	def open_and_edit_question(self, questionInfo):
 		# Make sure question is in edit mode
-		questionIndex = newInfo['index']
+		questionIndex = questionInfo['index']
 		print('editing question[' + str(questionIndex) + ']')
 		question = self.question_containers[questionIndex]
 		questionEls = self.get_state(question)
@@ -75,23 +75,25 @@ class EditTreatmentForm():
 			questionEls['editButton'].click()
 			# Reload questions to avoid staleException
 			self.load_question_containers()
-			question = self.question_containers[questionIndex]
+			questionCont = self.question_containers[questionIndex]
 
-		self.edit_question(question, newInfo)
+		self.edit_question(questionCont, questionInfo)
 
-	def edit_question(self, question, newInfo):
+	def edit_question(self, questionCont, questionInfo):
 		# Question should already be in edit mode
-		option = newInfo.get('option', None)
-		date = newInfo.get('date', None)
-		complexOptions = newInfo.get('complex', None)
-		if option:
-			self.set_option(option, question)
+		options = questionInfo.get('options', None)
+		date = questionInfo.get('date', None)
+		complexOptions = questionInfo.get('complex', None)
+		if options:
+			for key in options:
+				self.answer_question(key, options[key], questionCont)
+			# self.set_option(options, questionCont)
 		elif date:
-			self.set_date(date, question)
+			self.set_date(date, questionCont)
 		elif complexOptions:
-			self.set_complex(complexOptions, question)
-
-		self.save_question(question)
+			self.set_complex(complexOptions, questionCont)
+		# raw_input('done editing?')
+		self.save_question(questionCont)
 
 	def save_question(self, question):
 		buttons = question.find_elements_by_class_name('green-hvr-bounce-to-top')
@@ -100,36 +102,87 @@ class EditTreatmentForm():
 			save_button.click()
 		else:
 			raw_input('no buttons in question?')
-		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		# Need to reload page?
 
-	def set_option(self, optionInfo, question):
-		# option might be string (optionName), or might be dictionary with extra info (comment text)
-		questionInfo = self.load_question(question)
-		optionName = optionInfo
-		comment = None
-		if type(optionInfo) == dict:
-			# {'Other': {'comment': 'Radiation treatment Y'}}
-			for name, info in optionInfo.iteritems():
-				optionName = name
-				comment = info.get('comment', None)
-		inputEl = questionInfo.get(optionName, None)
-		if type(inputEl) is dict:
-			# get inputEl if questionInfo[optionName] has extra info
-			inputEl = inputEl['element']
-		if inputEl and not inputEl.is_selected():
+	def answer_question(self, optionName, optionInfo, questionCont):
+		comment = optionInfo.get('comment', None)
+		secondaryOptions = optionInfo.get('options', None)
+		# raw_input('optionInfo: ' + str(optionInfo))
+
+		# Get loaded info for given option/subOption
+		try:
+			loadedQuestion = self.load_question(questionCont)# self.questions[0][optionName]
+			# raw_input('loadedInfo: ' + str(loadedQuestion))
+			loadedOption = loadedQuestion[optionName]
+			# raw_input('loadedOption: ' + str(loadedOption))
+		except KeyError:
+			print(optionName + ' not in question options')
+			raise KeyError()
+		# if subOptionName:
+		# 	loadedQuestion = loadedQuestion['subquestions'][subOptionName]
+
+		# Grab input element out of loadedQuestion for option/subOption
+		inputEl = loadedOption
+		optionTextarea = None
+		if type(loadedOption) is dict:
+			inputEl = loadedOption.get('element', None)
+			optionTextarea = loadedOption.get('textareaEl', None)
+
+		# Make sure option is selected
+		if not inputEl.is_selected():
 			inputEl.click()
-		else:
-			print('Question does not have option: ' + str(optionInfo))
+			if comment or secondaryOptions:
+				self.load()
 
+		# handle comment (optional)
 		if comment:
-			textarea = question.find_element_by_tag_name('textarea')
-			textarea.clear()
-			textarea.send_keys(comment)
+			optionTextarea.clear()
+			optionTextarea.send_keys(comment)
 
-	def load_question(self, question):
-		radioCont = question.find_element_by_class_name('new-treatment-outcome-div')
-		radios = radioCont.find_elements_by_class_name('radio')
+		# handle secondaryQuestions
+		if secondaryOptions:
+			for secondaryOption in secondaryOptions:
+				# raw_input('about to answer secondary question')
+				self.answer_question(secondaryOption, secondaryOptions[secondaryOption], loadedOption['subquestions']['container'])
+
+	# def set_option(self, options, questionCont):
+	# 	# option might be string (optionName), or might be dictionary with extra info (subquestions, comment text)
+	# 	raw_input('options: ' + str(options))
+	# 	loadedQuestion = self.load_question(questionCont)
+	# 	raw_input('loadedInfo: ' + str(loadedQuestion))
+	# 	optionName = options
+	# 	subOptions = []
+	# 	comment = None
+	# 	if type(options) == dict:
+	# 		# {'Other': {'comment': 'Radiation treatment Y'}}
+
+	# 		# {'I discontinued this treatment': {
+	# 		# 	'options': {
+	# 		# 		'Too much travel': {},
+	# 		# 		'Too much time in the clinic': {},
+	# 		# 	},
+	# 		# }}
+	# 		for name, info in options.iteritems():
+	# 			optionName = name
+	# 			comment = info.get('comment', None)
+	# 	inputEl = loadedQuestion.get(optionName, None)
+	# 	if type(inputEl) is dict:
+	# 		# get inputEl if questionInfo[optionName] has extra info
+	# 		inputEl = inputEl['element']
+	# 	if inputEl and not inputEl.is_selected():
+	# 		inputEl.click()
+	# 	else:
+	# 		print('Question does not have option: ' + str(options))
+
+	# 	if comment:
+	# 		textarea = questionCont.find_element_by_tag_name('textarea')
+	# 		textarea.clear()
+	# 		textarea.send_keys(comment)
+
+	def load_question(self, questionCont):
+		# radioCont = question.find_element_by_class_name('new-treatment-outcome-div')
+		radios = questionCont.find_elements_by_class_name('radio')
 		questionInfo = {}
 		subquestion_filter = [] # Add index of any subquestion radio buttons to this list
 		for i, radio in enumerate(radios):
@@ -165,6 +218,7 @@ class EditTreatmentForm():
 
 				# Pass back dict if loaded anything besides inputElement
 				# todo: handle passing back secondary questions
+
 				if textareaEl or subquestions:
 					questionInfo[optionName] = {
 						'element': inputs[0],
@@ -173,6 +227,7 @@ class EditTreatmentForm():
 					}
 				else:
 					questionInfo[optionName] = inputs[0]
+		questionInfo['container'] = questionCont
 		return questionInfo
 
 	def set_complex(self, newOptions, container):
@@ -295,14 +350,14 @@ class EditTreatmentForm():
 		buttons = self.driver.find_elements_by_class_name('green-hvr-bounce-to-top')
 		back_button = buttons[1]
 		back_button.click()
-		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def edit_treatment(self, newTreatmentInfo):
-		for i, newInfo in enumerate(newTreatmentInfo):
-			if i == 0: # Validation info
-				self.validate_form(newInfo)
-			else:
-				self.set_question(newInfo)
+		for i, info in enumerate(newTreatmentInfo):
+			if i == 0: # 1st item should have validation info for whole form
+				self.validate_form(info)
+			else: # Items after 1st should be questions
+				self.open_and_edit_question(info)
 		self.leave_form()
 		return True
 

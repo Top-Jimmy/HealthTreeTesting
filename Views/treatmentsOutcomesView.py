@@ -8,8 +8,9 @@ from Components import popUpForm
 from Components import newAccountPopUpForm
 from Views import view
 
+import time
 from selenium.common.exceptions import (NoSuchElementException,
-		StaleElementReferenceException)
+		StaleElementReferenceException, WebDriverException)
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -423,27 +424,27 @@ class TreatmentsOutcomesView(view.View):
 
 	def delete_treatment(self):
 		self.popUpForm = popUpForm.PopUpForm(self.driver)
-		WDW(self.driver, 10).until(lambda x: self.popUpForm.load())
+		WDW(self.driver, 20).until(lambda x: self.popUpForm.load())
 		self.popUpForm.confirm('confirm')
-		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def edit_treatments(self, editInfo, expectedInfo):
 		self.editTreatmentForm = editTreatmentForm.EditTreatmentForm(self.driver)
-		WDW(self.driver, 10).until(lambda x: self.editTreatmentForm.load())
+		WDW(self.driver, 20).until(lambda x: self.editTreatmentForm.load())
 		if self.editTreatmentForm.edit_treatment(editInfo):
-			WDW(self.driver, 10).until(lambda x: self.load({'tests': [expectedInfo]}, 'saved'))
+			WDW(self.driver, 20).until(lambda x: self.load({'tests': [expectedInfo]}, 'saved'))
 
 	def edit_outcomes(self, editInfo, expectedInfo):
 		self.popUpEditor = editTreatmentPopup.EditTreatmentPopup(self.driver)
-		WDW(self.driver, 10).until(lambda x: self.popUpEditor.load())
+		WDW(self.driver, 20).until(lambda x: self.popUpEditor.load())
 		if self.popUpEditor.edit_treatment(editInfo, 'outcomes'):
-			WDW(self.driver, 10).until(lambda x: self.load({'tests': [expectedInfo]}, 'saved'))
+			WDW(self.driver, 20).until(lambda x: self.load({'tests': [expectedInfo]}, 'saved'))
 
 	def edit_side_effects(self, editInfo, expectedInfo):
 		self.popUpEditor = editTreatmentPopup.EditTreatmentPopup(self.driver)
-		WDW(self.driver, 10).until(lambda x: self.popUpEditor.load())
+		WDW(self.driver, 20).until(lambda x: self.popUpEditor.load())
 		if self.popUpEditor.edit_treatment(editInfo, 'side effects'):
-			WDW(self.driver, 10).until(lambda x: self.load({'tests': [expectedInfo]}, 'saved'))
+			WDW(self.driver, 20).until(lambda x: self.load({'tests': [expectedInfo]}, 'saved'))
 
 	def load_actions(self, tableContainer):
 		lastRow = tableContainer.find_elements_by_tag_name('tr')[-1]
@@ -461,6 +462,23 @@ class TreatmentsOutcomesView(view.View):
 				'delete': links[1],
 			}
 
+	def click_add_treatment(self):
+		# Sometimes thinks there's an element in the way of button
+		clicked = False
+		count = 0
+		while not clicked and count < 5:
+			try:
+				self.add_treatments_button.click()
+				clicked = True
+			except WebDriverException:
+				print('could not click add treatment button: ' + str(count))
+				time.sleep(.2)
+				pass
+			count += 1
+
+		if count == 5:
+			print('failed to click add treatment button')
+
 ############################### Test Functions. ####################################
 
 	def add_treatment(self, treatmentInfo, expectedInfo=None, expectedError=None, expectedWarnings=None):
@@ -470,7 +488,7 @@ class TreatmentsOutcomesView(view.View):
 		try:
 			# print(self.state)
 			if self.state == 'normal' or self.state == 'saved':
-				self.add_treatments_button.click()
+				self.click_add_treatment()
 				self.addTreatmentForm = addTreatmentForm.AddTreatmentForm(self.driver)
 				WDW(self.driver, 10).until(lambda x: self.addTreatmentForm.load())
 				if self.addTreatmentForm.add_treatment(treatmentInfo):

@@ -6,10 +6,10 @@ import form_info
 # import copy # copy.deepcopy(object)
 
 # TestChemotherapy
-# 	test_current_chemotherapy					Edit treatment/outcomes (side effects)
+# 	test_current_chemotherapy					Edit treatments, outcomes (side effects)
 # 	test_changed_chemotherapy:
 # TestClinical
-#   test_clinical_basic								Edit treatment, outcomes (side effects)
+#   test_clinical_basic								Edit treatment (#866), outcomes (side effects)
 # TestRadiation
 # 	test_add_radiation
 # TestExtra
@@ -100,7 +100,7 @@ class TestChemotherapy(unittest.TestCase):
 		editValues = [
 			{'num_questions': 9},
 			{'index': 1, 'date': '11/2016'},
-			{'index': 2, 'option': 'Yes'},
+			{'index': 2, 'options': 'Yes'},
 			{'index': 3, 'date': '03/2018'},
 			{'index': 5, 'complex': {
 				'chemotherapies': {
@@ -380,8 +380,16 @@ class TestClinical(unittest.TestCase):
 				},
 				{'type': 'single',										# 6: Best response?
 					'options': {
-						'The treatment reduced my myeloma and kept my myeloma under control': {},
+						'I discontinued this treatment': {
+							'type': 'select-all',
+							'options': {
+								'Severity of the side effects': {},
+								'Cost of the treatment': {},
+								'Other': {'comment': 'Discontinued because Y'},
+							},
+						}
 					},
+					'actions': 'continue',
 				},
 				{'type': 'popup', 								# 7: Side effects
 					'options': {
@@ -448,7 +456,13 @@ class TestClinical(unittest.TestCase):
 		}
 		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
 
-		new_outcome = {'The treatment did not reduce my myeloma': {}}
+		new_outcome = {'I discontinued this treatment': {
+			'options': {
+				'Severity of the side effects': {},
+				'Cost of the treatment': {},
+				'Other': {'comment': 'Discontinued because Y'},
+			}
+		}}
 		edited_outcome = {'options': new_outcome}
 		treatment1Edited['questions'][7]['options'] = new_outcome
 		toView.edit_treatment(0, 'outcomes', treatment1Edited, edited_outcome)
@@ -521,9 +535,9 @@ class TestRadiation(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Treatments & Outcomes')
 		self.assertTrue(toView.on())
-		# toView.delete_all_treatments()
+		toView.delete_all_treatments()
 
-		treatment1 = {
+		radiation1 = {
 			'testMeta': {'type': 'radiation'},
 			'questions': [
 				{'type': 'single', 		# 0: Treatment Type
@@ -562,24 +576,32 @@ class TestRadiation(unittest.TestCase):
 				},
 			],
 		}
-		# self.assertTrue(toView.add_treatment(treatment1))
+		self.assertTrue(toView.add_treatment(radiation1))
 
 		editValues = [
 			{'num_questions': 6},
-			{'index': 1, 'option': {
+			{'index': 1, 'options': {
 					'Other': {'comment': 'Radiation treatment Y'},
 				},
 			},
-			{'index': 2, 'date': '08/2017'},
-			{'index': 3, 'date': '01/2018'},
-			{'index': -1, 'complex': {
-				'cardiovascular/circulatory system': {
-    			'low blood pressure': {'intensity': 7},
-    			'low potassium': {'intensity': 5},
-    		}
-	    }},
+			# {'index': 2, 'date': '08/2017'},
+			# {'index': 3, 'date': '01/2018'},
+			{'index': -2, 'options': {
+				'I discontinued this treatment': {
+					'options': {
+						'Too much travel': {},
+						'Too much time in the clinic': {},
+					},
+				}
+			}},
+			# {'index': -1, 'complex': {
+			# 	'cardiovascular/circulatory system': {
+   #  			'low blood pressure': {'intensity': 7},
+   #  			'low potassium': {'intensity': 5},
+   #  		}
+	  #   }},
 		]
-		treatment1Edited = {
+		radiation1Edited = {
 			'testMeta': {'type': 'radiation'},
 			'questions': [
 				{'type': 'single', 		# 0: Treatment Type
@@ -600,9 +622,8 @@ class TestRadiation(unittest.TestCase):
 						'I discontinued this treatment': {
 							'type': 'select-all',
 							'options': {
-								'Severity of the side effects': {},
-								'Cost of the treatment': {},
-								'Other': {'comment': 'Discontinued because Y'},
+								'Too much travel': {},
+								'Too much time in the clinic': {},
 							},
 						}
 					},
@@ -618,16 +639,18 @@ class TestRadiation(unittest.TestCase):
 				},
 			],
 		}
-		# toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
+		toView.edit_treatment(0, 'treatments', radiation1Edited, editValues)
 
 		new_outcome = {'My myeloma is now undetectable': {
-			'I dont know the details of my response': {},
+			'options': {
+				'I dont know the details of my response': {},
+			}
 		}}
 		edited_outcome = {'options': new_outcome}
-		treatment1Edited['questions'][4]['options'] = new_outcome
-		toView.edit_treatment(0, 'outcomes', treatment1Edited, edited_outcome)
+		radiation1Edited['questions'][4]['options'] = new_outcome
+		toView.edit_treatment(0, 'outcomes', radiation1Edited, edited_outcome)
 
-		treatment2 = {
+		radiation2 = {
 			'testMeta': {'type': 'radiation'},
 			'questions': [
 				{'type': 'single',											# 0: Treatment Type
@@ -669,7 +692,7 @@ class TestRadiation(unittest.TestCase):
 		}
 
 		# Reset: Delete treatments
-		self.assertTrue(toView.add_treatment(treatment2))
+		self.assertTrue(toView.add_treatment(radiation2))
 		toView.delete_all_treatments()
 
 class TestExtra(unittest.TestCase):
@@ -734,10 +757,10 @@ class TestExtra(unittest.TestCase):
 
 		editValues = [
 			{'num_questions': 6},
-			{'index': 1, 'option': 'Zometa'},
+			{'index': 1, 'options': 'Zometa'},
 			{'index': 2, 'date': '11/2017'},
 			{'index': 4, 'date': '03/2018'},
-			{'index': 5, 'option': 'Once every 6 months'},
+			{'index': 5, 'options': 'Once every 6 months'},
 		]
 		treatment1Edited = {
 			'testMeta': {'type': 'bone strengtheners'},
@@ -862,7 +885,7 @@ class TestExtra(unittest.TestCase):
 
 		editValues = [
 			{'num_questions': 5},
-			{'index': 1, 'option': 'Levaquin (levofloxacin)'},
+			{'index': 1, 'options': 'Levaquin (levofloxacin)'},
 			{'index': 2, 'date': '11/2017'},
 			{'index': 4, 'date': '04/2018'},
 		]
@@ -981,7 +1004,7 @@ class TestExtra(unittest.TestCase):
 
 		editValues = [
 			{'num_questions': 5},
-			{'index': 1, 'option': 'Itraconazole'},
+			{'index': 1, 'options': 'Itraconazole'},
 			{'index': 2, 'date': '12/2017'},
 			{'index': 4, 'date': '05/2018'},
 		]

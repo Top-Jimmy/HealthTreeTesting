@@ -43,29 +43,77 @@ class EditTreatmentPopup():
 			return False
 		return True
 
-	def set_option(self, optionInfo):
-		# option might be string (optionName), or might be dictionary with extra info (comment text)
-		questionInfo = self.load_question(self.container)
-		optionName = optionInfo
-		comment = None
-		if type(optionInfo) == dict:
-			# {'Other': {'comment': 'Radiation treatment Y'}}
-			for name, info in optionInfo.iteritems():
-				optionName = name
-				comment = info.get('comment', None)
-		inputEl = questionInfo.get(optionName, None)
-		if type(inputEl) is dict:
-			# get inputEl if questionInfo[optionName] has extra info
-			inputEl = inputEl['element']
-		if inputEl and not inputEl.is_selected():
-			inputEl.click()
-		else:
-			print('Question does not have option: ' + str(optionInfo))
+	def answer_question(self, optionName, optionInfo, subOptionName=None):
+		# OptionName: 'My myeloma is now undetectable'
+		# optionInfo: {'I dont know the details of my response': {}}
 
+		# Note: This function is a bit different from it's counterpart in other forms.
+		# optionInfo typically contains other stuff besides subquestions. In this function it solely
+		# has info related to subquestions
+
+		comment = optionInfo.get('comment', None)
+		secondaryOptions = optionInfo.get('options', None)
+		raw_input('secondaryOptions: ' + str(secondaryOptions))
+
+		# Get loaded info for given option/subOption
+		try:
+			loadedInfo = self.load_question(self.container)
+			loadedQuestion = loadedInfo[optionName]
+		except KeyError:
+			print(optionName + ' not in question options')
+			print('question: ' + str(self.questions[0]))
+			raise KeyError()
+		if subOptionName:
+			loadedQuestion = loadedQuestion['subquestions'][subOptionName]
+
+		# Grab input element out of loadedQuestion for option/subOption
+		inputEl = loadedQuestion
+		optionTextarea = None
+		if type(loadedQuestion) is dict:
+			inputEl = loadedQuestion.get('element', None)
+			optionTextarea = loadedQuestion.get('textareaEl', None)
+
+		# Make sure option is selected
+		if not inputEl.is_selected():
+			inputEl.click()
+			if comment or secondaryOptions:
+				self.load()
+
+		# handle comment (optional)
 		if comment:
-			textarea = self.container.find_element_by_tag_name('textarea')
-			textarea.clear()
-			textarea.send_keys(comment)
+			if not optionTextarea:
+				optionTextarea = self.questions[0][optionName]['textareaEl']
+			optionTextarea.clear()
+			optionTextarea.send_keys(optionInfo['comment'])
+
+		# handle secondaryQuestions
+		if secondaryOptions:
+			for secondaryOption in secondaryOptions:
+				self.answer_question(optionName, secondaryOptions[secondaryOption], secondaryOption)
+
+	# def set_option(self, optionInfo):
+	# 	# option might be string (optionName), or might be dictionary with extra info (comment text)
+	# 	questionInfo = self.load_question(self.container)
+	# 	optionName = optionInfo
+	# 	comment = None
+	# 	if type(optionInfo) == dict:
+	# 		# {'Other': {'comment': 'Radiation treatment Y'}}
+	# 		for name, info in optionInfo.iteritems():
+	# 			optionName = name
+	# 			comment = info.get('comment', None)
+	# 	inputEl = questionInfo.get(optionName, None)
+	# 	if type(inputEl) is dict:
+	# 		# get inputEl if questionInfo[optionName] has extra info
+	# 		inputEl = inputEl['element']
+	# 	if inputEl and not inputEl.is_selected():
+	# 		inputEl.click()
+	# 	else:
+	# 		print('Question does not have option: ' + str(optionInfo))
+
+	# 	if comment:
+	# 		textarea = self.container.find_element_by_tag_name('textarea')
+	# 		textarea.clear()
+	# 		textarea.send_keys(comment)
 
 	def load_question(self, container):
 		# Load outcomes question
@@ -80,9 +128,9 @@ class EditTreatmentPopup():
 
 				# Test Validation
 				if len(inputs) == 0:
-					print('EditTreatmentForm: radio option has no inputElements?')
+					print('EditTreatmentPopup: radio option has no inputElements?')
 				elif len(spans) == 0:
-					print('EditTreatmentForm: radio option has no spanElements?')
+					print('EditTreatmentPopup: radio option has no spanElements?')
 
 				# Get option name.
 				optionName = spans[0].text
@@ -235,10 +283,14 @@ class EditTreatmentPopup():
 
 	def edit_treatment(self, newInfo, popupType, action='save'):
 		# Submit info
+		raw_input('editing treatment')
 		if popupType == 'side effects':
 			self.set_complex(newInfo['complex'])
 		elif popupType == 'outcomes':
-			self.set_option(newInfo['options'])
+			options = newInfo['options']
+			for key in options:
+				self.answer_question(key, options[key])
+			# self.set_option(newInfo['options'])
 
 		# Save or cancel
 		if action == 'save':
@@ -246,3 +298,4 @@ class EditTreatmentPopup():
 		elif action == 'cancel':
 			self.buttons[0].click()
 		WDW(self.driver, 15).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		raw_input('done editing treatment')
