@@ -40,7 +40,33 @@ class TestCreateAccount(unittest.TestCase):
 		homeView = self.andrew.homeView
 		createAcctView = self.andrew.createAcctView
 
+		acctInfo = {
+			'username': 'alfred',
+			'email': 'elliottidd1234@gmail.com',
+			'phone': '111-222-3333',
+			'password': 'thedonald'
+		}
+
 		self.assertTrue(createAcctView.go())
+		self.assertTrue(createAcctView.click_link('create account'))
+
+		self.assertTrue(createAcctView.create_account(acctInfo, 'sign-in'))
+
+	def test_invalid_account_information(self):
+		homeView = self.andrew.homeView
+		createAcctView = self.andrew.createAcctView
+
+		acctInfo = {
+			'username': '',
+			'email': '',
+			'phone': '',
+			'password': ''
+		}
+
+		self.assertTrue(createAcctView.go())
+		self.assertTrue(createAcctView.click_link('create account'))
+
+		self.assertTrue(createAcctView.create_account(acctInfo, 'fail'))
 
 
 class TestForgotPassword(unittest.TestCase):

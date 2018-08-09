@@ -102,7 +102,7 @@ class TestFullHealth(unittest.TestCase):
 
 		form_data = [
 			[{'option': 'eggs'}, {'option': 'no'}, {'option': 'household pest'}, {'option': 'other', 'secondary': {'text': 'cheezits'}}, {'option': 'indoor molds'}, {'option': 'cats'}, {'option': 'grass'}],
-			[{'option': 'liver'}],
+			[{'option': 'liver', 'secondary': {'text': 'never'}}],
 			[{'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}, {'option': 'no'}]
 		]
 

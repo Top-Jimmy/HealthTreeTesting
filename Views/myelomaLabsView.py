@@ -14,7 +14,7 @@ import time
 class MyelomaLabsView(view.View):
 	post_url = 'myeloma-labs'
 
-	def load(self, formInfo=None):
+	def load(self, labInfo=None):
 		try:
 			# Crap on left
 			WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
@@ -43,16 +43,49 @@ class MyelomaLabsView(view.View):
 			self.to_date_input = inputs[1]
 
 			self.load_table()
-			print(self.clinical_tables	)
 
-			self.validate()
+			self.validate(labInfo)
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
 			return False
 
-	def validate(self):
+	def validate(self, labInfo):
 		failures = []
+		loadedInfo = self.clinical_tables[-1]
+		if loadedInfo:
+			# if loadedInfo['dobd'] != labInfo['dobd']:
+			# 	failures.append('Table value: ' + '"' + str(loadedInfo['dobd']) + '"' + ' expected ' + '"' + str(labInfo['dobd']) + '"')
+			if loadedInfo['monoclonal'] != labInfo['monoclonal']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['monoclonal']) + '"' + ' expected ' + '"' + str(labInfo['monoclonal']) + '"')
+			if loadedInfo['kappa'] != labInfo['kappa']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['kappa']) + '"' + ' expected ' + '"' + str(labInfo['kappa']) + '"')
+			if loadedInfo['lambda'] != labInfo['lambda']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['lambda']) + '"' + ' expected ' + '"' + str(labInfo['lambda']) + '"')
+			if loadedInfo['ratio'] != labInfo['ratio']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['ratio']) + '"' + ' expected ' + '"' + str(labInfo['ratio']) + '"')
+			if loadedInfo['bone_marrow'] != labInfo['bone_marrow']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['bone_marrow']) + '"' + ' expected ' + '"' + str(labInfo['bone_marrow']) + '"')
+			if loadedInfo['blood'] != labInfo['blood']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['blood']) + '"' + ' expected ' + '"' + str(labInfo['blood']) + '"')
+			if loadedInfo['blood_cell'] != labInfo['blood_cell']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['blood_cell']) + '"' + ' expected ' + '"' + str(labInfo['blood_cell']) + '"')
+			if loadedInfo['hemoglobin'] != labInfo['hemoglobin']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['hemoglobin']) + '"' + ' expected ' + '"' + str(labInfo['hemoglobin']) + '"')
+			if loadedInfo['lactate'] != labInfo['lactate']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['lactate']) + '"' + ' expected ' + '"' + str(labInfo['lactate']) + '"')
+			if loadedInfo['albumin'] != labInfo['albumin']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['albumin']) + '"' + ' expected ' + '"' + str(labInfo['albumin']) + '"')
+			if loadedInfo['immuno_g'] != labInfo['immuno_g']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['immuno_g']) + '"' + ' expected ' + '"' + str(labInfo['immuno_g']) + '"')
+			if loadedInfo['immuno_a'] != labInfo['immuno_a']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['immuno_a']) + '"' + ' expected ' + '"' + str(labInfo['immuno_a']) + '"')
+			if loadedInfo['immuno_m'] != labInfo['immuno_m']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['immuno_m']) + '"' + ' expected ' + '"' + str(labInfo['immuno_m']) + '"')
+			if loadedInfo['calcium'] != labInfo['calcium']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['calcium']) + '"' + ' expected ' + '"' + str(labInfo['calcium']) + '"')
+			if loadedInfo['platelets'] != labInfo['platelets']:
+				failures.append('Table value: ' + '"' + str(loadedInfo['platelets']) + '"' + ' expected ' + '"' + str(labInfo['platelets']) + '"')
 		if self.add_new_button.text != 'Add New Labs':
 			failure.append('AddLabsView: Unexpected add new labs button text')
 

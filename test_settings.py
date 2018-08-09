@@ -42,19 +42,19 @@ class TestSettings(unittest.TestCase):
 		passwordInfo = {
 			'username': 'Elliot',
 			'password': 'cardinals',
-			'old_password': 'celtics',
-			'new_password': 'cardinals'
+			'old_password': 'cardinals',
+			'new_password': 'celtics'
 		}
 
 		otherusernameInfo = {
-			'new_username': 'elliot1'
+			'new_username': 'Elliot1'
 		}
 
 		otherpasswordInfo = {
 			'username': 'Elliot1',
-			'password': 'celtics',
-			'old_password': 'cardinals',
-			'new_password': 'celtics'
+			'password': 'cardinals',
+			'old_password': 'celtics',
+			'new_password': 'cardinals'
 		}
 
 		self.assertTrue(homeView.go())

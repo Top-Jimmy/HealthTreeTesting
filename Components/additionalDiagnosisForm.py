@@ -32,11 +32,6 @@ class AdditionalDiagnosisForm():
 		self.lesions2 = self.cont.find_element_by_id('2')
 		self.lesions3 = self.cont.find_element_by_id('3')
 
-		self.lesions0 = self.cont.find_element_by_id('0')
-		self.lesions1 = self.cont.find_element_by_id('1')
-		self.lesions2 = self.cont.find_element_by_id('2')
-		self.lesions3 = self.cont.find_element_by_id('3')
-
 		self.load_first_diagnosis_dropdown()
 		self.validate(expectedValues)
 		return True
@@ -104,7 +99,7 @@ class AdditionalDiagnosisForm():
 		if formInfo:
 			# Date
 			if formInfo['date'] is not None:
-				picker = datePicker.DatePicker(self.driver, self.dateDiagnosis_cont)
+				picker = datePicker.DatePicker(self.driver, self.cont)
 				dateSet = False
 				while not dateSet:
 					try:

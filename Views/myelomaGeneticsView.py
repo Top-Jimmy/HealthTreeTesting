@@ -20,6 +20,8 @@ class MyelomaGeneticsView(view.View):
 
 	def load(self, riskInfo=None):
 		try:
+			WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 
@@ -180,7 +182,7 @@ class MyelomaGeneticsView(view.View):
 	# def validate_fish_test(self, fishInfo):
 	# 	loadedInfo = self.fish_tests[-1]
 
-	# 	if loadedInfo['date of genetics test'] != fishInfo['']
+	# 	if 
 
 	def validate_gep_test(self, gepInfo):
 		failures = []
@@ -195,6 +197,8 @@ class MyelomaGeneticsView(view.View):
 				for failure in failures:
 					print(failure)
 				raise NoSuchElementException('Failed to load myelomaGeneticsView')
+		else:
+			pass
 
 
 	def validate_risk_table(self, riskInfo):

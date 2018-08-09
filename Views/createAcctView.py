@@ -2,6 +2,7 @@ from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 from viewExceptions import MsgError
 from Components import signInForm
+from Components import createAcctForm
 from Views import view
 
 class CreateAcctView(view.View):
@@ -64,8 +65,18 @@ class CreateAcctView(view.View):
 		return False
 
 	def click_link(self, link):
-		if link == 'sign in':
+		if link == 'create account':
 			self.createAccount_link.click()
+			self.createAcctForm = createAcctForm.CreateAcctForm(self.driver)
+			return True
+
+	def create_account(self, acctInfo, action):
+		if acctInfo:
+			self.createAcctForm.submit(acctInfo, action)
+			return True
+		return False
+
+
 
 
 

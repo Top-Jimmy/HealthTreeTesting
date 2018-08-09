@@ -87,6 +87,7 @@ class FullHealthView(view.View):
 			tab.click()
 
 			WDW(self.driver, 10).until(lambda x: self.load(tabName))
+			WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 			return True
 		except KeyError:
 			print('fullHealthView: No tab named: ' + str(tabName))

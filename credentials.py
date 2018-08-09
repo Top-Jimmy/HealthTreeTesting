@@ -194,7 +194,7 @@ andrew = {
 
 elliot = {
 	'username': 'elliot1',
-	'password': 'celtics',
+	'password': 'cardinals',
 	'about_me_data': {
 		'first_name': 'Elliot',
 		'last_name': 'Tidd',
@@ -212,10 +212,9 @@ elliot = {
 		'sparkCures': True,
 	},
 	'myeloma_diagnosis_data': {
-		'newly_diagnosed': 'yes',
 		'diagnosis_date': '01/2018',
-		'type': 'smoldering myeloma',
-		'lesions': 'no lesions',
+		'type': 'Smoldering myeloma',
+		'lesions': 'No lesions',
 		'high_risk': 'no',
 		'transplant_eligible': 'no',
 		'diagnosis_location': {

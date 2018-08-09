@@ -65,7 +65,7 @@ class TestMyelomaGenetics(unittest.TestCase):
 				'tri_17': True,
 				'tri_19': True,
 			},
-		'tetrasomies': {
+			'tetrasomies': {
 				'tetra_3': True,
 				'tetra_5': False,
 				'tetra_7': False,

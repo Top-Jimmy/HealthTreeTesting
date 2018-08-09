@@ -7,6 +7,7 @@ from Components import myelomaDiagnosisSavedForm
 from Components import menu
 from Components import header
 from Views import view
+import time
 
 class MyelDiagView(view.View):
 
@@ -22,6 +23,7 @@ class MyelDiagView(view.View):
 				else:
 					self.myelomaDiagnosisSavedForm = myelomaDiagnosisSavedForm.MyelomaDiagnosisSavedForm(self.driver, expectedValues)
 					self.myelomaDiagnosisFreshForm = None
+
 				self.menu = menu.Menu(self.driver)
 				self.header = header.AuthHeader(self.driver)
 				return True
@@ -78,6 +80,7 @@ class MyelDiagView(view.View):
 		if self.myelomaDiagnosisSavedForm:
 			if self.myelomaDiagnosisSavedForm.add_diagnosis(diagnosisInfo, action):
 				WDW(self.driver, 10).until(lambda x: self.load('saved', expectedInfo))
+
 		elif self.myelomaDiagnosisFreshForm:
 			# todo: handle working on fresh form
 			pass

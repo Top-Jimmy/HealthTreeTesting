@@ -2,6 +2,9 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class HealthLifestyleForm():
 
@@ -10,6 +13,7 @@ class HealthLifestyleForm():
 		self.load()
 
 	def load(self):
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
 

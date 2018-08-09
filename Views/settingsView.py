@@ -37,36 +37,36 @@ class SettingsView(view.View):
 	def change_username(self, usernameInfo, action='continue'):
 		self.edit_username_button.click()
 		self.changeUsernameForm = changeUsernameForm.ChangeUsernameForm(self.driver)
-		WDW(self.driver, 10).until(lambda x: self.changeUsernameForm.load())
+		WDW(self.driver, 20).until(lambda x: self.changeUsernameForm.load())
 		self.changeUsernameForm.submit(usernameInfo, action)
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
-		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def change_password(self, passwordInfo, action='continue'):
 		self.edit_password_button.click()
 		self.changePasswordForm = changePasswordForm.ChangePasswordForm(self.driver)
-		WDW(self.driver, 10).until(lambda x: self.changePasswordForm.load())
+		WDW(self.driver, 20).until(lambda x: self.changePasswordForm.load())
 		self.changePasswordForm.submit(passwordInfo, action)
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
-		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.header = header.AuthHeader(self.driver)
 		self.header.logout_button.click()
 
 	def change_back_username(self, otherusernameInfo, action='continue'):
 		self.edit_username_button.click()
 		self.changeUsernameForm = changeUsernameForm.ChangeUsernameForm(self.driver)
-		WDW(self.driver, 10).until(lambda x: self.changeUsernameForm.load())
+		WDW(self.driver, 20).until(lambda x: self.changeUsernameForm.load())
 		self.changeUsernameForm.submit(otherusernameInfo, action)
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
-		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def change_back_password(self, otherpasswordInfo, action='continue'):
 		self.edit_password_button.click()
 		self.changePasswordForm = changePasswordForm.ChangePasswordForm(self.driver)
-		WDW(self.driver, 10).until(lambda x: self.changePasswordForm.load())
+		WDW(self.driver, 20).until(lambda x: self.changePasswordForm.load())
 		self.changePasswordForm.submit(otherpasswordInfo, action)
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
-		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.header = header.AuthHeader(self.driver)
 		self.header.logout_button.click()
 	
