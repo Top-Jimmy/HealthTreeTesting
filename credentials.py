@@ -193,8 +193,8 @@ andrew = {
 }
 
 elliot = {
-	'username': 'elliot1',
-	'password': 'cardinals',
+	'username': 'elliot',
+	'password': 'celtics',
 	'about_me_data': {
 		'first_name': 'Elliot',
 		'last_name': 'Tidd',

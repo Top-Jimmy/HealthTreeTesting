@@ -36,25 +36,25 @@ class TestSettings(unittest.TestCase):
 		settingsView = self.elliot.settingsView
 
 		usernameInfo = {
-			'new_username': 'elliot'
+			'new_username': 'elliot1'
 		}
 
 		passwordInfo = {
-			'username': 'Elliot',
-			'password': 'cardinals',
-			'old_password': 'cardinals',
-			'new_password': 'celtics'
-		}
-
-		otherusernameInfo = {
-			'new_username': 'Elliot1'
-		}
-
-		otherpasswordInfo = {
 			'username': 'Elliot1',
 			'password': 'cardinals',
 			'old_password': 'celtics',
 			'new_password': 'cardinals'
+		}
+
+		otherusernameInfo = {
+			'new_username': 'Elliot'
+		}
+
+		otherpasswordInfo = {
+			'username': 'Elliot',
+			'password': 'celtics',
+			'old_password': 'cardinals',
+			'new_password': 'celtics'
 		}
 
 		self.assertTrue(homeView.go())

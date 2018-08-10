@@ -132,7 +132,7 @@ class FullHealthView(view.View):
 					textareaEl.send_keys()
 
 				if dropdowns:
-					self.form.set_dropdown(dropdowns, question.get('dropdown', None))
+					self.form.set_dropdown(dropdowns[0], question.get('dropdown', None))
 
 				if secondaryInfo: # Question has secondary response
 					# Reload question and get loadedInfo for secondary question

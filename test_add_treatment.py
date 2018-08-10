@@ -19,7 +19,7 @@ import form_info
 # TestStemCell
 # 	test_basic
 
-@unittiest.skip('wont pass')
+@unittest.skip('wont pass')
 class TestChemotherapy(unittest.TestCase):
 
 	def setUp(self):
@@ -331,7 +331,7 @@ class TestChemotherapy(unittest.TestCase):
 		self.assertTrue(toView.add_treatment(treatment1))
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
-@unittiest.skip('wont pass')
+@unittest.skip('wont pass')
 class TestClinical(unittest.TestCase):
 
 	def setUp(self):
@@ -514,7 +514,7 @@ class TestClinical(unittest.TestCase):
 		# self.assertTrue(toView.on({'tests': [treatment1]}))
 		self.assertTrue(toView.add_treatment(treatment2))
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
-@unittiest.skip('wont pass')
+@unittest.skip('wont pass')
 class TestRadiation(unittest.TestCase):
 
 	def setUp(self):
@@ -694,7 +694,7 @@ class TestRadiation(unittest.TestCase):
 		# Reset: Delete treatments
 		self.assertTrue(toView.add_treatment(radiation2))
 		toView.delete_all_treatments()
-@unittiest.skip('wont pass')
+@unittest.skip('wont pass')
 class TestExtra(unittest.TestCase):
 	# Tests treatments for: Bone strengtheners, antibiotics, antifungals
 
@@ -1089,7 +1089,7 @@ class TestExtra(unittest.TestCase):
 		toView.view_options()
 		self.assertTrue(treatmentOptionsView.on())
 
-@unittiest.skip('wont pass')
+@unittest.skip('wont pass')
 class TestStemCell(unittest.TestCase):
 	# 1. Treatment Type
 	# 2. Stemcell Type

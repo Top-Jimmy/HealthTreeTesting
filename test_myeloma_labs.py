@@ -111,11 +111,11 @@ class TestMyelomaLabs(unittest.TestCase):
 		self.assertTrue(aboutMeView.on())
 
 		aboutMeView.menu.go_to('Myeloma Labs')
-		self.assertTrue(myelomaLabsView.on())
+		self.assertTrue(myelomaLabsView.on(labInfo))
 
 		myelomaLabsView.add_new_lab(labInfo, 'save')
 
-		self.assertTrue(myelomaLabsView.on())
+		self.assertTrue(myelomaLabsView.on(labInfo))
 
 		myelomaLabsView.edit_delete_lab(-1, revisedLabInfo, 'edit')
 

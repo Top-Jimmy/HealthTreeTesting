@@ -63,9 +63,9 @@ class MyelomaGeneticsView(view.View):
 		fishTable = ''
 		try:
 			fishTable = self.driver.find_element_by_id('fish_table')
+			rows = fishTable.find_elements_by_class_name('table_row')
 		except NoSuchElementException:
 			pass
-		rows = fishTable.find_elements_by_class_name('table_row')
 		labInfo = [] # add text from each header row to values list
 		if fishTable:
 			for rowIndex, row in enumerate(rows):
@@ -131,32 +131,32 @@ class MyelomaGeneticsView(view.View):
 		ngsTable = ''
 		try:
 			ngsTable = self.driver.find_element_by_id('ngs_table')
+			rows = ngsTable.find_elements_by_class_name('table_row')
 		except NoSuchElementException:
 			pass
-		ngsTable = self.driver.find_element_by_id('ngs_table')
-		rows = ngsTable.find_elements_by_class_name('table_row')
 		labInfo = [] # add text from each header row to values list
-		for rowIndex, row in enumerate(rows):
-			labResult = {}
-			tds = row.find_elements_by_tag_name('td')
-			# for divIndex, div in enumerate(divs):
-			for tdIndex, td in enumerate(tds):
-				if rowIndex == 0:
-					labInfo.append(td.text.lower())
-				else: 
-					key = labInfo[tdIndex]
-					if key.lower() == 'actions':
-						actions = []
-						self.edit_button = row.find_element_by_class_name('edit-treatment-icon')
-						self.delete_button = row.find_element_by_class_name('delete-treatment-icon')
-						actions.append(self.edit_button)
-						actions.append(self.delete_button)
-						labResult[key] = actions
-					else:
-						text = td.text
-						labResult[key] = text
-			
-			self.ngs_tests.append(labResult)
+		if ngsTable:
+			for rowIndex, row in enumerate(rows):
+				labResult = {}
+				tds = row.find_elements_by_tag_name('td')
+				# for divIndex, div in enumerate(divs):
+				for tdIndex, td in enumerate(tds):
+					if rowIndex == 0:
+						labInfo.append(td.text.lower())
+					else: 
+						key = labInfo[tdIndex]
+						if key.lower() == 'actions':
+							actions = []
+							self.edit_button = row.find_element_by_class_name('edit-treatment-icon')
+							self.delete_button = row.find_element_by_class_name('delete-treatment-icon')
+							actions.append(self.edit_button)
+							actions.append(self.delete_button)
+							labResult[key] = actions
+						else:
+							text = td.text
+							labResult[key] = text
+				
+				self.ngs_tests.append(labResult)
 
 	def load_highRisk_table(self):
 		self.highRiskTable = self.driver.find_element_by_id('yesno_table')
@@ -241,7 +241,7 @@ class MyelomaGeneticsView(view.View):
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.load()
-		self.validate_fish_test(fishInfo)
+		# self.validate_fish_test(fishInfo)
 
 	def add_gep_test(self, gepInfo, action='cancel'):
 		self.add_gep_button.click()
