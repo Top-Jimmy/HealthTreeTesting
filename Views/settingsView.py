@@ -6,6 +6,8 @@ from Components import menu
 from Components import header
 from Components import changeUsernameForm
 from Components import changePasswordForm
+from Components import changeEmailForm
+from Components import confirmPasswordForm
 from Views import view
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
@@ -25,7 +27,8 @@ class SettingsView(view.View):
 			buttons = form.find_elements_by_tag_name('button')
 
 			self.edit_username_button = buttons[0]
-			self.edit_password_button = buttons[1]
+			self.edit_email_button = buttons[1]
+			self.edit_password_button = buttons[2]
 			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
@@ -52,21 +55,17 @@ class SettingsView(view.View):
 		self.header = header.AuthHeader(self.driver)
 		self.header.logout_button.click()
 
-	def change_back_username(self, otherusernameInfo, action='continue'):
-		self.edit_username_button.click()
-		self.changeUsernameForm = changeUsernameForm.ChangeUsernameForm(self.driver)
-		WDW(self.driver, 20).until(lambda x: self.changeUsernameForm.load())
-		self.changeUsernameForm.submit(otherusernameInfo, action)
+	def change_email(self, formData, confirmAction='continue', action='cancel'):
+		self.edit_email_button.click()
+		self.confirmPasswordForm = confirmPasswordForm.ConfirmPasswordForm(self.driver)
+		WDW(self.driver, 20).until(lambda x: self.confirmPasswordForm.load())
+		self.confirmPasswordForm.submit(formData, confirmAction)
+		time.sleep(3)
+		self.changeEmailForm = changeEmailForm.ChangeEmailForm(self.driver)
+		WDW(self.driver, 20).until(lambda x: self.changeEmailForm.load())
+		self.changeEmailForm.submit(formData, action)
 		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
-	def change_back_password(self, otherpasswordInfo, action='continue'):
-		self.edit_password_button.click()
-		self.changePasswordForm = changePasswordForm.ChangePasswordForm(self.driver)
-		WDW(self.driver, 20).until(lambda x: self.changePasswordForm.load())
-		self.changePasswordForm.submit(otherpasswordInfo, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
-		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
-		self.header = header.AuthHeader(self.driver)
-		self.header.logout_button.click()
+
 	

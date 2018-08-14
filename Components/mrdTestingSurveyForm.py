@@ -1,6 +1,10 @@
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+import time
 
 class MrdTestingSurveyForm():
 
@@ -9,42 +13,46 @@ class MrdTestingSurveyForm():
 
 	def load(self):
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
-		self.form = self.driver.find_elements_by_tag_name('form')[-1]
-		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
-		self.load_sections()
+		self.form = self.driver.find_elements_by_tag_name('form')[1]
+		buttons = self.form.find_elements_by_tag_name('button')
 
-	def load_sections(self):
-		self.sections = []
-		for i, section in enumerate(self.sectionConts):
-			# print('loading section: ' + str(i))
-			# Contains primary and any visible secondary questions
-			self.questionContainers = section.find_elements_by_class_name('ques_group_cls')
-			self.subQuestionIndices = []
-			questionList = []
-			for questionIndex, questionContainer in enumerate(self.questionContainers):
-				# print('loading question: ' + str(questionIndex))
-				# Primary or secondary question?
-				subquestions = questionContainer.find_elements_by_class_name('ques_group_cls')
-				if len(subquestions) > 0:
-					for subquestionIndex in xrange(len(subquestions)):
-						subIndex = questionIndex+1 + subquestionIndex
-						print('subquestion: ' + str(subIndex))
-						self.subQuestionIndices.append(subIndex)
+		self.close_button = buttons[0]
+		self.save_button = buttons[1]
+		self.cancel_button = buttons[2]
+		self.load_form()
+		self.loadedData = self.questionList
 
-				if questionIndex not in self.subQuestionIndices:
-					# Primary question
-					questionList.append(self.load_questions(questionContainer))
-			self.sections.append(questionList)
+		return True
+
+	def load_form(self):
+		self.questionContainers = self.form.find_elements_by_class_name('ques_group_cls')
+		self.subQuestionIndices = []
+		self.questionList = []
+		for questionIndex, questionContainer in enumerate(self.questionContainers):
+			# print('loading question: ' + str(questionIndex))
+			# Primary or secondary question?
+			subquestions = questionContainer.find_elements_by_class_name('ques_group_cls')
+			if len(subquestions) > 0:
+				for subquestionIndex in xrange(len(subquestions)):
+					subIndex = questionIndex+1 + subquestionIndex
+					print('subquestion: ' + str(subIndex))
+					self.subQuestionIndices.append(subIndex)
+
+			if questionIndex not in self.subQuestionIndices:
+				# Primary question
+				self.questionList.append(self.load_questions(questionContainer))
 
 	def load_questions(self, questionContainer, isSecondary=False):
 		question = {}
 		questionIndex = None
 		# First is primary. Any additional ones are secondary
-		questionConts = questionContainer.find_elements_by_class_name('cls_survey_question')
+		questionConts = questionContainer.find_elements_by_class_name('question')
+
 		if isSecondary:
 			questionConts = [questionContainer]
 
 		for i, questionCont in enumerate(questionConts):
+			# print('loading questionCont: ' + str(i))
 			textInput = None
 			radioOptions = None
 			options = {}
@@ -66,7 +74,10 @@ class MrdTestingSurveyForm():
 				# Look for an input
 
 			else: # secondary
-				secondary_questions.append(self.load_questions(questionCont, True))
+				# Some 'question' elements don't have questions
+				if len(questionCont.find_elements_by_tag_name('input')) > 0:
+					# print('loading secondary question: ' + str(i))
+					secondary_questions.append(self.load_questions(questionCont, True))
 			question['container'] = questionCont
 			if options:
 				question['options'] = options
@@ -74,70 +85,68 @@ class MrdTestingSurveyForm():
 				question['textInput'] = textInput
 			if secondary_questions:
 				question['secondary_questions'] = secondary_questions
-
+		# print('returning: ' + str(question))
 		return question
 
-	def submit(self, formInfo):
-		for sectionIndex, section in enumerate(formInfo):
-			print('answering section: ' + str(sectionIndex))
-			loadedSection = self.loadedData[sectionIndex]
+	def submit(self, mrdInfo, action='cancel'):
+		for questionIndex, question in enumerate(mrdInfo):
+			print('answering question: ' + str(questionIndex))
+			loadedQuestion = self.loadedData[questionIndex]
 
-			# section: [{'option': 'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}]
-			# [
-			# 	{u'1': [
-			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
-			# 	]},
-			# 	{u'2': [
-			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
-			# 	]},
-			# 	{u'3': [
-			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
-			# 	]}
-			# ]
-			for questionIndex, question in enumerate(section):
-				print('answering question: ' + str(questionIndex))
-				# question: {'option': 'yes'}
-				loadedQuestion = loadedSection[questionIndex]
-				# {u'1': [
-				# 	{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
-				# ]}
-				secondaryInfo = question.get('secondary', None)
-				questionOptions = loadedQuestion.get('options', None)
-				textarea = loadedQuestion.get('textInput', None)
-				dropdowns = loadedQuestion.get('dropdowns', None)
+			secondaryInfo = question.get('secondary', None)
+			questionOptions = loadedQuestion.get('options', None)
+			textarea = loadedQuestion.get('textInput', None)
+			dropdowns = loadedQuestion.get('dropdowns', None)
+			multipleDropdown = question.get('multiple_dropdown')
 
-				# {u'Yes': 'webElement', u'No': 'webElement'}
-				if questionOptions:
-					inputEl = questionOptions[question['option']]
-					inputEl.click()
-					# self.load('my myeloma')
+			if questionOptions:
+				inputEl = questionOptions[question['option']]
+				inputEl.click()
+				if not inputEl.is_selected():
+					print('Clicked input, but it is not selected')
+					return False
+				raw_input('input clicked')
 
-				if textarea:
-					textareaEl = textarea[question['textInput']]
-					textareaEl.send_keys()
+			if textarea:
+				textarea.send_keys(question.get('textInput', None))
 
-				if dropdowns:
-					self.form.set_dropdown(dropdowns, question.get('dropdown', None))
+			if dropdowns:
+				if multipleDropdown:
+					self.form.set_dropdown(dropdowns[0], question.get('multiple_dropdown', None))
+					AC(self.driver).send_keys(Keys.ESCAPE).perform()
+				else:
+					self.form.set_dropdown(dropdowns[0], question.get('dropdown', None))
 
-				if secondaryInfo: # Question has secondary response
-					# Reload question and get loadedInfo for secondary question
-					WDW(self.driver, 20).until(lambda x: self.load())
-					loadedSecondaryInfo = self.loadedData[sectionIndex][questionIndex].get('secondary_questions', None)
+			if secondaryInfo: # Question has secondary response
+				# Reload question and get loadedInfo for secondary question
+				WDW(self.driver, 20).until(lambda x: self.load())
+				loadedSecondaryInfo = self.loadedData[questionIndex].get('secondary_questions', None)
 
-					secondaryText = secondaryInfo.get('text', None)
-					secondaryOptions = secondaryInfo.get('options', None)
-					if secondaryText:
-						print(loadedSecondaryInfo)
-						textInput = loadedSecondaryInfo[0]['textInput']
-						if textInput:
-							textInput.clear()
-							textInput.send_keys(secondaryText)
-						else:
-							print('could not find textarea for question[' + str(questionIndex) + ']')
+				secondaryText = secondaryInfo.get('text', None)
+				secondaryOptions = secondaryInfo.get('options', None)
+				if secondaryText:
+					print(loadedSecondaryInfo)
+					textInput = loadedSecondaryInfo[0]['textInput']
+					if textInput:
+						textInput.clear()
+						textInput.send_keys(secondaryText)
 					else:
-						radioOptions = loadedSecondaryInfo[0]['options']
-						radioOptions[secondaryOptions].click()
+						print('could not find textarea for question[' + str(questionIndex) + ']')
+				else:
+					radioOptions = loadedSecondaryInfo[0]['options']
+					radioOptions[secondaryOptions].click()
 
 
-				time.sleep(1)
+			time.sleep(1)
+		if action == 'save':
+			self.save_button.click()
+		else:
+			self.cancel_button.click()
 		return True
+
+
+
+
+
+
+

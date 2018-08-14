@@ -111,3 +111,27 @@ class TestSurveys(unittest.TestCase):
 		self.assertTrue(surveysView.on())
 		surveysView.imaging_survey(imagingInfo, 'cancel')
 		self.assertTrue(surveysView.on())
+
+	def test_mrd_survey(self):
+		'''Surveys : Surveys . test_mrd-survey'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		surveysView = self.andrew.surveysView
+
+		surveyInfo = [
+			{'option': 'not sure'},
+			{'option': 'other sensitivity level', 'secondary': {'text': 'painful'}},
+			{'option': 'not sure'}
+		]
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Surveys')
+
+		self.assertTrue(surveysView.on())
+		surveysView.mrd_survey(surveyInfo, 'cancel')
+
+
+

@@ -8,6 +8,9 @@ from Views import view
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver import ActionChains as AC
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import time
 
 class FullHealthView(view.View):
@@ -120,6 +123,7 @@ class FullHealthView(view.View):
 				questionOptions = loadedQuestion.get('options', None)
 				textarea = loadedQuestion.get('textInput', None)
 				dropdowns = loadedQuestion.get('dropdowns', None)
+				multipleDropdown = question.get('multiple_dropdown')
 
 				# {u'Yes': 'webElement', u'No': 'webElement'}
 				if questionOptions:
@@ -128,11 +132,15 @@ class FullHealthView(view.View):
 					# self.load('my myeloma')
 
 				if textarea:
-					textareaEl = textarea[question['textInput']]
-					textareaEl.send_keys()
+					# textareaEl = textarea[question['textInput']]
+					textarea.send_keys(question.get('textInput', None))
 
 				if dropdowns:
-					self.form.set_dropdown(dropdowns[0], question.get('dropdown', None))
+					if multipleDropdown:
+						self.form.set_dropdown(dropdowns[0], question.get('multiple_dropdown', None))
+						AC(self.driver).send_keys(Keys.ESCAPE).perform()
+					else:
+						self.form.set_dropdown(dropdowns[0], question.get('dropdown', None))
 
 				if secondaryInfo: # Question has secondary response
 					# Reload question and get loadedInfo for secondary question

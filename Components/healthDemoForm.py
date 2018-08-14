@@ -95,7 +95,6 @@ class HealthDemoForm():
 	# Figure out if you need to click 'Select-value-label' or 'Select-placeholder' element
 		dropdown_preSet = False
 		try:
-			print(container)
 			dropdown_value = container.find_element_by_class_name('Select-value-label')
 			dropdown_placeholder = None
 			dropdown_preSet = True

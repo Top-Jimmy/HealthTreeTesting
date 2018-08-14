@@ -36,22 +36,22 @@ class TestSettings(unittest.TestCase):
 		settingsView = self.elliot.settingsView
 
 		usernameInfo = {
-			'new_username': 'elliot1'
+			'new_username': 'elliot'
 		}
 
 		passwordInfo = {
-			'username': 'Elliot1',
+			'username': 'Elliot',
 			'password': 'cardinals',
 			'old_password': 'celtics',
 			'new_password': 'cardinals'
 		}
 
 		otherusernameInfo = {
-			'new_username': 'Elliot'
+			'new_username': 'Elliot1'
 		}
 
 		otherpasswordInfo = {
-			'username': 'Elliot',
+			'username': 'Elliot1',
 			'password': 'celtics',
 			'old_password': 'cardinals',
 			'new_password': 'celtics'
@@ -75,7 +75,28 @@ class TestSettings(unittest.TestCase):
 		aboutMeView.menu.go_to('Settings')
 
 		self.assertTrue(settingsView.on())
-		settingsView.change_back_username(otherusernameInfo, 'continue')
+		settingsView.change_username(otherusernameInfo, 'continue')
 		self.assertTrue(settingsView.on())
-		settingsView.change_back_password(otherpasswordInfo, 'continue')
+		settingsView.change_password(otherpasswordInfo, 'continue')
+
+	def test_change_email(self):
+		'''settings : settings . test_change_email'''
+		homeView = self.elliot.homeView
+		aboutMeView = self.elliot.aboutMeView
+		settingsView = self.elliot.settingsView
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.elliot.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Settings')
+		
+		self.assertTrue(settingsView.on())
+
+		formData = {
+			'password': 'celtics',
+			'new_email': 'leonardbuttkiss123@hotmail.com'
+		}
+
+		settingsView.change_email(formData, 'continue', 'cancel')
+		self.assertTrue(settingsView.on())
 

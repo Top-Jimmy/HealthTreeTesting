@@ -51,7 +51,7 @@ class SurveysView(view.View):
 		self.conditionsSurveyForm = conditionsSurveyForm.ConditionsSurveyForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.conditionsSurveyForm.load())
 		self.conditionsSurveyForm.submit(conditionsInfo, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def molecular_survey(self, myelomaInfo, action='cancel'):
@@ -59,7 +59,7 @@ class SurveysView(view.View):
 		self.multipleMyelomaSurveyForm = multipleMyelomaSurveyForm.MultipleMyelomaSurveyForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.multipleMyelomaSurveyForm.load())
 		self.multipleMyelomaSurveyForm.submit(myelomaInfo, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def imaging_survey(self, imagingInfo, action='cancel'):
@@ -67,6 +67,14 @@ class SurveysView(view.View):
 		self.imagingSurveyForm = imagingSurveyForm.ImagingSurveyForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.imagingSurveyForm.load())
 		self.imagingSurveyForm.submit(imagingInfo, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+	def mrd_survey(self, mrdInfo, action):
+		self.surveys[0]['mrd testing in myeloma'].click()
+		self.mrdTestingSurveyForm = mrdTestingSurveyForm.MrdTestingSurveyForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.mrdTestingSurveyForm.load())
+		self.mrdTestingSurveyForm.submit(mrdInfo, action)
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
