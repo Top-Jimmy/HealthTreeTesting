@@ -4,12 +4,14 @@ from selenium.common.exceptions import (NoSuchElementException,
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from utilityFuncs import UtilityFunctions
 import time
 
 class MrdTestingSurveyForm():
 
 	def __init__(self, driver):
 		self.driver = driver
+		self.util = UtilityFunctions(self.driver)
 
 	def load(self):
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
@@ -64,7 +66,7 @@ class MrdTestingSurveyForm():
 					for radioCont in radioContainers:
 						inputs = radioCont.find_elements_by_tag_name('input')
 						spans = radioCont.find_elements_by_tag_name('span')
-						optionName = spans[0].text.lower()
+						optionName = self.util.get_text(spans[0])
 						options[optionName] = inputs[0]
 					if len(radioContainers) == 0:
 						textInput = questionCont.find_element_by_tag_name('input')

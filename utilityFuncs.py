@@ -105,3 +105,17 @@ class UtilityFunctions():
 		except StaleElementReferenceException:
 			print('StaleElementReferenceException: failed to click element')
 		return False
+
+	def get_text(self, element):
+		try:
+			elementText = element.text.lower()
+			text = elementText.strip()
+		except NoSuchElementException:
+			print('NoSuchElementException: no element or incorrect element passed in')
+			return False
+		return text
+
+
+
+
+

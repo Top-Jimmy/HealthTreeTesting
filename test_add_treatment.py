@@ -18,7 +18,7 @@ import form_info
 # 	test_antifungal: 									Question[4] still taking antifungal?
 # TestStemCell
 # 	test_basic
-
+@unittest.skip('Dont need to run these')
 class TestChemotherapy(unittest.TestCase):
 
 	def setUp(self):
@@ -342,7 +342,7 @@ class TestChemotherapy(unittest.TestCase):
 		toView.edit_treatment(1, 'delete', {'meta': {'num_treatments': 1}})
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
-
+@unittest.skip('Dont need to run these')
 class TestClinical(unittest.TestCase):
 
 	def setUp(self):

@@ -1,6 +1,10 @@
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+import time
 
 class FeedbackForm():
 
@@ -8,6 +12,8 @@ class FeedbackForm():
 		self.driver = driver
 
 	def load(self):
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		time.sleep(.5)
 		self.form = self.driver.find_element_by_class_name('editroll')
 		buttons = self.form.find_elements_by_tag_name('button')
 

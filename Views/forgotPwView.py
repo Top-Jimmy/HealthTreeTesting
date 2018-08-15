@@ -3,11 +3,13 @@ from selenium.common.exceptions import (NoSuchElementException,
 from viewExceptions import MsgError, WarningError
 from Components import forgotPwForm
 from Views import view
+from utilityFuncs import UtilityFunctions
 
 class ForgotPwView(view.View):
 	post_url = 'forgot-password'
 
 	def load(self):
+		self.util = UtilityFunctions(self.driver)
 		try:
 			# Crap on left
 			self.forgotPwForm = forgotPwForm.ForgotPwForm(self.driver)
@@ -20,8 +22,8 @@ class ForgotPwView(view.View):
 
 	def validate(self):
 		failures = []
-		if self.signIn_link.text != 'Sign In':
-			failures.append('1. Sign In link. Expecting text "Sign In", got "' + self.signIn_link.text + '"')
+		if self.util.get_text(self.signIn_link) != 'sign in':
+			failures.append('1. Sign In link. Expecting text "Sign In", got "' + self.util.get_text(self.signIn_link) + '"')
 		if len(failures) > 0:
 			print(failures)
 			raise NoSuchElementException('Failed to load HomeView')

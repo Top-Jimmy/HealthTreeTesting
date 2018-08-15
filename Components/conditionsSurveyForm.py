@@ -4,6 +4,7 @@ from selenium.common.exceptions import (NoSuchElementException,
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import time
 
 class ConditionsSurveyForm():
 
@@ -12,6 +13,7 @@ class ConditionsSurveyForm():
 
 	def load(self):
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		time.sleep(.5)
 		form = self.driver.find_elements_by_tag_name('form')[-2]
 		buttons = form.find_elements_by_tag_name('button')
 		inputs = form.find_elements_by_tag_name('input')

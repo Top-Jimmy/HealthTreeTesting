@@ -2,11 +2,13 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
+from utilityFuncs import UtilityFunctions
 
 class FamHistForm():
 
 	def __init__(self, driver, expectedValues=None):
 		self.driver = driver
+		self.util = UtilityFunctions(self.driver)
 		self.load(expectedValues)
 
 	def load(self, expectedValues):
@@ -72,7 +74,7 @@ class FamHistForm():
 					for radioCont in radioContainers:
 						inputs = radioCont.find_elements_by_tag_name('input')
 						spans = radioCont.find_elements_by_tag_name('span')
-						optionName = spans[0].text.lower()
+						optionName = self.util.get_text(spans[0])
 						options[optionName] = inputs[0]
 					if dropdownContainers:
 						question['dropdowns'] = dropdownContainers

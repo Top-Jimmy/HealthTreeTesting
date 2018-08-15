@@ -5,11 +5,13 @@ from selenium.common.exceptions import (NoSuchElementException,
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from utilityFuncs import UtilityFunctions
 
 class HealthHistForm():
 
 	def __init__(self, driver, expectedValues=None):
 		self.driver = driver
+		self.util = UtilityFunctions(self.driver)
 		self.load(expectedValues)
 
 	def load(self, expectedValues):
@@ -75,7 +77,7 @@ class HealthHistForm():
 					for radioCont in radioContainers:
 						inputs = radioCont.find_elements_by_tag_name('input')
 						spans = radioCont.find_elements_by_tag_name('span')
-						optionName = spans[0].text.lower()
+						optionName = self.util.get_text(spans[0])
 						options[optionName] = inputs[0]
 					if len(radioContainers) == 0:
 						textInput = questionCont.find_element_by_tag_name('input')
