@@ -6,8 +6,8 @@ import form_info
 # import copy # copy.deepcopy(object)
 
 # TestChemotherapy
+#   test_changed_chemotherapy
 # 	test_current_chemotherapy					Edit treatments, outcomes (side effects)
-# 	test_changed_chemotherapy:
 # TestClinical
 #   test_clinical_basic								Edit treatment (#866), outcomes (side effects)
 # TestRadiation
@@ -19,7 +19,6 @@ import form_info
 # TestStemCell
 # 	test_basic
 
-@unittest.skip('wont pass')
 class TestChemotherapy(unittest.TestCase):
 
 	def setUp(self):
@@ -28,6 +27,100 @@ class TestChemotherapy(unittest.TestCase):
 
 	def tearDown(self):
 		self.driver.quit()
+
+	def test_changed_chemotherapy(self):
+		''' test_add_treatment.py:TestChemotherapy.test_changed_chemotherapy '''
+		# Different flows depending on whether medications were added/removed during treatment
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		toView = self.andrew.treatmentsOutcomesView
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Treatments & Outcomes')
+		self.assertTrue(toView.on())
+		toView.delete_all_treatments()
+
+		# Chemo: Medications were added and removed
+		# Should have 10 questions: 8 (base amount) +1 (added) +1 (removed)
+		treatment1 = {
+			'testMeta': {'type': 'chemo'},
+			'questions': [
+				{'type': 'single',	# 0: Treatment Type
+					'options': {
+						'Chemotherapy/Myeloma Therapy': {},
+					},
+				},
+				{'type': 'date', 'text': '10/2017' }, # 1: Start date
+				{'type': 'single',	# 2: Currently taking?
+					'options': {
+						'Yes': {},
+					},
+				},
+				{'type': 'single',	# 3: Maintenance therapy? (don't think it matters how you answer this question)
+					'options': {
+						'Yes': {},
+					},
+				},
+				{'type': 'popup', # 4: Chemo treatment options
+					'options': {
+						'Chemotherapies': {
+		    			'Adriamycin': None,
+		    		},
+		    		'Steroids': {
+		    			'Dexamethasone': None,
+		    		},
+		    	}
+				},
+				{'type': 'single',	# 5: Changes to treatment?
+					'options': {
+						'Yes': {
+							'type': 'select-all',
+							'options': {
+								'Yes, my doctor added some medications to my treatment': {},
+								'Yes, my doctor removed some medications from my treatment': {},
+							},
+						}
+					},
+					'actions': 'continue',
+				},
+				{'type': 'complex', # 6: Drugs ADDED
+					'date': '12/2017',
+					'options': {
+						'Chemotherapies': {'Melphalan': None}
+					}
+				},
+				{'type': 'table', # 7: Drugs REMOVED
+					'options': {
+						'Dexamethasone': {
+		    			'date stopped': '03/2018',
+		    			'reason stopped': 'Too much travel',
+		    		},
+		    		'Adriamycin': {
+		    			'date stopped': '03/2018',
+		    			'reason stopped': 'Drug cost',
+		    		},
+		    		'Melphalan': {},
+		    	}
+				},
+				{'type': 'single',	# 8: Best response?
+					'options': {
+						'The treatment initially reduced my myeloma but my myeloma began to increase and required a treatment change': {},
+					},
+				},
+				{'type': 'popup', # 9: Side effects
+					'options': {
+						'Cardiovascular/Circulatory System': {
+		    			'Blood clots': {'intensity': 9},
+		    			'Irregular/rapid heartbeat': {'intensity': 2},
+		    		}
+		    	}
+				},
+			]
+		}
+		self.assertTrue(toView.add_treatment(treatment1))
+		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 	def test_current_chemotherapy(self):
 		''' test_add_treatment.py:TestChemotherapy.test_current_chemotherapy '''
@@ -66,12 +159,12 @@ class TestChemotherapy(unittest.TestCase):
 				},
 				{'type': 'popup', # 4: Chemo treatment options
 					'options': {
-						'chemotherapies': {
+						'Chemotherapies': {
 		    			'Melphalan': None,
 		    			'Adriamycin': None,
 		    		},
-		    		'proteasome inhibitors': {
-		    			'kyprolis (carfilzomib)': None,
+		    		'Proteasome Inhibitors': {
+		    			'Kyprolis (carfilzomib)': None,
 		    		},
 		    	}
 				},
@@ -87,9 +180,9 @@ class TestChemotherapy(unittest.TestCase):
 				},
 				{'type': 'popup', # 7: Side effects
 					'options': {
-						'cardiovascular/circulatory system': {
-		    			'blood clots': {'intensity': 9},
-		    			'irregular/rapid heartbeat': {'intensity': 2},
+						'Cardiovascular/Circulatory System': {
+		    			'Blood clots': {'intensity': 9},
+		    			'Irregular/rapid heartbeat': {'intensity': 2},
 		    		}
 		    	}
 				},
@@ -100,21 +193,23 @@ class TestChemotherapy(unittest.TestCase):
 		editValues = [
 			{'num_questions': 9},
 			{'index': 1, 'date': '11/2016'},
-			{'index': 2, 'options': 'Yes'},
+			{'index': 2, 'options': {
+				'No': {},
+			}},
 			{'index': 3, 'date': '03/2018'},
 			{'index': 5, 'complex': {
-				'chemotherapies': {
-    			'Melphalan': None,
-    			'D-PACE': None,
+				'Chemotherapies': {
+    			'Melphalan': {},
+    			'D-PACE': {},
     		},
-    		'proteasome inhibitors': {
-    			'Ninlaro (ixazomib)': None,
+    		'Proteasome Inhibitors': {
+    			'Ninlaro (ixazomib)': {},
     		},
 			}},
 			{'index': -1, 'complex': {
-				'cardiovascular/circulatory system': {
-    			'blood clots': {'intensity': 7},
-    			'irregular/rapid heartbeat': {'intensity': 5},
+				'Cardiovascular/Circulatory System': {
+    			'Blood clots': {'intensity': 7},
+    			'Irregular/rapid heartbeat': {'intensity': 5},
     		}
 			}},
 		]
@@ -140,11 +235,11 @@ class TestChemotherapy(unittest.TestCase):
 				},
 				{'type': 'popup', # 5: Chemo treatment options
 					'options': {
-						'chemotherapies': {
+						'Chemotherapies': {
 		    			'Melphalan': None,
 		    			'D-PACE': None,
 		    		},
-		    		'proteasome inhibitors': {
+		    		'Proteasome Inhibitors': {
 		    			'Ninlaro (ixazomib)': None,
 		    		},
 		    	}
@@ -161,20 +256,32 @@ class TestChemotherapy(unittest.TestCase):
 				},
 				{'type': 'popup', # 8: Side effects
 					'options': {
-						'cardiovascular/circulatory system': {
-		    			'blood clots': {'intensity': 7},
-		    			'irregular/rapid heartbeat': {'intensity': 5},
+						'Cardiovascular/Circulatory System': {
+		    			'Blood clots': {'intensity': 7},
+		    			'Irregular/rapid heartbeat': {'intensity': 5},
 		    		}
 		    	}
 				},
 			]
 		}
+		# Edit Treatment
 		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
 
+		# Edit Outcome
 		new_outcome = {'The treatment did not reduce my myeloma': {}}
-		edited_outcome = {'options': new_outcome}
 		treatment1Edited['questions'][7]['options'] = new_outcome
-		toView.edit_treatment(0, 'outcomes', treatment1Edited, edited_outcome)
+		toView.edit_treatment(0, 'outcomes', treatment1Edited, new_outcome)
+
+		# Edit Side Effects
+		new_effects = {
+			'Other': {
+  			'Infusion related reactions': {'intensity': 5},
+  			'Insomnia': {'intensity': 6},
+  			'Tremors': {'intensity': 4},
+  		}
+		}
+		treatment1Edited['questions'][-1]['options'] = new_effects
+		toView.edit_treatment(0, 'side effects', treatment1Edited, new_effects)
 
 		# Chemo: Stopped taking
 		# Should have 9 questions (+1 for stop date)
@@ -200,12 +307,12 @@ class TestChemotherapy(unittest.TestCase):
 				},
 				{'type': 'popup', # 5: Chemo treatment options
 					'options': {
-						'chemotherapies': {
+						'Chemotherapies': {
 		    			'Melphalan': None,
 		    			'Adriamycin': None,
 		    		},
-		    		'proteasome inhibitors': {
-		    			'kyprolis (carfilzomib)': None,
+		    		'Proteasome Inhibitors': {
+		    			'Kyprolis (carfilzomib)': None,
 		    		},
 		    	}
 				},
@@ -221,117 +328,21 @@ class TestChemotherapy(unittest.TestCase):
 				},
 				{'type': 'popup', # 8: Side effects
 					'options': {
-						'cardiovascular/circulatory system': {
-		    			'blood clots': {'intensity': 9},
-		    			'irregular/rapid heartbeat': {'intensity': 2},
+						'Cardiovascular/Circulatory System': {
+		    			'Blood clots': {'intensity': 9},
+		    			'Irregular/rapid heartbeat': {'intensity': 2},
 		    		}
 		    	}
 				},
 			]
 		}
-		# Tests should be in order of recency
+		# Most recent tests should be first
 		self.assertTrue(toView.add_treatment(treatment2, [treatment2, treatment1Edited]))
 
 		toView.edit_treatment(1, 'delete', {'meta': {'num_treatments': 1}})
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
-	# Fails on question[6] ()
-	def test_changed_chemotherapy(self):
-		''' test_add_treatment.py:TestChemotherapy.test_changed_chemotherapy '''
-		# Different flows depending on whether medications were added/removed during treatment
-		homeView = self.andrew.homeView
-		aboutMeView = self.andrew.aboutMeView
-		toView = self.andrew.treatmentsOutcomesView
-		self.assertTrue(homeView.go())
-		self.assertTrue(homeView.login(self.andrew.credentials))
-		self.assertTrue(aboutMeView.on())
 
-		aboutMeView.menu.go_to('Treatments & Outcomes')
-		self.assertTrue(toView.on())
-		toView.delete_all_treatments()
-
-		# Chemo: Medications were added and removed
-		# Should have 10 questions: 8 (base amount) +1 (added) +1 (removed)
-		treatment1 = {
-			'testMeta': {'type': 'chemo'},
-			'questions': [
-				{'type': 'single',	# 0: Treatment Type
-					'options': {
-						'Chemotherapy/Myeloma Therapy': {},
-					},
-				},
-				{'type': 'date', 'text': '10/2017' }, # 1: Start date
-				{'type': 'single',	# 2: Currently taking?
-					'options': {
-						'Yes': {},
-					},
-				},
-				{'type': 'single',	# 3: Maintenance therapy? (don't think it matters how you answer this question)
-					'options': {
-						'Yes': {},
-					},
-				},
-				{'type': 'popup', # 4: Chemo treatment options
-					'options': {
-						'chemotherapies': {
-		    			'Adriamycin': None,
-		    		},
-		    		'steroids': {
-		    			'Dexamethasone': None,
-		    		},
-		    	}
-				},
-				{'type': 'single',	# 5: Changes to treatment?
-					'options': {
-						'Yes': {
-							'type': 'select-all',
-							'options': {
-								'Yes, my doctor added some medications to my treatment': {},
-								'Yes, my doctor removed some medications from my treatment': {},
-							},
-						}
-					},
-					'actions': 'continue',
-				},
-				{'type': 'complex', # 6: Drugs ADDED
-					'date': '12/2017',
-					'options': {
-						'chemotherapies': {'melphalan': None,}
-					}
-				},
-				{'type': 'table', # 7: Drugs REMOVED
-					'options': {
-						'dexamethasone': {
-		    			'date stopped': '03/2018',
-		    			'reason stopped': 'too much travel',
-		    		},
-		    		'adriamycin': {
-		    			'date stopped': '03/2018',
-		    			'reason stopped': 'drug cost',
-		    		},
-		    		'melphalan': {},
-		    	}
-				},
-				{'type': 'single',	# 8: Best response?
-					'options': {
-						'The treatment initially reduced my myeloma but my myeloma began to increase and required a treatment change': {},
-					},
-				},
-				{'type': 'complex', # 9: Side effects
-					'options': {
-						'cardiovascular/circulatory system': {
-		    			'blood clots': {'intensity': 9},
-		    			'irregular/rapid heartbeat': {'intensity': 2},
-		    		}
-		    	}
-				},
-			]
-		}
-		# self.assertTrue(toView.on({'tests': [treatment1] }))
-		self.assertTrue(toView.add_treatment(treatment1))
-		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
-
-@unittest.skip('wont pass')
 class TestClinical(unittest.TestCase):
 
 	def setUp(self):
@@ -393,16 +404,16 @@ class TestClinical(unittest.TestCase):
 				},
 				{'type': 'popup', 								# 7: Side effects
 					'options': {
-						'cardiovascular/circulatory system': {
-		    			'blood clots': {'intensity': 9},
-		    			'irregular/rapid heartbeat': {'intensity': 2},
+						'Cardiovascular/Circulatory System': {
+		    			'Blood clots': {'intensity': 9},
+		    			'Irregular/rapid heartbeat': {'intensity': 2},
 		    		}
 		    	}
 				},
 			],
 		}
-		# self.assertTrue(toView.on({'tests': [treatment1]}))
 		self.assertTrue(toView.add_treatment(treatment1))
+		# raw_input('added 1')
 		editValues = [
 			{'num_questions': 8},
 			{'index': 1, 'date': '10/2015'},
@@ -410,9 +421,9 @@ class TestClinical(unittest.TestCase):
 			{'index': 4, 'text': 'NCT00000421'},
 	    {'index': 5, 'text': 'Test Treatment X'},
 	    {'index': -1, 'complex': {
-				'lymphatic/immune system': {
-    			'fatigue/tired': {'intensity': 5},
-    			'mouth sores': {'intensity': 4},
+				'Lymphatic/Immune System': {
+	    		'Fatigue/tired': {'intensity': 5},
+	    		'Mouth sores': {'intensity': 4},
     		}
 	    }},
 		]
@@ -441,14 +452,21 @@ class TestClinical(unittest.TestCase):
 				},
 				{'type': 'single',										# 6: Best response?
 					'options': {
-						'The treatment reduced my myeloma and kept my myeloma under control': {},
+						'I discontinued this treatment': {
+							'type': 'select-all',
+							'options': {
+								'Severity of the side effects': {},
+								'Cost of the treatment': {},
+								'Other': {'comment': 'Discontinued because Y'},
+							},
+						}
 					},
 				},
 				{'type': 'popup', 								# 7: Side effects
 					'options': {
-						'lymphatic/immune system': {
-			    		'fatigue/tired': {'intensity': 5},
-			    		'mouth sores': {'intensity': 4},
+						'Lymphatic/Immune System': {
+			    		'Fatigue/tired': {'intensity': 5},
+			    		'Mouth sores': {'intensity': 4},
 		    		}
 		    	}
 				},
@@ -456,16 +474,27 @@ class TestClinical(unittest.TestCase):
 		}
 		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
 
-		new_outcome = {'I discontinued this treatment': {
+		new_outcome = {'My myeloma is now undetectable': {
+			'type': 'single',
 			'options': {
-				'Severity of the side effects': {},
-				'Cost of the treatment': {},
-				'Other': {'comment': 'Discontinued because Y'},
-			}
+				'I dont know the details of my response': {},
+			},
 		}}
+		# Edit Outcomes
 		edited_outcome = {'options': new_outcome}
-		treatment1Edited['questions'][7]['options'] = new_outcome
+		treatment1Edited['questions'][-2]['options'] = new_outcome
 		toView.edit_treatment(0, 'outcomes', treatment1Edited, edited_outcome)
+
+		# Edit Side Effects
+		new_effects = {
+			'Renal/Urinary System': {
+  			'Kidney damage': {'intensity': 3},
+  			'Kidney failure': {'intensity': 4},
+  			'Liver failure': {'intensity': 5},
+  		}
+		}
+		treatment1Edited['questions'][-1]['options'] = new_effects
+		toView.edit_treatment(0, 'side effects', treatment1Edited, new_effects)
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 		# Still on trial
@@ -503,9 +532,9 @@ class TestClinical(unittest.TestCase):
 				},
 				{'type': 'popup', 								# 6: Side effects
 					'options': {
-						'cardiovascular/circulatory system': {
-		    			'blood clots': {'intensity': 9},
-		    			'irregular/rapid heartbeat': {'intensity': 2},
+						'Cardiovascular/Circulatory System': {
+		    			'Blood clots': {'intensity': 9},
+		    			'Irregular/rapid heartbeat': {'intensity': 2},
 		    		}
 		    	}
 				},
@@ -514,6 +543,7 @@ class TestClinical(unittest.TestCase):
 		# self.assertTrue(toView.on({'tests': [treatment1]}))
 		self.assertTrue(toView.add_treatment(treatment2))
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
+
 @unittest.skip('wont pass')
 class TestRadiation(unittest.TestCase):
 
@@ -568,9 +598,9 @@ class TestRadiation(unittest.TestCase):
 				},
 				{'type': 'popup', 								# 5: Side effects
 					'options': {
-						'cardiovascular/circulatory system': {
-		    			'blood clots': {'intensity': 9},
-		    			'irregular/rapid heartbeat': {'intensity': 2},
+						'Cardiovascular/Circulatory System': {
+		    			'Blood clots': {'intensity': 9},
+		    			'Irregular/rapid heartbeat': {'intensity': 2},
 		    		}
 		    	}
 				},
@@ -584,22 +614,22 @@ class TestRadiation(unittest.TestCase):
 					'Other': {'comment': 'Radiation treatment Y'},
 				},
 			},
-			# {'index': 2, 'date': '08/2017'},
-			# {'index': 3, 'date': '01/2018'},
+			{'index': 2, 'date': '08/2017'},
+			{'index': 3, 'date': '01/2018'},
 			{'index': -2, 'options': {
 				'I discontinued this treatment': {
-					'options': {
+					'select-all': {
 						'Too much travel': {},
 						'Too much time in the clinic': {},
 					},
 				}
 			}},
-			# {'index': -1, 'complex': {
-			# 	'cardiovascular/circulatory system': {
-   #  			'low blood pressure': {'intensity': 7},
-   #  			'low potassium': {'intensity': 5},
-   #  		}
-	  #   }},
+			{'index': -1, 'complex': {
+				'Cardiovascular/Circulatory System': {
+    			'Low blood pressure': {'intensity': 7},
+    			'Low potassium': {'intensity': 5},
+    		}
+	    }},
 		]
 		radiation1Edited = {
 			'testMeta': {'type': 'radiation'},
@@ -631,7 +661,7 @@ class TestRadiation(unittest.TestCase):
 				},
 				{'type': 'popup', 								# 5: Side effects
 					'options': {
-						'cardiovascular/circulatory system': {
+						'Cardiovascular/Circulatory System': {
 		    			'low blood pressure': {'intensity': 7},
 		    			'low potassium': {'intensity': 5},
 		    		}
@@ -682,7 +712,7 @@ class TestRadiation(unittest.TestCase):
 				},
 				{'type': 'popup', 										# 5: Side effects
 					'options': {
-						'cardiovascular/circulatory system': {
+						'Cardiovascular/Circulatory System': {
 		    			'low potassium': {'intensity': 2},
 		    			'low blood pressure': {'intensity': 5},
 		    		}
@@ -694,6 +724,7 @@ class TestRadiation(unittest.TestCase):
 		# Reset: Delete treatments
 		self.assertTrue(toView.add_treatment(radiation2))
 		toView.delete_all_treatments()
+		
 @unittest.skip('wont pass')
 class TestExtra(unittest.TestCase):
 	# Tests treatments for: Bone strengtheners, antibiotics, antifungals
@@ -1125,7 +1156,7 @@ class TestStemCell(unittest.TestCase):
 		self.driver.quit()
 
 	def test_basic(self):
-		''' test_add_treatment.py:TestStemCell.test_basic '''
+		''' test_add_treatment.py::TestStemCell.test_basic '''
 		# Only 8 questions. Not induction theraapy, not maintenance therapy
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
@@ -1214,8 +1245,8 @@ class TestStemCell(unittest.TestCase):
 				},
 				{'type': 'popup', 										# 5: Induction: therapy treatments
 					'options': {
-						'chemotherapies': {
-							'melphalan': {},
+						'Chemotherapies': {
+							'Melphalan': {},
 						}
 					}
 				},
@@ -1298,8 +1329,8 @@ class TestStemCell(unittest.TestCase):
 				},
 				{'type': 'popup', 										# 6: Induction therapy treatments
 					'options': {
-						'chemotherapies': {
-							'melphalan': {},
+						'Chemotherapies': {
+							'Melphalan': {},
 						}
 					}
 				},

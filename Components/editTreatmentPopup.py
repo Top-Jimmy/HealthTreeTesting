@@ -1,5 +1,6 @@
 from Components import datePicker
 from Components import sideEffectsForm
+from utilityFuncs import UtilityFunctions
 
 import time
 from selenium.webdriver.common.keys import Keys
@@ -16,6 +17,7 @@ class EditTreatmentPopup():
 
 	def __init__(self, driver):
 		self.driver = driver
+		self.util = UtilityFunctions(self.driver)
 
 	def load(self, expectedValues=None):
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
@@ -43,218 +45,126 @@ class EditTreatmentPopup():
 			return False
 		return True
 
-	def answer_question(self, optionName, optionInfo, subOptionName=None):
-		# OptionName: 'My myeloma is now undetectable'
-		# optionInfo: {'I dont know the details of my response': {}}
+	def parse_select_all(self, questionInfo, questionCont):
+		done = False
+		count = 0
+		while not done and count < 5:
+			try:
+				# Select options in specified in optionInfo
+				# De-selecting options not contained in optionInfo
+				name_checker = ['Severity of the side effects', 'Cost of the treatment', 'Too much travel']
+				radios = questionCont.find_elements_by_class_name('radio')
+				suboption_filter = [] # Add index of any suboptions radio buttons to this list. Skip over them
+				for i, radio in enumerate(radios):
+					if i not in suboption_filter:
+						inputs = radio.find_elements_by_tag_name('input')
+						spans = radio.find_elements_by_tag_name('span')
+						if len(inputs) == 0:
+							print('EditTreatmentForm: radio option has no inputElements?')
+						elif len(spans) == 0:
+							print('EditTreatmentForm: radio option has no spanElements?')
 
-		# Note: This function is a bit different from it's counterpart in other forms.
-		# optionInfo typically contains other stuff besides subquestions. In this function it solely
-		# has info related to subquestions
 
-		comment = optionInfo.get('comment', None)
-		secondaryOptions = optionInfo.get('options', None)
-		raw_input('secondaryOptions: ' + str(secondaryOptions))
+						optionName = spans[0].text
+						optionName = optionName.replace("'", '')
+						optionInput = inputs[0]
+						optionInfo = questionInfo.get(optionName, False)
+						subOptions = False
+						if optionInfo != False: # select input, enter comment, check for subquestions
+							if not optionInput.is_selected():
+								self.util.click_radio(optionInput)
+							self.util.set_input(radio, optionInfo.get('comment', ''))
 
-		# Get loaded info for given option/subOption
-		try:
-			loadedInfo = self.load_question(self.container)
-			loadedQuestion = loadedInfo[optionName]
-		except KeyError:
-			print(optionName + ' not in question options')
-			print('question: ' + str(self.questions[0]))
-			raise KeyError()
-		if subOptionName:
-			loadedQuestion = loadedQuestion['subquestions'][subOptionName]
+							# Check for suboptions or select-all
+							subOptions = optionInfo.get('options', False)
+							if not subOptions:
+								subOptions = optionInfo.get('select-all', False)
+						else:
+							# De-select, clear comment, update inputs (might have hidden subquestions)
+							if optionInput.is_selected():
+								self.util.click_radio(optionInput)
+								self.util.set_input(radio, '')
+								inputs = radio.find_elements_by_tag_name('input')
 
-		# Grab input element out of loadedQuestion for option/subOption
-		inputEl = loadedQuestion
-		optionTextarea = None
-		if type(loadedQuestion) is dict:
-			inputEl = loadedQuestion.get('element', None)
-			optionTextarea = loadedQuestion.get('textareaEl', None)
+						# Don't iterate over suboptions
+						if len(inputs) > 1:
+							for inputIndex, inputEl in enumerate(inputs):
+								if inputIndex > 0:
+									print('skipping ' + str(i + inputIndex))
+									suboption_filter.append(i + inputIndex)
 
-		# Make sure option is selected
-		if not inputEl.is_selected():
-			inputEl.click()
-			if comment or secondaryOptions:
-				self.load()
+						if subOptions: 
+								self.parse_select_all(subOptions, radio)
+				done = True
+			except StaleElementReferenceException:
+				print('failed to parse select-all: ' + str(count))
+			count += 1
+			time.sleep(.2)
+		if count == 5:
+			print('EditTreatmentPopup: failed to parse select-all')
 
-		# handle comment (optional)
-		if comment:
-			if not optionTextarea:
-				optionTextarea = self.questions[0][optionName]['textareaEl']
-			optionTextarea.clear()
-			optionTextarea.send_keys(optionInfo['comment'])
-
-		# handle secondaryQuestions
-		if secondaryOptions:
-			for secondaryOption in secondaryOptions:
-				self.answer_question(optionName, secondaryOptions[secondaryOption], secondaryOption)
-
-	# def set_option(self, optionInfo):
-	# 	# option might be string (optionName), or might be dictionary with extra info (comment text)
-	# 	questionInfo = self.load_question(self.container)
-	# 	optionName = optionInfo
-	# 	comment = None
-	# 	if type(optionInfo) == dict:
-	# 		# {'Other': {'comment': 'Radiation treatment Y'}}
-	# 		for name, info in optionInfo.iteritems():
-	# 			optionName = name
-	# 			comment = info.get('comment', None)
-	# 	inputEl = questionInfo.get(optionName, None)
-	# 	if type(inputEl) is dict:
-	# 		# get inputEl if questionInfo[optionName] has extra info
-	# 		inputEl = inputEl['element']
-	# 	if inputEl and not inputEl.is_selected():
-	# 		inputEl.click()
-	# 	else:
-	# 		print('Question does not have option: ' + str(optionInfo))
-
-	# 	if comment:
-	# 		textarea = self.container.find_element_by_tag_name('textarea')
-	# 		textarea.clear()
-	# 		textarea.send_keys(comment)
-
-	def load_question(self, container):
-		# Load outcomes question
-		# radioCont = container.find_element_by_class_name('col-md-12')
-		radios = container.find_elements_by_class_name('radio')
-		questionInfo = {}
-		subquestion_filter = [] # Add index of any subquestion radio buttons to this list
-		for i, radio in enumerate(radios):
-			if i not in subquestion_filter: # Don't load info if current radio option is a subquestion
-				inputs = radio.find_elements_by_tag_name('input')
-				spans = radio.find_elements_by_tag_name('span')
-
-				# Test Validation
-				if len(inputs) == 0:
-					print('EditTreatmentPopup: radio option has no inputElements?')
-				elif len(spans) == 0:
-					print('EditTreatmentPopup: radio option has no spanElements?')
-
-				# Get option name.
-				optionName = spans[0].text
-				optionName.replace("'", '')
-				# Check for textarea
-				try:
-					textareaEl = radio.find_element_by_tag_name('textarea')
-				except NoSuchElementException:
-					textareaEl = None
-
-				# handle any subquestions
-				subquestions = None
-				if len(inputs) > 1: # All inputs after 1st should be secondary questions
-					for inputIndex, inputEl in enumerate(inputs):
-						if inputIndex > 0:
-
-							# Add subquestion to filter list
-							subquestion_filter.append(i + inputIndex)
-
-							# Load subquestion info
-							subquestions = self.load_question(radios[i])
-
-				# Pass back dict if loaded anything besides inputElement
-				# todo: handle passing back secondary questions
-				if textareaEl or subquestions:
-					questionInfo[optionName] = {
-						'element': inputs[0],
-						'textareaEl': textareaEl,
-						'subquestions': subquestions,
-					}
-				else:
-					questionInfo[optionName] = inputs[0]
-		return questionInfo
-
-	def set_complex(self, newOptions, container):
+	def parse_complex(self, complexInfo, questionCont):
 		# For questions w/ multiple sections (sideEffects, chemotherapy drugs, medications added/removed)
-		categories = container.find_elements_by_class_name('new-treatment-dynamic')
+		# Loop through complexInfo and select given options for each category
+		# De-select options not contained in complexInfo
+
+		# Wait for categories to show up
+		categories = None
+		loaded = False
+		count = 0
+		while not loaded and count < 5: # Doesn't immediately load
+			categories = questionCont.find_elements_by_class_name('col-md-6')
+			if categories:
+				loaded = True
+			else:
+				time.sleep(.2)
+			count += 1
+		
 		question = {}
 		for i, category in enumerate(categories):
-
-			# Has issues loading category name sometime.
+			# Has issues loading category name sometimes.
 			# Make sure it's loaded before looking for options
 			loadedCategoryName = False
 			count = 0
 			while not loadedCategoryName and count < 5:
 				try:
-					categoryEl = category.find_element_by_class_name('treatment-group')
-					categoryName = categoryEl.text.lower()
+					categoryName = category.find_element_by_class_name('treatment-group').text
+					loadedCategoryName = True
 				except NoSuchElementException:
 					categoryName = None
 
-				if categoryName:
-					print('categoryName: ' + str(categoryName))
-					loadedCategoryName = True
-
-					# Does newOptions have any in this category?
-					changesToCategory = False
-					newCategoryOptions = newOptions.get(categoryName, None)
-					if newCategoryOptions:
-						changesToCategory = True
-
-					radioContainers = category.find_elements_by_class_name('radio')
+				if categoryName: # Loaded name! Parse through category options
+					categoryOptions = complexInfo.get(categoryName, False)
 					options = {}
-					for radioCont in radioContainers:
-						label = radioCont.find_element_by_tag_name('label')
+					for radio in category.find_elements_by_class_name('radio'):
 
+						inputs = radio.find_elements_by_tag_name('input')
+						labels = radio.find_elements_by_tag_name('label')
+						label = labels[0]							
 
-						# Save option name (key) and inputEl (value) in options dict
-						# radioCont will contain treatment scale or textarea (when visible)
-						optionName = label.text.lower()
+						optionName = label.text
 						optionInput = label.find_element_by_tag_name('input')
-
-						if not changesToCategory:
-							# Make sure every option in category is de-selected
-							if optionInput.is_selected():
-								optionInput.click()
+						optionInfo = False
+						if categoryOptions:
+							optionInfo = categoryOptions.get(optionName, False)
+						if optionInfo != False: # select input, enter comment/intensity
+							if not optionInput.is_selected():
+								self.util.click_radio(optionInput)
+							self.util.set_input(radio, optionInfo.get('comment', ''))
+							self.set_intensity(radio, optionInfo.get('intensity', None))
 						else:
-							# Check if this option needs to be selected
-							newOption = newCategoryOptions.get(optionName, '')
-							# Should be {} (has option) or {'intensity': x} (has option and need to set intensity)
-							if newOption != '':
-								# Has this option. Select it and set intensity (if applicable)
-								if not optionInput.is_selected():
-									optionInput.click()
+							# De-select, clear comment, update inputs (might have hidden subquestions)
+							if optionInput.is_selected():
+								self.util.click_radio(optionInput)
+								self.util.set_input(radio, '')
+								inputs = radio.find_elements_by_tag_name('input')
 
-								# Handle setting sideEffects
-								if newOption.get('intensity', None):
-									hasIntensity = False
-
-									self.set_intensity(radioCont, newOption['intensity'])
-							else:
-								# Doesn't have option. Make sure it's not selected
-								if optionInput.is_selected():
-									optionInput.click()
-
-				else:
+				else: # Failed to find categoryName
 					count += 1
 					time.sleep(.2)
-					# raw_input('failed to find category name: ' + str(count))
 
-			# print('count: ' + str(count))
-				# raw_input('failed to find category name')
-
-		# Check if question has datepicker (added chemotherapy medications question)
-		try:
-			datepickerCont = container.find_element_by_class_name('mnth-datepicker')
-			question['datepicker'] = datepickerCont
-		except NoSuchElementException:
-			# Complex question does not have datepicker
-			pass
-
-	def set_date(self, date, question):
-		picker = datePicker.DatePicker(self.driver, question.find_element_by_class_name('new-datepicker'))
-		dateSet = False
-		count = 0
-		while not dateSet and count < 3:
-			try:
-				picker.set_date(date)
-				dateSet = True
-			except (ElementNotVisibleException, StaleElementReferenceException, ValueError, KeyError) as e:
-				time.sleep(.4)
-			count += 1
-		if count == 3:
-			print('Failed to set date')
+		if complexInfo.get('date', None):
+			print('complex question has date. Need to set it')
 
 	def set_intensity(self, container, value):
 		try:
@@ -268,7 +178,6 @@ class EditTreatmentPopup():
 			xOffset = None # Every time offset doesn't work, increase by 5 and try again
 			additionalOffset = 0
 			while str(curValue) != str(value) and additionalOffset < 50:
-				# print('additionalOffset: ' + str(additionalOffset))
 				if curValue != 1: # reset to base position
 					AC(self.driver).drag_and_drop_by_offset(sliderEl, -200, 0).perform()
 
@@ -276,26 +185,42 @@ class EditTreatmentPopup():
 				# Note: monitor and window sizes affect this.
 				if xOffset != None:
 					# First offset wasn't correct. Increment amount of offset
-					additionalOffset += 5
+					additionalOffset += 4
 				xOffset = 11*(value - 1) + additionalOffset
 				AC(self.driver).drag_and_drop_by_offset(sliderEl, xOffset, 0).perform()
 				curValue = sliderEl.get_attribute('aria-valuenow')
 
+	def set_input(self, container, value):
+		# Return if able to set value into textarea or input in container.
+		try:
+			textareaEl = container.find_element_by_tag_name('textarea')
+			textareaEl.clear()
+			textareaEl.send_keys(value)
+			return True
+		except NoSuchElementException:
+
+			try:
+				inputEl = container.find_element_by_tag_name('input')
+				if inputEl.get_attribute('type') == 'text':
+					inputEl.clear()
+					inputEl.send_keys(value)
+				return True
+			except NoSuchElementException:
+				return False
+
 	def edit_treatment(self, newInfo, popupType, action='save'):
 		# Submit info
-		raw_input('editing treatment')
 		if popupType == 'side effects':
-			self.set_complex(newInfo['complex'])
+			self.parse_complex(newInfo, self.container)
 		elif popupType == 'outcomes':
-			options = newInfo['options']
-			for key in options:
-				self.answer_question(key, options[key])
-			# self.set_option(newInfo['options'])
+			self.parse_select_all(newInfo, self.container)
 
 		# Save or cancel
 		if action == 'save':
-			self.buttons[1].click()
+			self.util.click_el(self.buttons[1])
 		elif action == 'cancel':
-			self.buttons[0].click()
+			self.util.click_el(self.buttons[0])
 		WDW(self.driver, 15).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
-		raw_input('done editing treatment')
+		return True
+
+	

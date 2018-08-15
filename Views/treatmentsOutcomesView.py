@@ -10,7 +10,7 @@ from Views import view
 
 import time
 from selenium.common.exceptions import (NoSuchElementException,
-		StaleElementReferenceException, WebDriverException)
+		StaleElementReferenceException, WebDriverException, TimeoutException)
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -35,9 +35,11 @@ class TreatmentsOutcomesView(view.View):
 				pass
 			else:
 				self.tutorial_button = self.driver.find_element_by_class_name('videobtn')
-				self.view_options_button = self.driver.find_element_by_class_name('treatment_op_btn')
-				buttonCont = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
-				self.add_treatments_button = buttonCont.find_elements_by_tag_name('button')[0]
+				try:
+					self.view_options_button = self.driver.find_element_by_class_name('treatment_op_btn')
+				except NoSuchElementException:
+					self.view_options_button = None
+				self.load_add_treatment_button()
 				self.saved_tests = self.driver.find_elements_by_class_name('table_container')
 			return self.validate(expectedValues)
 		except (NoSuchElementException, StaleElementReferenceException,
@@ -60,11 +62,15 @@ class TreatmentsOutcomesView(view.View):
 			except NoSuchElementException:
 				return 'fresh'
 
+	def load_add_treatment_button(self):
+		buttonCont = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
+		self.add_treatments_button = buttonCont.find_elements_by_tag_name('button')[0]
+
 	def validate(self, expectedValues):
 		self.failures = []
 
 		if expectedValues:
-			# print('validating expectedValues')
+			print('validating expectedValues')
 			meta = expectedValues.get('meta', None)
 			if meta:
 				for key, value in meta.iteritems():
@@ -76,16 +82,18 @@ class TreatmentsOutcomesView(view.View):
 
 			elif self.state == 'fresh':
 				# todo: Validate text on 'fresh' popup
+				print('validating fresh')
 				pass
 			else:
 				if self.add_treatments_button and self.add_treatments_button.text != 'Add Treatments':
 					self.failures.append('treatmentsOutcomesView: Unexpected text on add treatment button')
 				if self.state == 'saved':
+					print('validating saved')
 					# Verify tests have expected data
-					# raw_input('expectedValues: ' + str(expectedValues))
 					extraTypes = ['bone strengtheners', 'antibiotics', 'antifungal']
 					expectedTests = expectedValues.get('tests', {})
 					for testIndex, test in enumerate(expectedTests):
+						print('T&O: Validating test: ' + str(testIndex))
 						# Test meta data
 						testType = test['testMeta']['type']
 						numQuestions = len(test['questions'])
@@ -118,6 +126,7 @@ class TreatmentsOutcomesView(view.View):
 							self.compare_outcome(savedData['outcome'], test, testType)
 
 				elif self.state == 'normal':
+					print('validating normal')
 					pass
 
 		if len(self.failures) > 0:
@@ -172,7 +181,7 @@ class TreatmentsOutcomesView(view.View):
 						items = td.find_elements_by_class_name('treatments-lbl-span')
 						if len(items) > 0:
 							for effect in items:
-								name = effect.find_element_by_tag_name('span').text.lower()
+								name = effect.find_element_by_tag_name('span').text
 								intensity = int(effect.find_element_by_tag_name('div').text)
 								sideEffects[name] = {'intensity': intensity}
 							testData[key] = sideEffects
@@ -467,17 +476,51 @@ class TreatmentsOutcomesView(view.View):
 		clicked = False
 		count = 0
 		while not clicked and count < 5:
+			# Has issues clicking for some reason. 
 			try:
-				self.add_treatments_button.click()
+				buttonCont = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
+				button = buttonCont.find_elements_by_tag_name('button')[0]
+				button.click()
+				# self.add_treatments_button.click()
 				clicked = True
 			except WebDriverException:
 				print('could not click add treatment button: ' + str(count))
-				time.sleep(.2)
+				time.sleep(.4)
 				pass
 			count += 1
 
 		if count == 5:
 			print('failed to click add treatment button')
+
+	# def clear_alert(self):
+	# 	# Verify alert text and close. Wait for alert to disappear
+	# 	alertText = None
+	# 	alertClose = None
+
+	# 	foundAlert = False
+	# 	count = 0
+	# 	while not foundAlert and count < 5:
+	# 		try:
+	# 			# pageCont = self.driver.find_element_by_id('page-content-wrapper')
+	# 			alertCont = self.driver.find_elements_by_class_name('s-alert-wrapper')[1]
+	# 			alertClose = alertCont.find_element_by_class_name('s-alert-close')
+	# 			alertText = alertCont.text
+	# 			foundAlert = True
+	# 			break
+	# 		except NoSuchElementException:
+	# 			time.sleep(.4)
+	# 		count += 1
+
+	# 	if count == 5:
+	# 		print('Failed to find alert')
+	# 	elif alertClose and alertText:
+	# 		if alertText != 'Treatment has been updated successfully.':
+	# 			print('T&OView: unexpected alert text: ' + str(alertText))
+	# 		try:
+	# 			alertClose.click()
+	# 		except WebDriverException:
+	# 			raw_input('WTF??????')
+	# 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 's-alert-close')))
 
 ############################### Test Functions. ####################################
 
@@ -495,7 +538,6 @@ class TreatmentsOutcomesView(view.View):
 					WDW(self.driver, 10).until(lambda x: self.load({'tests': expectedInfo}, 'saved'))
 				else:
 					print('Failed to add treatment')
-
 			else:
 				# todo: handle fresh popup
 				pass
@@ -545,12 +587,15 @@ class TreatmentsOutcomesView(view.View):
 
 			if editType == 'delete':
 				self.delete_treatment()
-			elif editType == 'treatments':
-				self.edit_treatments(editInfo, expectedInfo)
-			elif editType == 'outcomes':
-				self.edit_outcomes(editInfo, expectedInfo)
-			elif editType == 'side effects':
-				self.edit_side_effects(editInfo, expectedInfo)
+			else:
+				if editType == 'treatments':
+					self.edit_treatments(editInfo, expectedInfo)
+				elif editType == 'outcomes':
+					self.edit_outcomes(editInfo, expectedInfo)
+				elif editType == 'side effects':
+					self.edit_side_effects(editInfo, expectedInfo)
+				# self.clear_alert()
+			print('Done editing: ' + str(editType))
 
 	def delete_all_treatments(self):
 		if self.state == 'saved':
@@ -568,9 +613,13 @@ class TreatmentsOutcomesView(view.View):
 				WDW(self.driver, 10).until(lambda x: self.load({'meta': {'num_treatments': num_treatments - (i+1)}}))
 
 	def view_options(self):
-		self.view_options_button.click()
-		url = self.driver.current_url
-		if '/treatment-options' not in url:
+		if self.view_options_button:
+			self.view_options_button.click()
+			url = self.driver.current_url
+			if '/treatment-options' not in url:
+				return False
+		else:
+			print('Treatment & Outcomes view does not have "View Options" button')
 			return False
 
 

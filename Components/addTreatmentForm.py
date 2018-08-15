@@ -1,5 +1,6 @@
 from Components import datePicker
 from Components import sideEffectsForm
+from utilityFuncs import UtilityFunctions
 
 import time
 from selenium.webdriver.common.keys import Keys
@@ -16,22 +17,27 @@ class AddTreatmentForm():
 
 	def __init__(self, driver):
 		self.driver = driver
+		self.util = UtilityFunctions(self.driver)
 
 	def load(self, expectedValues=None):
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
-		# Popup questions have 'editroll' class too
 		self.form_conts = self.driver.find_elements_by_class_name('editroll')
+		if not self.form_conts:
+			time.sleep(.2)
+			return False
 		self.form = self.form_conts[0]
-		self.load_questions()
-
+		self.questionConts = self.form.find_elements_by_class_name('new-ques-div')
 		self.validate(expectedValues)
+
+		self.load_questions()
 		return True
 
 	def load_questions(self):
-		self.questionConts = self.form.find_elements_by_class_name('new-ques-div')
 		self.questions = []
-		for container in self.questionConts:
-			self.questions.append(self.load_question(container))
+		self.questions.append(self.load_question(self.questionConts[0]))
+		# for i, container in enumerate(self.questionConts):
+		# 	print('Loading question: ' + str(i))
+		# 	self.questions.append(self.load_question(container))
 
 	def load_question(self, container):
 			question = {}
@@ -45,10 +51,13 @@ class AddTreatmentForm():
 				groups = container.find_elements_by_class_name('treatment-group')
 			tables = container.find_elements_by_class_name('table-striped') # Drugs Removed (Chemotherapy)
 			if categories and groups:
+				print('loading complex question')
 				question = self.load_complex_question(container, categories)
 			elif tables:
+				# print('loading table')
 				question = self.load_table(tables[0])
 			elif len(radioContainers) > 0: # Radio button question
+				# print('loading radio')
 				question = self.load_radio_question(radioContainers)
 			elif len(datepickerContainers) > 0: # Datepicker
 				question['datepicker'] = datepickerContainers[0].find_element_by_tag_name('input')
@@ -74,8 +83,7 @@ class AddTreatmentForm():
 
 				# Get option name.
 				optionName = spans[0].text
-				# Check for textarea
-				try:
+				try: # Check for textarea
 					textareaEl = radioCont.find_element_by_tag_name('textarea')
 				except NoSuchElementException:
 					textareaEl = None
@@ -106,7 +114,7 @@ class AddTreatmentForm():
 
 	def load_complex_question(self, container, categories):
 		# For questions w/ multiple sections (sideEffects, chemotherapy drugs, medications added/removed)
-		# time.sleep(1)
+		print('# categories: ' + str(len(categories)))
 		question = {}
 		for i, category in enumerate(categories):
 
@@ -119,28 +127,22 @@ class AddTreatmentForm():
 				# raw_input('count: ' + str(count))
 				try:
 					categoryEl = category.find_element_by_class_name('treatment-group')
-					categoryName = categoryEl.text.lower()
-					# raw_input('categoryname: ' + str(categoryName))
+					categoryName = categoryEl.text
+					print('categoryName: ' + str(categoryName))
 				except NoSuchElementException:
+					print('no category name')
 					categoryName = None
-
+				
 				if categoryName:
 					loadedCategoryName = True
 					radioContainers = category.find_elements_by_class_name('radio')
 					options = {}
 					for radioCont in radioContainers:
 						label = radioCont.find_element_by_tag_name('label')
-						# Will have scale if option is selected
-						try:
-							scaleCont = radioCont.find_element_by_class_name('severity-indv-sld')
-							scale = scaleCont.find_element_by_class_name('rc-slider-handle')
-							scaleVal = scale.get_attribute('aria-valuenow')
-						except NoSuchElementException:
-							scaleVal = None
 
 						# Save option name (key) and inputEl (value) in options dict
 						# radioCont will contain treatment scale or textarea (when visible)
-						optionName = label.text.lower()
+						optionName = label.text
 						# optionInput = label.find_element_by_tag_name('input')
 						options[optionName] = {
 							# 'inputEl': optionInput,
@@ -149,10 +151,22 @@ class AddTreatmentForm():
 
 						question[categoryName] = options
 				else:
+					print('no category name: ' + str(i) + ', ' + str(count))
+					if count == 0:
+						pass
+					elif count == 1:
+						pass
+					elif count == 2:
+						pass
+					elif count == 3:
+						pass
+					elif count == 4:
+						pass
 					count += 1
 					time.sleep(.2)
-					# raw_input('failed to find category name: ' + str(count))
 
+			if count == 5:
+				raw_input('failed to load category name')
 			# print('count: ' + str(count))
 				# raw_input('failed to find category name')
 
@@ -175,43 +189,42 @@ class AddTreatmentForm():
 		tableHeader = container.find_elements_by_tag_name('thead')[0]
 		th = tableHeader.find_elements_by_tag_name('th')
 		num_columns = len(th)
-
-		# keys = [] # ['treatment', 'date stopped', 'reason stopped']
-		# for headerCell in th:
-		# 	keys.append(headerCell.text.lower())
+		# print('numCols: ' + str(num_columns))
 
 		# Load data for each row
 		tableBody = container.find_elements_by_tag_name('tbody')[0]
 		tableCells = tableBody.find_elements_by_class_name('outcomeTbl')
-		count = 0;
+		column = 1;  # Keep track of which column you're in (Should be 3 columns)
 		for i, cell in enumerate(tableCells):
+			# print('cell: ' + str(i))
 			# Initialize data for new row
-			if count == 0:
+			if column == 1:
 				treatment = None
 				dateCont = None
 				reasonCont = None
 			remainder = i % num_columns
+			# print('reminder: ' + str(remainder))
 
-			# Pull data from current cell then increment count
-			if remainder == 0:
-				treatment = cell.text.lower()
+			# Col1: Treatment Name
+			if remainder == 0: 
+				treatment = cell.text
 
+			# Col2: Date stopped
 			elif remainder == 1:
 				try:
-					dateCont = cell.find_element_by_class_name('mnth-datepicker')
+					dateCont = cell.find_element_by_class_name('date-select')
 				except NoSuchElementException:
 					print('AddTreatmentForm: Could not find datepicker cont in expected table cell')
 
+			# Col3 Reason stopped
 			elif remainder == 2:
 				try:
 					reasonCont = cell.find_element_by_class_name('Select-control')
 				except NoSuchElementException:
 					print('AddTreatmentForm: Could not find reason cont in expected table cell')
 
-			count += 1
-
 			# Should have info for all 3 columns. Add data to tableInfo and reset count
-			if count == num_columns:
+			if column == num_columns:
 				if treatment == None:
 					print('Row did not find treatment')
 				elif dateCont == None:
@@ -219,28 +232,32 @@ class AddTreatmentForm():
 				elif reasonCont == None:
 					print('Row did not have reason')
 				else:
-					count = 0
+					column = 1
 					tableInfo[treatment] = {
 						'date stopped': dateCont,
 						'reason stopped': reasonCont,
 					}
+			else:
+				column += 1
 
 		return tableInfo
 
 	def load_popup_question(self, container):
-		hasCategories = False
+		loaded = False
 		count = 0
 		categories = []
-		while not hasCategories and count < 5:
+		while not loaded and count < 5:
 			categories = container.find_elements_by_class_name('new-treatment-dynamic')
 			if not categories:
 				# Side Effects popup doesn't have other class
 				categories = container.find_elements_by_class_name('col-md-6')
 
 			if len(categories) > 0:
-				print('# categories: ' + str(len(categories)))
+				print('loading popup question')
 				self.popup_question = self.load_complex_question(container, categories)
-				hasCategories = True
+				if self.popup_question:
+					# Make sure it loads something useful. Sometimes load_complex_question() returns {}
+					loaded = True
 			count += 1
 			time.sleep(.4)
 
@@ -269,19 +286,18 @@ class AddTreatmentForm():
 
 	def add_treatment(self, treatmentInfo, formAction='save'):
 		questions = treatmentInfo['questions']
-		# sideEffects = treatmentInfo.get('sideEffects', None)
 
 		lastQuestionIndex = len(questions) - 1
 		# questions
 		for i, question in enumerate(questions):
-			print('question[' + str(i) + ']')
+			print('answering question[' + str(i) + ']')
 			qType = question['type']
 			questionActions = question.get('actions', None)
 			if qType == 'date':
 				# Container should always be 1st (latest questions are on top of page)
 				self.set_date(self.questionConts[0], question['text'])
 			elif qType == 'input':
-				self.set_input(self.questionConts[0], question['text'])
+				self.util.set_input(self.questionConts[0], question['text'])
 			elif qType == 'table':
 				self.set_table(question)
 			else:
@@ -306,14 +322,14 @@ class AddTreatmentForm():
 			# Don't need to pass in actions for 'complex' questions. Assumes they all have continue action
 			if questionActions and questionActions == 'continue':
 				try:
-					self.questionConts[0].find_element_by_class_name('green-hvr-bounce-to-top').click()
+					continue_button = self.questionConts[0].find_element_by_class_name('green-hvr-bounce-to-top')
 				except NoSuchElementException:
 					print('question[' + str(i) + '] did not have continue button')
+				self.util.click_el(continue_button)
 
-			# Reload if this isn't the last question
+			# Reload if this isn't the last question. Verify has 1 extra question container
 			if i != lastQuestionIndex:
-				# Should have i+1 questions
-				WDW(self.driver, 10).until(lambda x: self.load({'meta': {'num_questions': i+1}}))
+				WDW(self.driver, 10).until(lambda x: self.load({'meta': {'num_questions': i+2}}))
 		return True
 
 	def load_and_answer_popup(self, options):
@@ -326,12 +342,13 @@ class AddTreatmentForm():
 			if len(self.form_conts) == 2:
 				self.load_popup_question(self.form_conts[1])
 				loadedPopup = True
+			time.sleep(.2)
 			count += 1
 
-
-		# Answer popup
-		# date = question.get('date', None)
-		self.answer_popup(options)
+		if loadedPopup:
+			self.answer_popup(options)
+		else:
+			raw_input('no popup?')
 
 	def set_date(self, dateCont, date):
 		# Assumes dateCont has both month/year dropdowns in it
@@ -349,26 +366,11 @@ class AddTreatmentForm():
 			print('Failed to set date')
 			return False
 
-	def set_input(self, container, info):
-		inputEl = None
-		try:
-			inputEl = container.find_element_by_tag_name('textarea')
-		except NoSuchElementException:
-			print('AddTreatment: could not find textarea')
-			try:
-				inputEl = container.find_element_by_tag_name('input')
-			except NoSuchElementException:
-				print('AddTreatment: could not find input')
-
-		if inputEl:
-			inputEl.clear()
-			inputEl.send_keys(info)
-		else:
-			print('unable to set input')
-
 	def answer_question(self, optionName, optionInfo, subOptionName=None):
 		comment = optionInfo.get('comment', None)
 		secondaryOptions = optionInfo.get('options', None)
+		if secondaryOptions:
+			print('has secondaryOptions: ' + str(secondaryOptions))
 
 		# Get loaded info for given option/subOption
 		try:
@@ -378,7 +380,12 @@ class AddTreatmentForm():
 			print('question: ' + str(self.questions[0]))
 			raise KeyError()
 		if subOptionName:
-			loadedQuestion = loadedQuestion['subquestions'][subOptionName]
+			try:
+				loadedQuestion = loadedQuestion['subquestions'][subOptionName]
+			except TypeError:
+				print('subOptionName: ' + str(subOptionName))
+				print('loadedQuestion: ' + str(loadedQuestion))
+				raw_input('wtf?')
 
 		# Grab input element out of loadedQuestion for option/subOption
 		inputEl = loadedQuestion
@@ -389,7 +396,7 @@ class AddTreatmentForm():
 
 		# Make sure option is selected
 		if not inputEl.is_selected():
-			inputEl.click()
+			self.util.click_radio(inputEl)
 			if comment or secondaryOptions:
 				self.load()
 
@@ -406,13 +413,16 @@ class AddTreatmentForm():
 				self.answer_question(optionName, secondaryOptions[secondaryOption], secondaryOption)
 
 	def answer_complex(self, questionOptions, date=None):
+		print('answering complex')
 		# For questions w/ categories and suboptions: i.e SideEffects or Chemotherapy treatment options
 
 		# Date picker is probably already focused. Need to set that before selecting options
 		if date:
+			print('setting date: ' + str(date))
 			self.set_date(self.questionConts[0], date)
 
 		for categoryName, options in questionOptions.iteritems():
+			print('setting category: ' + str(categoryName))
 			try:
 				loadedInfo = self.questions[0][categoryName]
 			except KeyError:
@@ -423,9 +433,10 @@ class AddTreatmentForm():
 
 		# Assuming all complex questions have 'continue' button
 		try:
-			self.questionConts[0].find_element_by_class_name('green-hvr-bounce-to-top').click()
+			continue_button = self.questionConts[0].find_element_by_class_name('green-hvr-bounce-to-top')
 		except NoSuchElementException:
 			print('Complex question did not have continue button')
+		self.util.click_el(continue_button)
 
 	def answer_popup(self, questionOptions, date=None):
 		# Should be same as answer complex. Just use self.popup_question instead of self.questions[0]
@@ -434,21 +445,25 @@ class AddTreatmentForm():
 		if date:
 			self.set_date(self.form_conts[1], date)
 
-		# raw_input('popupInfo: ' + str(self.popup_question))
 		for categoryName, options in questionOptions.iteritems():
-			loadedInfo = self.popup_question[categoryName]
+			try:
+				loadedInfo = self.popup_question[categoryName]
+			except KeyError:
+				raw_input('KeyError: loadedInfo = ' + str(self.popup_question))
+				raw_input('catName: ' + str(categoryName))
 			self.set_category(options, loadedInfo)
 
 		# Assuming all popup questions have 'continue' button
 		try:
-			self.form_conts[1].find_element_by_class_name('green-hvr-bounce-to-top').click()
+			continue_button = self.form_conts[1].find_element_by_class_name('green-hvr-bounce-to-top')
 		except NoSuchElementException:
 			print('Popup question did not have continue button')
+		self.util.click_el(continue_button)
 
 	def set_category(self, categoryOptions, loadedCategory):
 		# Set values in sectionInfo
 		for suboption, value in categoryOptions.iteritems():
-			suboption = suboption.lower()
+			suboption = suboption
 			# Grab inputEl and make sure it's selected
 			try:
 				inputEl = loadedCategory[suboption]['container'].find_element_by_tag_name('input')
@@ -456,11 +471,12 @@ class AddTreatmentForm():
 			except KeyError:
 				print('failed to load sideEffect named: ' + str(suboption))
 			if not inputEl.is_selected():
-				try:
-					inputEl.click()
-				except WebDriverException:
-					print('cannot click on ' + str(suboption))
-					raise WebDriverException('AddTreatmentForm: Failed to set category. Wrong question type?')
+				self.util.click_radio(inputEl)
+				# try:
+				# 	inputEl.click
+				# except WebDriverException:
+				# 	print('cannot click on ' + str(suboption))
+				# 	raise WebDriverException('AddTreatmentForm: Failed to set category. Wrong question type?')
 
 			# Type comment, set intensity, etc
 			if type(value) is dict:
@@ -500,7 +516,7 @@ class AddTreatmentForm():
 				# Note: monitor and window sizes affect this.
 				if xOffset != None:
 					# First offset wasn't correct. Increment amount of offset
-					additionalOffset += 5
+					additionalOffset += 4
 				xOffset = 11*(value - 1) + additionalOffset
 				AC(self.driver).drag_and_drop_by_offset(sliderEl, xOffset, 0).perform()
 				curValue = sliderEl.get_attribute('aria-valuenow')
@@ -508,8 +524,10 @@ class AddTreatmentForm():
 	def set_table(self, questionInfo):
 		# Used for Chemotherapy drugs REMOVED question
 		loadedInfo = self.questions[0]
+		# raw_input('loadedInfo: ' + str(loadedInfo))
 
 		options = questionInfo['options']
+		# raw_input('options: ' + str(options))
 		# Options should look something like...
 		# 'dexamethasone': {
 		# 	'date stopped': '03/2018',
@@ -531,20 +549,18 @@ class AddTreatmentForm():
 				except KeyError:
 					print('loadedInfo: ' + str(loadedInfo))
 					raise KeyError('optionName: ' + str(optionName))
-				inputEl = dateCont.find_element_by_tag_name('input')
-				inputEl.click()
 				self.set_date(dateCont, date)
 
 			if reason:
 				reasonCont = loadedInfo[optionName]['reason stopped']
 				self.set_dropdown(reasonCont, reason)
 
-
-		# Assuming all complex questions have 'continue' button
+		# Assuming all table questions have 'continue' button
 		try:
-			self.questionConts[0].find_element_by_class_name('green-hvr-bounce-to-top').click()
+			continue_button = self.questionConts[0].find_element_by_class_name('green-hvr-bounce-to-top')
 		except NoSuchElementException:
 			print('Complex question did not have continue button')
+		self.util.click_el(continue_button)
 
 	def set_dropdown(self, container, value):
 		# Figure out if you need to click 'Select-value-label' or 'Select-placeholder' element
@@ -559,9 +575,9 @@ class AddTreatmentForm():
 
 		# click it
 		if dropdown_preSet:
-			dropdown_value.click()
+			self.util.click_el(dropdown_value)
 		else:
-			dropdown_placeholder.click()
+			self.util.click_el(dropdown_placeholder)
 
 		# load options in dropdown
 		options = {}
@@ -570,18 +586,20 @@ class AddTreatmentForm():
 			divs = menu.find_elements_by_tag_name('div')
 			for i, div in enumerate(divs):
 				if i != 0:
-					options[div.text.lower()] = divs[i]
+					options[div.text] = divs[i]
 		except NoSuchElementException:
 			print('Unable to find dropdown items for first diagnosis')
 
 		# click option
 		try:
-			option = options[value.lower()]
-			option.click()
+			option = options[value]
+			self.util.click_el(option)
 		except (IndexError, KeyError) as e:
 			print('invalid index: ' + value)
 			for option in options:
 				print(option)
+
+	
 
 
 
