@@ -31,10 +31,10 @@ class EditTreatmentPopup():
 		# Basic validation
 		if len(self.buttons) != 2:
 			self.failures.append('editTreatmentPopup: Expected 2 buttons, loaded ' + str(len(self.buttons)))
-		if self.buttons[0].text != 'CANCEL':
-			self.failures.append('editTreatmentPopup: Unexpected text on cancel button: ' + self.buttons[0].text)
-		if self.buttons[1].text != 'SAVE':
-			self.failures.append('editTreatmentPopup: Unexpected text on save button: ' + self.buttons[1].text)
+		if self.util.get_text(self.buttons[0]) != 'CANCEL':
+			self.failures.append('editTreatmentPopup: Unexpected text on cancel button: ' + self.util.get_text(self.buttons[0]))
+		if self.util.get_text(self.buttons[1]) != 'SAVE':
+			self.failures.append('editTreatmentPopup: Unexpected text on save button: ' + self.util.get_text(self.buttons[1]))
 
 		if expectedValues:
 			print('editTreatmentPopup: Need to validate expectedValues')
@@ -48,6 +48,7 @@ class EditTreatmentPopup():
 	def parse_select_all(self, questionInfo, questionCont):
 		done = False
 		count = 0
+		raw_input('questionInfo: ' + str(questionInfo))
 		while not done and count < 5:
 			try:
 				# Select options in specified in optionInfo
@@ -64,15 +65,17 @@ class EditTreatmentPopup():
 						elif len(spans) == 0:
 							print('EditTreatmentForm: radio option has no spanElements?')
 
-
-						optionName = spans[0].text
-						optionName = optionName.replace("'", '')
+						optionName = self.util.get_text(spans[0])
+						print('optionName: ' + optionName)
 						optionInput = inputs[0]
 						optionInfo = questionInfo.get(optionName, False)
+						raw_input('optionInfo: ' + str(optionInfo))
 						subOptions = False
 						if optionInfo != False: # select input, enter comment, check for subquestions
 							if not optionInput.is_selected():
+								raw_input('about to click option')
 								self.util.click_radio(optionInput)
+								raw_input('clicked option?')
 							self.util.set_input(radio, optionInfo.get('comment', ''))
 
 							# Check for suboptions or select-all
@@ -82,7 +85,9 @@ class EditTreatmentPopup():
 						else:
 							# De-select, clear comment, update inputs (might have hidden subquestions)
 							if optionInput.is_selected():
+								raw_input('de-selecting option')
 								self.util.click_radio(optionInput)
+								raw_input('de-selected?')
 								self.util.set_input(radio, '')
 								inputs = radio.find_elements_by_tag_name('input')
 
@@ -128,7 +133,7 @@ class EditTreatmentPopup():
 			count = 0
 			while not loadedCategoryName and count < 5:
 				try:
-					categoryName = category.find_element_by_class_name('treatment-group').text
+					categoryName = self.util.get_text(category.find_element_by_class_name('treatment-group'))
 					loadedCategoryName = True
 				except NoSuchElementException:
 					categoryName = None
@@ -142,7 +147,7 @@ class EditTreatmentPopup():
 						labels = radio.find_elements_by_tag_name('label')
 						label = labels[0]							
 
-						optionName = label.text
+						optionName = self.util.get_text(label)
 						optionInput = label.find_element_by_tag_name('input')
 						optionInfo = False
 						if categoryOptions:
@@ -211,9 +216,9 @@ class EditTreatmentPopup():
 	def edit_treatment(self, newInfo, popupType, action='save'):
 		# Submit info
 		if popupType == 'side effects':
-			self.parse_complex(newInfo, self.container)
+			self.parse_complex(newInfo['options'], self.container)
 		elif popupType == 'outcomes':
-			self.parse_select_all(newInfo, self.container)
+			self.parse_select_all(newInfo['options'], self.container)
 
 		# Save or cancel
 		if action == 'save':

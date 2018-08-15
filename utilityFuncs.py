@@ -36,7 +36,6 @@ class UtilityFunctions():
 	def find_input(self, element):
 		inputEl = None
 		tag_name = element.tag_name
-		print('tag_name: ' + str(tag_name))
 		if tag_name == 'input' or tag_name == 'textarea':
 			inputEl = element
 		else:
@@ -48,7 +47,7 @@ class UtilityFunctions():
 				try:
 					inputEl = element.find_element_by_tag_name('input')
 					if inputEl.get_attribute('type') != 'text':
-						print('SetInput: Found input, but type is not text (may not be an issue)')
+						print('FindInput: Found input, but type is not text (may not be an issue)')
 				except NoSuchElementException:
 					# print('SetInput: no input')
 					pass
@@ -108,14 +107,20 @@ class UtilityFunctions():
 
 	def get_text(self, element):
 		try:
-			elementText = element.text.lower()
-			text = elementText.strip()
+			text = element.text
+			text = text.strip()
+			# remove single quotes, apostrophes, etc
+			text = text.replace(u"\u2018", '').replace(u"\u2019", '').replace("'", '')
+
+			# Check for extra spaces (picking up tooltip text)
+			if '   ' in text:
+				index = text.find('   ')
+				text = text[:index]
+
+			# Option #2: Get innerHTML of element and get first bit of react text -->text<!--
+				
 		except NoSuchElementException:
 			print('NoSuchElementException: no element or incorrect element passed in')
 			return False
 		return text
-
-
-
-
 

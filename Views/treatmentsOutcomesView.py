@@ -7,6 +7,7 @@ from Components import header
 from Components import popUpForm
 from Components import newAccountPopUpForm
 from Views import view
+from utilityFuncs import UtilityFunctions
 
 import time
 from selenium.common.exceptions import (NoSuchElementException,
@@ -21,6 +22,7 @@ class TreatmentsOutcomesView(view.View):
 	def load(self, expectedValues=None, expectedState=None):
 		try:
 			WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+			self.util = UtilityFunctions(self.driver)
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 			self.state = self.load_state()
@@ -480,8 +482,7 @@ class TreatmentsOutcomesView(view.View):
 			try:
 				buttonCont = self.driver.find_element_by_class_name('custom1-add-treatment-btn')
 				button = buttonCont.find_elements_by_tag_name('button')[0]
-				button.click()
-				# self.add_treatments_button.click()
+				self.util.click_el(button)
 				clicked = True
 			except WebDriverException:
 				print('could not click add treatment button: ' + str(count))
@@ -491,36 +492,6 @@ class TreatmentsOutcomesView(view.View):
 
 		if count == 5:
 			print('failed to click add treatment button')
-
-	# def clear_alert(self):
-	# 	# Verify alert text and close. Wait for alert to disappear
-	# 	alertText = None
-	# 	alertClose = None
-
-	# 	foundAlert = False
-	# 	count = 0
-	# 	while not foundAlert and count < 5:
-	# 		try:
-	# 			# pageCont = self.driver.find_element_by_id('page-content-wrapper')
-	# 			alertCont = self.driver.find_elements_by_class_name('s-alert-wrapper')[1]
-	# 			alertClose = alertCont.find_element_by_class_name('s-alert-close')
-	# 			alertText = alertCont.text
-	# 			foundAlert = True
-	# 			break
-	# 		except NoSuchElementException:
-	# 			time.sleep(.4)
-	# 		count += 1
-
-	# 	if count == 5:
-	# 		print('Failed to find alert')
-	# 	elif alertClose and alertText:
-	# 		if alertText != 'Treatment has been updated successfully.':
-	# 			print('T&OView: unexpected alert text: ' + str(alertText))
-	# 		try:
-	# 			alertClose.click()
-	# 		except WebDriverException:
-	# 			raw_input('WTF??????')
-	# 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 's-alert-close')))
 
 ############################### Test Functions. ####################################
 
@@ -580,7 +551,7 @@ class TreatmentsOutcomesView(view.View):
 
 			try:
 				action = actions[editType]
-				action.click()
+				self.util.click_el(action)
 			except KeyError:
 				print(str(editType) + ' Is not a valid treatment option')
 				raise KeyError('Not a valid treatment option')
@@ -604,7 +575,7 @@ class TreatmentsOutcomesView(view.View):
 				print('deleting treatment #' + str(i))
 				actions = self.load_actions(self.saved_tests[0])
 				try:
-					actions['delete'].click()
+					self.util.click_el(actions['delete'])
 				except KeyError:
 					print('"delete" Is not a valid treatment option')
 					raise KeyError('Not a valid treatment option')
@@ -614,7 +585,7 @@ class TreatmentsOutcomesView(view.View):
 
 	def view_options(self):
 		if self.view_options_button:
-			self.view_options_button.click()
+			self.util.click_el(self.view_options_button)
 			url = self.driver.current_url
 			if '/treatment-options' not in url:
 				return False

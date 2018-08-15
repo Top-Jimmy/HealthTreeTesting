@@ -30,7 +30,6 @@ class EditTreatmentForm():
 	def validate(self, expectedValues):
 		if expectedValues:
 			pass
-
 		return True
 
 	def validate_form(self, expectedInfo):
@@ -214,8 +213,8 @@ class EditTreatmentForm():
 							# De-select, clear comment, update inputs (might have hidden subquestions)
 							if optionInput.is_selected():
 								self.util.click_radio(optionInput)
-								self.util.set_input(radio, '')
-								inputs = radio.find_elements_by_tag_name('input')
+								# self.util.set_input(radio, '') # Comment should disappear when option de-selected
+								inputs = radio.find_elements_by_tag_name('input') # ?
 
 				else: # Failed to find categoryName
 					count += 1

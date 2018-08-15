@@ -18,7 +18,7 @@ import form_info
 # 	test_antifungal: 									Question[4] still taking antifungal?
 # TestStemCell
 # 	test_basic
-@unittest.skip('Dont need to run these')
+# @unittest.skip('Dont need to run these')
 class TestChemotherapy(unittest.TestCase):
 
 	def setUp(self):
@@ -342,7 +342,7 @@ class TestChemotherapy(unittest.TestCase):
 		toView.edit_treatment(1, 'delete', {'meta': {'num_treatments': 1}})
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
-@unittest.skip('Dont need to run these')
+# @unittest.skip('Dont need to run these')
 class TestClinical(unittest.TestCase):
 
 	def setUp(self):
@@ -413,7 +413,7 @@ class TestClinical(unittest.TestCase):
 			],
 		}
 		self.assertTrue(toView.add_treatment(treatment1))
-		# raw_input('added 1')
+		raw_input('added 1')
 		editValues = [
 			{'num_questions': 8},
 			{'index': 1, 'date': '10/2015'},
@@ -473,6 +473,7 @@ class TestClinical(unittest.TestCase):
 			],
 		}
 		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
+		raw_input('edited 1')
 
 		new_outcome = {'My myeloma is now undetectable': {
 			'type': 'single',
@@ -484,7 +485,7 @@ class TestClinical(unittest.TestCase):
 		edited_outcome = {'options': new_outcome}
 		treatment1Edited['questions'][-2]['options'] = new_outcome
 		toView.edit_treatment(0, 'outcomes', treatment1Edited, edited_outcome)
-
+		raw_input('edited outcomes')
 		# Edit Side Effects
 		new_effects = {
 			'Renal/Urinary System': {
@@ -495,6 +496,7 @@ class TestClinical(unittest.TestCase):
 		}
 		treatment1Edited['questions'][-1]['options'] = new_effects
 		toView.edit_treatment(0, 'side effects', treatment1Edited, new_effects)
+		raw_input('edited side effects')
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 		# Still on trial
@@ -544,7 +546,7 @@ class TestClinical(unittest.TestCase):
 		self.assertTrue(toView.add_treatment(treatment2))
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
-@unittest.skip('wont pass')
+# @unittest.skip('wont pass')
 class TestRadiation(unittest.TestCase):
 
 	def setUp(self):
@@ -724,8 +726,8 @@ class TestRadiation(unittest.TestCase):
 		# Reset: Delete treatments
 		self.assertTrue(toView.add_treatment(radiation2))
 		toView.delete_all_treatments()
-		
-@unittest.skip('wont pass')
+
+# @unittest.skip('wont pass')
 class TestExtra(unittest.TestCase):
 	# Tests treatments for: Bone strengtheners, antibiotics, antifungals
 
@@ -1120,7 +1122,7 @@ class TestExtra(unittest.TestCase):
 		toView.view_options()
 		self.assertTrue(treatmentOptionsView.on())
 
-@unittest.skip('wont pass')
+# @unittest.skip('wont pass')
 class TestStemCell(unittest.TestCase):
 	# 1. Treatment Type
 	# 2. Stemcell Type
@@ -1267,8 +1269,6 @@ class TestStemCell(unittest.TestCase):
 		    		},
 		    	}
 				},
-
-
 				{'name': 'transplant start date',								# 9. Transplant Start date
 					'type': 'date',
 					'text': '01/2018'
