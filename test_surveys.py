@@ -133,5 +133,36 @@ class TestSurveys(unittest.TestCase):
 		self.assertTrue(surveysView.on())
 		surveysView.mrd_survey(surveyInfo, 'cancel')
 
+		self.assertTrue(surveysView.on())
+
+	def test_vaccinations_survey(self):
+		'''Surveys : Surveys . test_vaccinations_survey'''
+		homeView = self.andrew.homeView
+		aboutMeView = self.andrew.aboutMeView
+		surveysView = self.andrew.surveysView
+
+		surveyInfo = [
+			{'option': 'other', 'secondary': {'text': 'tetinus'}},
+			{'option': 'i have not received the influence vaccine any year in the last three years'},
+			{'option': 'no'},
+			{'option': 'no, i was not treated with anti-viral drugs'},
+			{'option': 'no'},
+			{'option': 'no'}
+		]
+
+		self.assertTrue(homeView.go())
+		self.assertTrue(homeView.login(self.andrew.credentials))
+		self.assertTrue(aboutMeView.on())
+
+		aboutMeView.menu.go_to('Surveys')
+
+		self.assertTrue(surveysView.on())
+		surveysView.vaccinations_survey(surveyInfo, 'cancel')
+
+		self.assertTrue(surveysView.on())
+
+
+
+
 
 

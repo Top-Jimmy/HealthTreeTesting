@@ -21,7 +21,7 @@ class TestAboutMe(unittest.TestCase):
 		self.assertTrue(homeView.login(self.andrew.credentials))
 
 		self.assertTrue(aboutMeView.on())
-		aboutMeView.menu.go_to('Myeloma Diagnosis')
+		self.assertTrue(aboutMeView.menu.go_to('Myeloma Diagnosis'))
 
 	def test_validate(self):
 		'''test_aboutMe.py:TestAboutMe.test_validate '''

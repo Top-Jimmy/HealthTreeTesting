@@ -12,6 +12,7 @@ from Views import view
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import time
 
 class SurveysView(view.View):
 	post_url = 'surveys'
@@ -75,6 +76,14 @@ class SurveysView(view.View):
 		self.mrdTestingSurveyForm = mrdTestingSurveyForm.MrdTestingSurveyForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.mrdTestingSurveyForm.load())
 		self.mrdTestingSurveyForm.submit(mrdInfo, action)
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+	def vaccinations_survey(self, vaccinationsInfo, action):
+		self.surveys[0]['vaccinations you received after myeloma treatment'].click()
+		self.vaccinationsSurveyForm = vaccinationsSurveyForm.VaccinationsSurveyForm(self.driver)
+		WDW(self.driver, 10).until(lambda x: self.vaccinationsSurveyForm.load())
+		self.vaccinationsSurveyForm.submit(vaccinationsInfo, action)
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 

@@ -24,7 +24,8 @@ class Menu():
 			if 'Surveys' in option.text:
 				self.menu_options['Surveys'] = self.list_items[i]
 			else:
-				self.menu_options[option.text] = self.list_items[i]
+				spans = option.find_element_by_tag_name('span')
+				self.menu_options[spans.text] = self.list_items[i]
 		return True
 
 	def calculate_menu_type(self):
@@ -35,7 +36,7 @@ class Menu():
 
 	def go_to(self, destination):
 		"""Go to given page in menu. Destination should match text in menu."""
-		option = self.menu_options[destination]
+		option = self.get_destination(destination)
 		if option:
 			self.driver.execute_script('arguments[0].scrollIntoView();', option)
 			try:
@@ -46,7 +47,23 @@ class Menu():
 				self.go_to(destination)
 		else:
 			print('Menu: Unexpected destination: ' + destination)
+			# print('menuoptions: ' + str(self.menu_options))
 			return False
+		return True
+
+	def get_destination(self, destination):
+		option = None
+		found = False
+		count = 0
+		while not found and count < 5:
+			option = self.menu_options.get(destination, None)
+			if option:
+				found = True
+			else:
+				time.sleep(.4)
+			count += 1
+
+		return option
 
 	def selected_option(self):
 		self.menu_items = []

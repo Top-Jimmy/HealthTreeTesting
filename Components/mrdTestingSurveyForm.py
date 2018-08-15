@@ -105,7 +105,6 @@ class MrdTestingSurveyForm():
 				if not inputEl.is_selected():
 					print('Clicked input, but it is not selected')
 					return False
-				raw_input('input clicked')
 
 			if textarea:
 				textarea.send_keys(question.get('textInput', None))

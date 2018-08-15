@@ -18,9 +18,9 @@ class AuthHeader():
 
 	def validate(self):
 		failures = []
-		if self.logout_button.text != 'Logout':
+		if self.logout_button.text.lower() != 'logout':
 			failures.append('AuthHeader: Unexpected logout button text: "' + self.logout_button.text + '"')
-		if self.feedback_button.text != 'FEEDBACK':
+		if self.feedback_button.text.lower() != 'feedback':
 			failures.append('AuthHeader: Unexpected feedback button text: "' + self.feedback_button.text + '"')
 
 		if len(failures) > 0:
