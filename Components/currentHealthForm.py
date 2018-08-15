@@ -5,11 +5,13 @@ from selenium.common.exceptions import (NoSuchElementException,
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from utilityFuncs import UtilityFunctions
 
 class CurrentHealthForm():
 
 	def __init__(self, driver, expectedValues=None):
 		self.driver = driver
+		self.util = UtilityFunctions(self.driver)
 		self.load(expectedValues)
 
 	def load(self, expectedValues):
@@ -34,7 +36,7 @@ class CurrentHealthForm():
 	def load_question(self, container):
 		# Load question title (label), value, and any secondary questions and their values
 		labels = container.find_elements_by_tag_name('label')
-		question_label = labels[0].text
+		question_label = self.util.get_text(labels[0])
 		value = None
 		secondaryQuestions = []
 
@@ -51,7 +53,7 @@ class CurrentHealthForm():
 			secondary_questions = container.find_elements_by_class_name('form-check')
 
 			for secondary_question in secondary_questions:
-				secondary_label = secondary_question.text
+				secondary_label = self.util.get_text(secondary_question)
 				secondary_input = secondary_question.find_element_by_tag_name('input')
 
 				selected = secondary_input.is_selected()
@@ -131,7 +133,7 @@ class CurrentHealthForm():
 	def answer_question(self, index, questionInfo):
 		container = self.question_elements[index]
 		labels = container.find_elements_by_tag_name('label')
-		question_label = labels[0].text
+		question_label = self.util.get_text(labels[0])
 		labelIndex = {'yes': 1, 'no': 2, 'dont know': 3}
 
 		# If right question, set value
@@ -153,7 +155,7 @@ class CurrentHealthForm():
 
 				# Set value for each secondary question
 				for i, question in enumerate(secondary_questions):
-					question_name = question.text
+					question_name = self.util.get_text(question)
 					input_el = question.find_element_by_tag_name('input')
 
 					if input_el.is_selected() != expectedSecondaryInfo[i][question_name]:
@@ -169,19 +171,19 @@ class CurrentHealthForm():
 	def tooltip(self):
 		p = self.form.find_elements_by_class_name('tooltip-p')
 		self.blood_pressure_tooltip.click()
-		if p[0].text != 'Blood pressure is the pressure exerted on walls of the blood vessels by circulating blood. Along with body temperature, respiratory rate, and pulse rate, blood pressure is one of the four main vital signs monitored by medical professionals.':
-			print('tooltip not clicked correctly:' + str(p[0].text))
+		if self.util.get_text(p[0]) != 'blood pressure is the pressure exerted on walls of the blood vessels by circulating blood. along with body temperature, respiratory rate, and pulse rate, blood pressure is one of the four main vital signs monitored by medical professionals.':
+			print('tooltip not clicked correctly:' + str(self.util.get_text(p[0])))
 			raw_input('first tooltip worked?')
 			return False
 
 		self.blood_clot_tooltip.click()
-		if p[1].text != 'Deep vein thrombosis (DVT) occurs when a blood clot (thrombus) forms in one or more of the deep veins in your body, usually in your legs. Deep vein thrombosis can cause leg pain or swelling, but also can occur with no symptoms.':
-			print('tooltip not clicked correctly:' + str(p[1].text))
+		if self.util.get_text(p[1]) != 'deep vein thrombosis (dvt) occurs when a blood clot (thrombus) forms in one or more of the deep veins in your body, usually in your legs. deep vein thrombosis can cause leg pain or swelling, but also can occur with no symptoms.':
+			print('tooltip not clicked correctly:' + str(self.util.get_text(p[1])))
 			return False
 			
 		self.neuropathy_tooltip.click()
-		if p[2].text != 'Neuropathy is gradual onset of numbness, prickling or tingling in your feet or hands, which can spread upward into your legs and arms.':
-			print('tooltip not clicked correctly:' + str(p[2].text))
+		if self.util.get_text(p[2]) != 'neuropathy is gradual onset of numbness, prickling or tingling in your feet or hands, which can spread upward into your legs and arms.':
+			print('tooltip not clicked correctly:' + str(self.util.get_text(p[2])))
 			return False
 		return True
 

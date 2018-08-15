@@ -11,28 +11,28 @@ class TestCurrentHealth(unittest.TestCase):
 		self.andrew = profiles.Profile(self.driver, 'andrew')
 
 		self.defaultQuestions =  [
-			{'name': 'Heart Conditions', 'value': 'dont know',
+			{'name': 'heart conditions', 'value': 'dont know',
 				'secondaryQuestions': [],
 			},
-			{'name': 'Lung Conditions', 'value': 'dont know',
+			{'name': 'lung conditions', 'value': 'dont know',
 				'secondaryQuestions': [],
 			},
-			{'name': 'Kidney Conditions', 'value': 'dont know',
+			{'name': 'kidney conditions', 'value': 'dont know',
 				'secondaryQuestions': [],
 			},
-			{'name': 'Diabetes Conditions', 'value': 'dont know',
+			{'name': 'diabetes conditions', 'value': 'dont know',
 				'secondaryQuestions': [],
 			},
-			{'name': 'Blood Pressure Conditions', 'value': 'dont know',
+			{'name': 'blood pressure conditions', 'value': 'dont know',
 				'secondaryQuestions': [],
 			},
-			{'name': 'Blood Clot (DVT) Conditions', 'value': 'dont know',
+			{'name': 'blood clot (dvt) conditions', 'value': 'dont know',
 				'secondaryQuestions': [],
 			},
-			{'name': 'Neuropathy Conditions', 'value': 'dont know',
+			{'name': 'neuropathy conditions', 'value': 'dont know',
 				'secondaryQuestions': [],
 			},
-			{'name': 'Other Health Conditions', 'value': 'dont know',
+			{'name': 'other health conditions', 'value': 'dont know',
 				'secondaryQuestions': [],
 			},
 		]
@@ -143,7 +143,7 @@ class TestCurrentHealth(unittest.TestCase):
 
 		# Update a few secondary questions and verify form has expected changes
 		heartConditions = {
-			'name': 'Heart Conditions',
+			'name': 'heart conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'Heart disease but not heart failure': False},
@@ -152,7 +152,7 @@ class TestCurrentHealth(unittest.TestCase):
 			]
 		}
 		lungConditions = {
-			'name': 'Lung Conditions',
+			'name': 'lung conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'Known lung disease and difficulty breathing when exercising': False},
@@ -160,7 +160,7 @@ class TestCurrentHealth(unittest.TestCase):
 			]
 		}
 		kidneyConditions = {
-			'name': 'Kidney Conditions',
+			'name': 'kidney conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'Mild kidney problems (renal impairment)': True},
@@ -210,7 +210,7 @@ class TestCurrentHealth(unittest.TestCase):
 		}
 
 		heartConditions = {
-			'name': 'Heart Conditions',
+			'name': 'heart conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'Heart disease but not heart failure': False},
@@ -219,7 +219,7 @@ class TestCurrentHealth(unittest.TestCase):
 			]
 		}
 		lungConditions = {
-			'name': 'Lung Conditions',
+			'name': 'lung conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'Known lung disease and difficulty breathing when exercising': True},
@@ -227,7 +227,7 @@ class TestCurrentHealth(unittest.TestCase):
 			]
 		}
 		kidneyConditions = {
-			'name': 'Kidney Conditions',
+			'name': 'kidney conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'Mild kidney problems (renal impairment)': True},
@@ -235,7 +235,7 @@ class TestCurrentHealth(unittest.TestCase):
 			]
 		}
 		diabetesConditions = {
-			'name': 'Diabetes Conditions',
+			'name': 'diabetes conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'Pre-diabetic': True},
@@ -243,7 +243,7 @@ class TestCurrentHealth(unittest.TestCase):
 			]
 		}
 		bloodPressureConditions = {
-			'name': 'Blood Pressure Conditions',
+			'name': 'blood pressure conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'High blood pressure but under control': False},
@@ -251,7 +251,7 @@ class TestCurrentHealth(unittest.TestCase):
 			]
 		}
 		bloodClotConditions = {
-			'name': 'Blood Clot (DVT) Conditions',
+			'name': 'blood clot (dvt) conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'History of Deep Vein Thrombosis but now off anti-coagulation': True},
@@ -259,7 +259,7 @@ class TestCurrentHealth(unittest.TestCase):
 			]
 		}
 		neuropathyConditions = {
-			'name': 'Neuropathy Conditions',
+			'name': 'neuropathy conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'Mild neuropathy': True},
@@ -267,7 +267,7 @@ class TestCurrentHealth(unittest.TestCase):
 			]
 		}
 		otherConditions = {
-			'name': 'Other Health Conditions',
+			'name': 'other health conditions',
 			'value': 'yes',
 			'secondaryQuestions': [
 				{'History of anxiety or mania': True},
