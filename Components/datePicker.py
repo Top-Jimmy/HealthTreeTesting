@@ -1,3 +1,5 @@
+from utilityFuncs import UtilityFunctions
+
 from selenium.common.exceptions import (NoSuchElementException,
   ElementNotVisibleException, StaleElementReferenceException, WebDriverException)
 from selenium.webdriver.support.wait import WebDriverWait as WDW
@@ -11,6 +13,7 @@ class DatePicker():
     # Throw exception if container doesn't contain date stuff
     cont = container.find_element_by_class_name('Select--single')
     self.container = container
+    self.util = UtilityFunctions(self.driver)
 
   def load(self, expectedState=None):
     try:
@@ -49,9 +52,9 @@ class DatePicker():
     month = self.parse_date(date, 'month')
     year = self.parse_date(date, 'year')
     self.load()
-    # print('setting date')
-    # print(month)
-    # print(year)
+    print('setting date')
+    print(month)
+    print(year)
     WDW(self.driver, 10).until(lambda x: self.set_dropdown(self.month_cont, month))
     WDW(self.driver, 10).until(lambda x: self.set_dropdown(self.year_cont, year))
 
@@ -70,7 +73,7 @@ class DatePicker():
       dropdown_placeholder = container.find_element_by_class_name('Select-placeholder')
 
     # Only continue if value isn't already set
-    if dropdown_value and dropdown_value.text == value:
+    if dropdown_value and self.util.get_text(dropdown_value) == value:
       return True
 
     # click it
@@ -88,7 +91,7 @@ class DatePicker():
         divs = menu.find_elements_by_tag_name('div')
         for i, div in enumerate(divs):
           if i != 0:
-            options[div.text.lower()] = divs[i]
+            options[self.util.get_text(div).lower()] = divs[i]
         loaded = True
       except NoSuchElementException:
         print('Unable to find dropdown items for datepicker')

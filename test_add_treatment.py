@@ -19,6 +19,24 @@ import form_info
 # TestStemCell
 # 	test_basic
 # @unittest.skip('Dont need to run these')
+
+# Requirements for each treatment type...
+
+# Add Treatment
+	# Stem Cell: Too complicated. Only partial (basic) coverage
+		# Adds 2 treatment tables (can only read 1 rn)
+# Edit Treatment
+# Edit Outcomes
+# Edit Side Effects
+
+	# Chemo
+	# Stem Cell
+	# Radiation
+	# Clinical Trials
+	# Extras (Bone strengtheners, antibiotics, antifungal)
+
+
+
 class TestChemotherapy(unittest.TestCase):
 
 	def setUp(self):
@@ -124,7 +142,10 @@ class TestChemotherapy(unittest.TestCase):
 
 	def test_current_chemotherapy(self):
 		''' test_add_treatment.py:TestChemotherapy.test_current_chemotherapy '''
-		# Different flows depending on how you answer question[2] (Are you currently taking chemotherapy)
+		# Add T1: Currently taking (no stop date)
+		# Edit T1 Treatment, Outcomes, Side Effects
+		# Add T2: Not currently taking (has stop date)
+		# T1 vs T2: Depends on how you answer question[2] (Are you currently taking chemotherapy)
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -136,7 +157,7 @@ class TestChemotherapy(unittest.TestCase):
 		self.assertTrue(toView.on())
 		toView.delete_all_treatments()
 
-		# Chemo: Currently taking
+		# T1 Chemo: Currently taking
 		# Should have 8 questions (base amount)
 		treatment1 = {
 			'testMeta': {'type': 'chemo'},
@@ -270,7 +291,7 @@ class TestChemotherapy(unittest.TestCase):
 		# Edit Outcome
 		new_outcome = {'The treatment did not reduce my myeloma': {}}
 		treatment1Edited['questions'][7]['options'] = new_outcome
-		toView.edit_treatment(0, 'outcomes', treatment1Edited, new_outcome)
+		toView.edit_treatment(0, 'outcomes', treatment1Edited, {'options': new_outcome})
 
 		# Edit Side Effects
 		new_effects = {
@@ -281,9 +302,9 @@ class TestChemotherapy(unittest.TestCase):
   		}
 		}
 		treatment1Edited['questions'][-1]['options'] = new_effects
-		toView.edit_treatment(0, 'side effects', treatment1Edited, new_effects)
+		toView.edit_treatment(0, 'side effects', treatment1Edited, {'options': new_effects})
 
-		# Chemo: Stopped taking
+		# T2 Chemo: Stopped taking
 		# Should have 9 questions (+1 for stop date)
 		treatment2 = {
 			'testMeta': {'type': 'chemo'},
@@ -354,6 +375,9 @@ class TestClinical(unittest.TestCase):
 
 	def test_clinical_basic(self):
 		''' test_add_treatment.py:TestClinical.test_clinical_basic '''
+		# Add T1: Not on trial (has end date)
+		# Edit Treatments/Outcomes/Side Effects for T1
+		# Add T2: Still on trial (has no end date)
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -413,7 +437,7 @@ class TestClinical(unittest.TestCase):
 			],
 		}
 		self.assertTrue(toView.add_treatment(treatment1))
-		raw_input('added 1')
+
 		editValues = [
 			{'num_questions': 8},
 			{'index': 1, 'date': '10/2015'},
@@ -473,7 +497,6 @@ class TestClinical(unittest.TestCase):
 			],
 		}
 		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
-		raw_input('edited 1')
 
 		new_outcome = {'My myeloma is now undetectable': {
 			'type': 'single',
@@ -485,7 +508,7 @@ class TestClinical(unittest.TestCase):
 		edited_outcome = {'options': new_outcome}
 		treatment1Edited['questions'][-2]['options'] = new_outcome
 		toView.edit_treatment(0, 'outcomes', treatment1Edited, edited_outcome)
-		raw_input('edited outcomes')
+
 		# Edit Side Effects
 		new_effects = {
 			'Renal/Urinary System': {
@@ -495,8 +518,7 @@ class TestClinical(unittest.TestCase):
   		}
 		}
 		treatment1Edited['questions'][-1]['options'] = new_effects
-		toView.edit_treatment(0, 'side effects', treatment1Edited, new_effects)
-		raw_input('edited side effects')
+		toView.edit_treatment(0, 'side effects', treatment1Edited, {'options': new_effects})
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
 		# Still on trial
@@ -542,7 +564,6 @@ class TestClinical(unittest.TestCase):
 				},
 			],
 		}
-		# self.assertTrue(toView.on({'tests': [treatment1]}))
 		self.assertTrue(toView.add_treatment(treatment2))
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
@@ -554,10 +575,21 @@ class TestRadiation(unittest.TestCase):
 		self.andrew = profiles.Profile(self.driver, 'andrew')
 
 	def tearDown(self):
-		self.driver.quit()
+		if main.get_browser() == 'safari':
+			self.driver.close()
+		else:
+			self.driver.quit()
 
 	def test_add_radiation(self):
 		''' test_add_treatment.py:TestRadiation.test_add_radiation '''
+		# Add and save radiation treatment
+		# Edit saved treatment
+		# Edit outcomes
+		# Edit side effects
+
+		# Add 2nd treatment
+			# Radiation Type: comment (Treatment1), Local radiation (Treatment2)
+		# Delete both radiation treatments
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -569,6 +601,7 @@ class TestRadiation(unittest.TestCase):
 		self.assertTrue(toView.on())
 		toView.delete_all_treatments()
 
+		# Add and save radiation treatment
 		radiation1 = {
 			'testMeta': {'type': 'radiation'},
 			'questions': [
@@ -610,6 +643,7 @@ class TestRadiation(unittest.TestCase):
 		}
 		self.assertTrue(toView.add_treatment(radiation1))
 
+		# Edit saved treatment
 		editValues = [
 			{'num_questions': 6},
 			{'index': 1, 'options': {
@@ -664,8 +698,8 @@ class TestRadiation(unittest.TestCase):
 				{'type': 'popup', 								# 5: Side effects
 					'options': {
 						'Cardiovascular/Circulatory System': {
-		    			'low blood pressure': {'intensity': 7},
-		    			'low potassium': {'intensity': 5},
+		    			'Low blood pressure': {'intensity': 7},
+		    			'Low potassium': {'intensity': 5},
 		    		}
 		    	}
 				},
@@ -673,6 +707,7 @@ class TestRadiation(unittest.TestCase):
 		}
 		toView.edit_treatment(0, 'treatments', radiation1Edited, editValues)
 
+		# Edit outcome
 		new_outcome = {'My myeloma is now undetectable': {
 			'options': {
 				'I dont know the details of my response': {},
@@ -682,6 +717,19 @@ class TestRadiation(unittest.TestCase):
 		radiation1Edited['questions'][4]['options'] = new_outcome
 		toView.edit_treatment(0, 'outcomes', radiation1Edited, edited_outcome)
 
+		# Edit Side Effects
+		new_effects = {
+			'Other': {
+  			'Infusion related reactions': {'intensity': 5},
+  			'Insomnia': {'intensity': 6},
+  			'Tremors': {'intensity': 4},
+  		}
+		}
+		radiation1Edited['questions'][-1]['options'] = new_effects
+		toView.edit_treatment(0, 'side effects', radiation1Edited, {'options': new_effects})
+
+		# Add 2nd treatment
+			# Radiation Type: comment (Treatment1), Local radiation (Treatment2)
 		radiation2 = {
 			'testMeta': {'type': 'radiation'},
 			'questions': [
@@ -715,19 +763,18 @@ class TestRadiation(unittest.TestCase):
 				{'type': 'popup', 										# 5: Side effects
 					'options': {
 						'Cardiovascular/Circulatory System': {
-		    			'low potassium': {'intensity': 2},
-		    			'low blood pressure': {'intensity': 5},
+		    			'Low potassium': {'intensity': 2},
+		    			'Low blood pressure': {'intensity': 5},
 		    		}
 		    	}
 				},
 			],
 		}
 
-		# Reset: Delete treatments
+		# Reset: Delete both radiation treatments
 		self.assertTrue(toView.add_treatment(radiation2))
 		toView.delete_all_treatments()
 
-# @unittest.skip('wont pass')
 class TestExtra(unittest.TestCase):
 	# Tests treatments for: Bone strengtheners, antibiotics, antifungals
 
@@ -740,6 +787,11 @@ class TestExtra(unittest.TestCase):
 
 	def test_bone_strengthener(self):
 		''' test_add_treatment.py:TestExtra.test_bone_strengthener '''
+		# Add bone strengthener treatment
+		# Make sure doesn't have option to edit outcomes or side effects
+		# Edit bone strengthener treatment then delete
+		# Add 2nd treatment then delete
+			# Todo: Distinction between T1/T2
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -788,9 +840,15 @@ class TestExtra(unittest.TestCase):
 		}
 		self.assertTrue(toView.add_treatment(treatment1))
 
+		# Make sure T1 doesn't have option to edit outcomes or side effects
+		self.assertTrue(toView.get_treatment_type(0) == 'extra')
+
+		# Edit bone strengthener treatment then delete
 		editValues = [
 			{'num_questions': 6},
-			{'index': 1, 'options': 'Zometa'},
+			{'index': 1, 'options': {
+				'Zometa': {},
+			}},
 			{'index': 2, 'date': '11/2017'},
 			{'index': 4, 'date': '03/2018'},
 			{'index': 5, 'options': 'Once every 6 months'},
@@ -832,7 +890,8 @@ class TestExtra(unittest.TestCase):
 		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
-		# Currently taking bone strengtheners
+		# Add 2nd treatment then delete
+			# Todo: Distinction between T1/T2
 		treatment2 = {
 			'testMeta': {'type': 'bone strengtheners'},
 			'questions': [
@@ -871,6 +930,10 @@ class TestExtra(unittest.TestCase):
 
 	def test_antibiotics(self):
 		''' test_add_treatment.py:TestExtra.test_antibiotics '''
+		# Add T1: Not still taking (has end date)
+		# Make sure T1 doesn't have option to edit outcomes or side effects
+		# Edit then delete T1
+		# Add T2: Still taking (has no end date) then delete
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -882,7 +945,7 @@ class TestExtra(unittest.TestCase):
 		self.assertTrue(toView.on())
 		toView.delete_all_treatments()
 
-		# Not currently taking antibiotics
+		# Add T1: Not still taking (has end date)
 		treatment1 = {
 			'testMeta': {'type': 'antibiotics'},
 			'questions': [
@@ -916,6 +979,10 @@ class TestExtra(unittest.TestCase):
 		}
 		self.assertTrue(toView.add_treatment(treatment1))
 
+		# Make sure T1 doesn't have option to edit outcomes or side effects
+		self.assertTrue(toView.get_treatment_type(0) == 'extra')
+
+		# Edit then delete T1
 		editValues = [
 			{'num_questions': 5},
 			{'index': 1, 'options': 'Levaquin (levofloxacin)'},
@@ -956,7 +1023,7 @@ class TestExtra(unittest.TestCase):
 		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
-		# Still taking antibiotics
+		# Add T2: Still taking (has no end date) then delete
 		treatment2 = {
 			'testMeta': {'type': 'antibiotics'},
 			'questions': [
@@ -990,6 +1057,10 @@ class TestExtra(unittest.TestCase):
 
 	def test_antifungal(self):
 		''' test_add_treatment.py:TestExtra.test_antifungal '''
+		# Add T1: Not currently taking (has end date)
+		# Make sure T1 doesn't have option to edit outcomes or side effects
+		# Edit T1 then delete
+		# Add T2: Currently taking (has no end date) then delete
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		toView = self.andrew.treatmentsOutcomesView
@@ -1001,7 +1072,7 @@ class TestExtra(unittest.TestCase):
 		self.assertTrue(toView.on())
 		toView.delete_all_treatments()
 
-		# Not currently taking antifungal
+		# Add T1: Not currently taking (has end date)
 		treatment1 = {
 			'testMeta': {'type': 'antifungal'},
 			'questions': [
@@ -1035,6 +1106,10 @@ class TestExtra(unittest.TestCase):
 		}
 		self.assertTrue(toView.add_treatment(treatment1))
 
+		# Make sure T1 doesn't have option to edit outcomes or side effects
+		self.assertTrue(toView.get_treatment_type(0) == 'extra')
+
+		# Edit T1 then delete
 		editValues = [
 			{'num_questions': 5},
 			{'index': 1, 'options': 'Itraconazole'},
@@ -1075,7 +1150,7 @@ class TestExtra(unittest.TestCase):
 		toView.edit_treatment(0, 'treatments', treatment1Edited, editValues)
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
-		# Still taking antifungal
+		# Add T2: Currently taking (has no end date) then delete
 		treatment2 = {
 			'testMeta': {'type': 'antifungal'},
 			'questions': [

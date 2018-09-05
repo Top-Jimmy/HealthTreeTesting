@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains as AC
 
-# Form for adding a treatment from 'Treatments & Outcomes' page
+# Form for editing a treatment from 'Treatments & Outcomes' page
 
 class EditTreatmentForm():
 
@@ -79,19 +79,19 @@ class EditTreatmentForm():
 			questionCont = self.question_containers[questionIndex]
 
 		self.edit_question(questionCont, questionInfo)
-		if questionIndex == -2:
-			print('questioninfo: ' + str(questionInfo))
-			raw_input('properly set?')
+		# if questionIndex == -2:
+		# 	print('questioninfo: ' + str(questionInfo))
+		# 	raw_input('properly set?')
 
 	def edit_question(self, questionCont, questionInfo):
 		# Question should already be in edit mode
-		options = questionInfo.get('options', None)
-		selectAll = questionInfo.get('select-all', None)
+		options = questionInfo.get('options', None) # Single question
+		selectAll = questionInfo.get('select-all', None) # Select-all
 		date = questionInfo.get('date', None)
 		text = questionInfo.get('text', None)
 		complexOptions = questionInfo.get('complex', None)
 		if options:
-			self.parse_select_all(options, questionCont)
+			self.parse_select_all(options, questionCont, False)
 		elif selectAll:
 			self.parse_select_all(selectAll, questionCont)
 		elif date:
@@ -116,8 +116,12 @@ class EditTreatmentForm():
 			WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 			return True
 
-	def parse_select_all(self, questionInfo, questionCont):
-		print('parse select-all')
+	def parse_select_all(self, questionInfo, questionCont, selectAll=True):
+		# Handles single and select-all questions
+		if selectAll:
+			print('parse select-all')
+		else:
+			print('parse single question')
 		# Select options in specified in optionInfo
 		# De-selecting options not contained in optionInfo
 		name_checker = ['Severity of the side effects', 'Cost of the treatment', 'Too much travel']
@@ -138,8 +142,17 @@ class EditTreatmentForm():
 				optionName = spans[0].text
 				print(optionName)
 				optionInput = inputs[0]
-				optionInfo = questionInfo.get(optionName, False)
+				# questionInfo is either text (name of option) or dict (multiple options/single option w/ extra info)
+				if isinstance(questionInfo, basestring):
+					if questionInfo.lower() == optionName.lower():
+						optionInfo = {}
+					else:
+						optionInfo = False
+				else: # Probably a dictionary
+					optionInfo = questionInfo.get(optionName, False)
+					
 				subOptions = False
+				subSelectAll = False # Set to True if question has suboptions that are select-all
 				print('optionInfo: ' + str(optionInfo))
 				if optionInfo != False: # select input, enter comment, check for subquestions
 					if not optionInput.is_selected():
@@ -150,7 +163,9 @@ class EditTreatmentForm():
 					subOptions = optionInfo.get('options', False)
 					if not subOptions:
 						subOptions = optionInfo.get('select-all', False)
-				else:
+						if subOptions:
+							subSelectAll = True
+				elif selectAll: # Pass in False for selectAll parameter for 'single' response questions
 					# De-select, clear comment, update inputs (might have hidden subquestions)
 					if optionInput.is_selected():
 						self.util.click_radio(optionInput)
@@ -167,7 +182,7 @@ class EditTreatmentForm():
 							suboption_filter.append(i + inputIndex)
 
 				if subOptions: 
-						self.parse_select_all(subOptions, radio)
+						self.parse_select_all(subOptions, radio, subSelectAll)
 			else:
 				print('skipped radio: ' + str(i))
 
@@ -266,6 +281,8 @@ class EditTreatmentForm():
 	def leave_form(self):
 		buttons = self.driver.find_elements_by_class_name('green-hvr-bounce-to-top')
 		back_button = buttons[1]
+		self.driver.execute_script("window.scrollTo(0, 0)")
+		time.sleep(.4)
 		self.util.click_el(back_button)
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 

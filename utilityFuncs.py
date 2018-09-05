@@ -70,29 +70,40 @@ class UtilityFunctions():
 			raise WebDriverException('ClickEl: Failed to click element.')
 
 	def click_radio(self, radioEl):
-		# Ensure element is clicked and selected state changed
-		originalState = radioEl.is_selected()
-		print('originalState: ' + str(originalState))
-		newState = None
+		changed = False
+		changedCount = 0
+		while not changed and changedCount < 5:
 
-		clicked = False
-		count = 0
-		while not clicked and count < 5:
-			if self.click(radioEl):
-				clicked = True
-				newState = radioEl.is_selected()
-				print('newState: ' + str(newState))
-			else:
-				print('ClickRadio: Tried to click radioEl: ' + str(count))
+			# Ensure element is clicked and selected state changed
+			originalState = radioEl.is_selected()
+			# print('originalState: ' + str(originalState))
+			newState = None
+
+			clicked = False
+			clickedCount = 0
+			while not clicked and clickedCount < 5:
+				if self.click(radioEl):
+					clicked = True
+					newState = radioEl.is_selected()
+					# print('newState: ' + str(newState))
+				else:
+					print('ClickRadio: Tried to click radioEl: ' + str(clickedCount))
+				time.sleep(.2)
+				clickedCount += 1
+
+			if not clicked:
+				print('ClickRadio: Failed to click radioEl.')
+				raise WebDriverException('ClickRadio: Failed to click radioEl.')
+			elif clicked and originalState == newState:
+				print('ClickRadio: Tried to change state of radioEl: ' + str(changedCount))
+				
+			elif clicked and originalState != newState:
+				changed = True
 			time.sleep(.2)
-			count += 1
-
-		if not clicked:
-			print('ClickRadio: Failed to click radioEl.')
-			raise WebDriverException('ClickRadio: Failed to click radioEl.')
-		elif clicked and originalState == newState:
-			print('ClickRadio: Failed to change state of radioEl')
-			raw_input('?')
+			changedCount += 1
+				
+		if not changed:
+			raw_input('Failed to change radio?')
 			raise WebDriverException('ClickRadio: Failed to change state of radioEl.')
 
 	def click(self, element):

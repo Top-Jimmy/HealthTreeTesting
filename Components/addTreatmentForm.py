@@ -82,7 +82,7 @@ class AddTreatmentForm():
 					print('AddTreatmentForm: radio option has no spanElements?')
 
 				# Get option name.
-				optionName = spans[0].text
+				optionName = self.util.get_text(spans[0])
 				try: # Check for textarea
 					textareaEl = radioCont.find_element_by_tag_name('textarea')
 				except NoSuchElementException:
@@ -127,7 +127,7 @@ class AddTreatmentForm():
 				# raw_input('count: ' + str(count))
 				try:
 					categoryEl = category.find_element_by_class_name('treatment-group')
-					categoryName = categoryEl.text
+					categoryName = self.util.get_text(categoryEl)
 					print('categoryName: ' + str(categoryName))
 				except NoSuchElementException:
 					print('no category name')
@@ -142,7 +142,7 @@ class AddTreatmentForm():
 
 						# Save option name (key) and inputEl (value) in options dict
 						# radioCont will contain treatment scale or textarea (when visible)
-						optionName = label.text
+						optionName = self.util.get_text(label)
 						# optionInput = label.find_element_by_tag_name('input')
 						options[optionName] = {
 							# 'inputEl': optionInput,
@@ -207,7 +207,7 @@ class AddTreatmentForm():
 
 			# Col1: Treatment Name
 			if remainder == 0: 
-				treatment = cell.text
+				treatment = self.util.get_text(cell)
 
 			# Col2: Date stopped
 			elif remainder == 1:
@@ -363,7 +363,8 @@ class AddTreatmentForm():
 				time.sleep(.4)
 			count += 1
 		if count == 3:
-			print('Failed to set date')
+			print('AddTreatmentForm: Failed to set date')
+			raw_input('?')
 			return False
 
 	def answer_question(self, optionName, optionInfo, subOptionName=None):
@@ -470,6 +471,7 @@ class AddTreatmentForm():
 				# inputEl = loadedCategory[suboption]['inputEl']
 			except KeyError:
 				print('failed to load sideEffect named: ' + str(suboption))
+				# raw_input(loadedCategory)
 			if not inputEl.is_selected():
 				self.util.click_radio(inputEl)
 				# try:
@@ -586,7 +588,8 @@ class AddTreatmentForm():
 			divs = menu.find_elements_by_tag_name('div')
 			for i, div in enumerate(divs):
 				if i != 0:
-					options[div.text] = divs[i]
+					optionName = self.util.get_text(div)
+					options[optionName] = divs[i]
 		except NoSuchElementException:
 			print('Unable to find dropdown items for first diagnosis')
 

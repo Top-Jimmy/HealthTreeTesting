@@ -48,7 +48,6 @@ class EditTreatmentPopup():
 	def parse_select_all(self, questionInfo, questionCont):
 		done = False
 		count = 0
-		raw_input('questionInfo: ' + str(questionInfo))
 		while not done and count < 5:
 			try:
 				# Select options in specified in optionInfo
@@ -69,13 +68,11 @@ class EditTreatmentPopup():
 						print('optionName: ' + optionName)
 						optionInput = inputs[0]
 						optionInfo = questionInfo.get(optionName, False)
-						raw_input('optionInfo: ' + str(optionInfo))
+						# raw_input('optionInfo: ' + str(optionInfo))
 						subOptions = False
 						if optionInfo != False: # select input, enter comment, check for subquestions
 							if not optionInput.is_selected():
-								raw_input('about to click option')
 								self.util.click_radio(optionInput)
-								raw_input('clicked option?')
 							self.util.set_input(radio, optionInfo.get('comment', ''))
 
 							# Check for suboptions or select-all
@@ -85,9 +82,7 @@ class EditTreatmentPopup():
 						else:
 							# De-select, clear comment, update inputs (might have hidden subquestions)
 							if optionInput.is_selected():
-								raw_input('de-selecting option')
 								self.util.click_radio(optionInput)
-								raw_input('de-selected?')
 								self.util.set_input(radio, '')
 								inputs = radio.find_elements_by_tag_name('input')
 

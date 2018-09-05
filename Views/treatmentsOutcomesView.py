@@ -38,6 +38,7 @@ class TreatmentsOutcomesView(view.View):
 			else:
 				self.tutorial_button = self.driver.find_element_by_class_name('videobtn')
 				try:
+					# Only shows up when certain diagnoses are selected on 'Myeloma Diagnosis'
 					self.view_options_button = self.driver.find_element_by_class_name('treatment_op_btn')
 				except NoSuchElementException:
 					self.view_options_button = None
@@ -87,7 +88,7 @@ class TreatmentsOutcomesView(view.View):
 				print('validating fresh')
 				pass
 			else:
-				if self.add_treatments_button and self.add_treatments_button.text != 'Add Treatments':
+				if self.add_treatments_button and self.util.get_text(self.add_treatments_button) != 'Add Treatments':
 					self.failures.append('treatmentsOutcomesView: Unexpected text on add treatment button')
 				if self.state == 'saved':
 					print('validating saved')
@@ -108,24 +109,28 @@ class TreatmentsOutcomesView(view.View):
 						# raw_input('savedTest: ' + str(savedTest))
 						savedData = savedTest['testData']
 
-						if testType == 'clinical':
-							self.compare_nct(savedData['nct #'], test, testType)
-							self.compare_treatments(savedData['treatment type'], test, testType)
-						else:
-							# All other treatment types have treatments and therapy type
-							self.compare_therapy_type(savedData['therapy type'], test, testType)
-							self.compare_treatments(savedData['treatments'], test, testType)
-						if testType == 'stem cell':
-							self.compare_start_date(self.convert_date(savedData['transplant date']), test, testType)
-						else:
-							self.compare_start_date(self.convert_date(savedData['start date']), test, testType)
-							self.compare_end_date(self.convert_date(savedData['end date']), test, testType)
+						try:
+							if testType == 'clinical':
+								self.compare_nct(savedData['nct #'], test, testType)
+								self.compare_treatments(savedData['treatment type'], test, testType)
+							else:
+								# All other treatment types have treatments and therapy type
+								self.compare_therapy_type(savedData['therapy type'], test, testType)
+								self.compare_treatments(savedData['treatments'], test, testType)
+							if testType == 'stem cell':
+								self.compare_start_date(self.convert_date(savedData['transplant date']), test, testType)
+							else:
+								self.compare_start_date(self.convert_date(savedData['start date']), test, testType)
+								self.compare_end_date(self.convert_date(savedData['end date']), test, testType)
 
-						if testType in extraTypes: # Bone Strengtheners, Antibiotics, Antifungal
-							self.compare_frequency(savedData['frequency'], test, testType)
-						else: # Chemo, Radiation, Stem Cell
-							self.compare_side_effects(savedData['side effects'], test, testType)
-							self.compare_outcome(savedData['outcome'], test, testType)
+							if testType in extraTypes: # Bone Strengtheners, Antibiotics, Antifungal
+								self.compare_frequency(savedData['frequency'], test, testType)
+							else: # Chemo, Radiation, Stem Cell
+								self.compare_side_effects(savedData['side effects'], test, testType)
+								self.compare_outcome(savedData['outcome'], test, testType)
+						except KeyError:
+							print(savedData)
+							raw_input('keyerror: ?')
 
 				elif self.state == 'normal':
 					print('validating normal')
@@ -161,7 +166,7 @@ class TreatmentsOutcomesView(view.View):
 			if rowIndex == 0:
 				tds = row.find_elements_by_tag_name('td')
 				for td in tds:
-					testKeys.append(td.text.lower())
+					testKeys.append(self.util.get_text(td).lower())
 
 			# Test values
 			elif rowIndex == 1:
@@ -171,11 +176,19 @@ class TreatmentsOutcomesView(view.View):
 					if tdIndex == len(tds)-2: # Treatments List (2nd to last td)
 						items = td.find_elements_by_class_name('treatments-lbl-span')
 						for treatment in items:
-							treatmentText = treatment.text.lower()
+							treatmentText = self.util.get_text(treatment).lower()
 							treatments.append(treatmentText)
 						# Clinical doesn't have items (just text)
 						if not items:
-							treatments.append(td.text)
+							text = self.util.get_text(td)
+							if text:
+								treatments.append(text.lower())
+							else:
+								raw_input('wtf?')
+							# try:
+							# 	treatments.append(self.util.get_text(td)).lower()
+							# except AttributeError:
+							# 	raw_input(str(key) + '?')
 						testData[key] = treatments
 
 					elif tdIndex == len(tds)-1: # Last row: index=4 (3 for stem cell)
@@ -183,27 +196,28 @@ class TreatmentsOutcomesView(view.View):
 						items = td.find_elements_by_class_name('treatments-lbl-span')
 						if len(items) > 0:
 							for effect in items:
-								name = effect.find_element_by_tag_name('span').text
-								intensity = int(effect.find_element_by_tag_name('div').text)
+								# Leave in upper case. Data passed in is in upper case
+								name = self.util.get_text(effect.find_element_by_tag_name('span'))
+								intensity = int(self.util.get_text(effect.find_element_by_tag_name('div')))
 								sideEffects[name] = {'intensity': intensity}
 							testData[key] = sideEffects
 
 						else: # Frequency (Bone strengtheners, antibiotics, antifungal)
 							# Only bone strengtheners have frequency (otherwise 'N/A')
-							text = td.text
+							text = self.util.get_text(td).lower()
 							print('text: ' + str(text))
 							if text:
-								testData[key] = text.lower()
+								testData[key] = text
 							else: # Might have no side effects (any type of treatment)
 								testData[key] = sideEffects
 
 					else: # Start date, end date, therapy type
-						testData[key] = td.text.lower()
+						testData[key] = self.util.get_text(td).lower()
 
 			# Outcome (no outcome for bone strengtheners, antibiotics, antifungal. Table only has 3 rows)
 			elif rowIndex == 2 and len(rows) == 4:
 				td = row.find_elements_by_tag_name('td')[1] # text is in 2nd td
-				testData['outcome'] = td.text.lower()
+				testData['outcome'] = self.util.get_text(td).lower()
 
 			# Actions (last row)
 			elif (rowIndex + 1) == len(rows):
@@ -358,7 +372,7 @@ class TreatmentsOutcomesView(view.View):
 			else:
 				expectedVal = test['questions'][5].get('text', None)
 			if expectedVal:
-				expectedVal = ['Clinical Trial: ' + expectedVal]
+				expectedVal = ['clinical trial: ' + expectedVal.lower()]
 		else:
 			print('Not evaluating treatments for testType: ' + str(testType))
 
@@ -492,6 +506,19 @@ class TreatmentsOutcomesView(view.View):
 
 		if count == 5:
 			print('failed to click add treatment button')
+
+	def get_treatment_type(self, treatmentIndex):
+		# Normal: Chemo, Radiation, Stem Cell, Clinical. 
+		# Extra: Bone strengtheners, antibiotics antifungal
+		test = self.read_test(treatmentIndex)
+		num_actions = len(test['actions'])
+		if num_actions == 2:
+			return 'extra'
+		elif num_actions == 4:
+			return 'normal'
+		else:
+			print('unexpected number of treatment actions: ' + str(num_actions))
+		return False
 
 ############################### Test Functions. ####################################
 
