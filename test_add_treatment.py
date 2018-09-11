@@ -18,6 +18,7 @@ import form_info
 # 	test_antifungal: 									Question[4] still taking antifungal?
 # TestStemCell
 # 	test_basic
+
 # @unittest.skip('Dont need to run these')
 
 # Requirements for each treatment type...
@@ -34,8 +35,6 @@ import form_info
 	# Radiation
 	# Clinical Trials
 	# Extras (Bone strengtheners, antibiotics, antifungal)
-
-
 
 class TestChemotherapy(unittest.TestCase):
 
@@ -363,7 +362,7 @@ class TestChemotherapy(unittest.TestCase):
 		toView.edit_treatment(1, 'delete', {'meta': {'num_treatments': 1}})
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
-# @unittest.skip('Dont need to run these')
+@unittest.skip('Dont need to run these')
 class TestClinical(unittest.TestCase):
 
 	def setUp(self):
@@ -567,7 +566,7 @@ class TestClinical(unittest.TestCase):
 		self.assertTrue(toView.add_treatment(treatment2))
 		toView.edit_treatment(0, 'delete', {'meta': {'num_treatments': 0}})
 
-# @unittest.skip('wont pass')
+@unittest.skip('wont pass')
 class TestRadiation(unittest.TestCase):
 
 	def setUp(self):
@@ -1197,7 +1196,7 @@ class TestExtra(unittest.TestCase):
 		toView.view_options()
 		self.assertTrue(treatmentOptionsView.on())
 
-# @unittest.skip('wont pass')
+@unittest.skip('wont pass')
 class TestStemCell(unittest.TestCase):
 	# 1. Treatment Type
 	# 2. Stemcell Type

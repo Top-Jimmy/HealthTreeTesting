@@ -35,7 +35,6 @@ class MyelomaLabsView(view.View):
 			self.five_year_button = buttons[7]
 			self.ten_year_button = buttons[8]
 			self.all_button = buttons[9]
-
 			self.continue_button = buttons[10]
 
 			self.from_date_input = inputs[0]
@@ -53,6 +52,7 @@ class MyelomaLabsView(view.View):
 	def validate(self, labInfo):
 		failures = []
 		loadedInfo = self.clinical_tables[-1]
+		raw_input('correctly loaded info')
 		if loadedInfo:
 			if labInfo:
 				if loadedInfo['dobd'] != labInfo['dobd']:
@@ -88,13 +88,20 @@ class MyelomaLabsView(view.View):
 				if loadedInfo['platelets'] != labInfo['platelets']:
 					failures.append('Table value: ' + '"' + str(loadedInfo['platelets']) + '"' + ' expected ' + '"' + str(labInfo['platelets']) + '"')
 		if self.add_new_button.text != 'Add New Labs':
-			failure.append('AddLabsView: Unexpected add new labs button text')
+			failures.append('AddLabsView: Unexpected add new labs button text')
+
+		if len(failures) > 0:
+			for failure in failures:
+				print(failure)
+				return False
+		return True
 
 
 	def load_table(self):
 		self.clinical_tables = []
-		clinical_table = self.form.find_element_by_id('clinical_table')
-		rows = clinical_table.find_elements_by_class_name('table_row')
+		time.sleep(3)
+		clinical_table = self.form.find_element_by_class_name('reactbootstraptableouter')
+		rows = clinical_table.find_elements_by_tag_name('tr')
 		keys = ['actions', 'dobd', 'monoclonal', 'kappa', 'lambda', 'ratio', 'bone_marrow', 'blood', 'blood_cell', 'hemoglobin',  'lactate', 'albumin', 'immuno_g', 'immuno_a', 'immuno_m', 'calcium', 'platelets']
 		for rowIndex, row in enumerate(rows):
 			rowInfo = {} # Info for an individual test

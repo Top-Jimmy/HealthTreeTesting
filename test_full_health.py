@@ -77,7 +77,7 @@ class TestFullHealth(unittest.TestCase):
 		self.assertTrue(fullHealthView.on('my myeloma'))
 
 		form_data = [
-			[{'option': 'white (original ancestry from europe, middle east, north africa)'}, {'option': 'hispanic or latino'}, {'multiple_dropdown': 'Cuban'}, {'dropdown': 'United States of America'}, {'textInput': 'gilford'}, {'textInput': 'sandy'}, {'textInput': 'sandy'}, {'dropdown': 'None'}, {'dropdown': 'Married'}, {'dropdown': 'Some grade school'}, {'dropdown': 'Disabled'}, {'option': 'yes', 'secondary': {'options': 'insurance through work'}}, {'option': 'no'}]
+			[{'option': 'White (Original ancestry from Europe, Middle East, North Africa)'}, {'option': 'Hispanic or Latino'}, {'multiple_dropdown': 'Cuban'}, {'dropdown': 'United States of America'}, {'textInput': 'gilford'}, {'textInput': 'sandy'}, {'textInput': 'sandy'}, {'dropdown': 'None'}, {'dropdown': 'Married'}, {'dropdown': 'Some grade school'}, {'dropdown': 'Disabled'}, {'option': 'Yes', 'secondary': {'options': 'Insurance through work'}}, {'option': 'No'}]
 		]
 
 		self.assertTrue(fullHealthView.select_tab('demographics'))
@@ -128,8 +128,6 @@ class TestFullHealth(unittest.TestCase):
 			[{'option': 'no'}, {'option': 'no'}, {'option': 'no'}],
 			[{'option': 'yes', 'secondary': {'options': 'first cousin'}}, {'option': 'no'}, {'option': 'no'}]
 		]
-
-		self.assertTrue(fullHealthView.select_tab('family history'))
 
 		self.assertTrue(fullHealthView.submit(form_data, 'family history'))
 

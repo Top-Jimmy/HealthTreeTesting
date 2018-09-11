@@ -15,7 +15,6 @@ class FitLvlView(view.View):
 			self.fitLvlForm = fitLvlForm.FitLvlForm(self.driver)
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
-			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:

@@ -21,7 +21,6 @@ class MyelomaDiagnosisFreshForm():
 		self.form = self.driver.find_element_by_id('diagnosis_form')
 		self.rows = self.form.find_elements_by_class_name('form-group')
 		self.load_state()
-		print(self.state)
 
 		# self.dateDiagnosis_cont = self.form.find_element_by_class_name('mnth-datepicker')
 		# self.dateDiagnosis_input = self.rows[0].find_element_by_tag_name('input')
@@ -96,16 +95,8 @@ class MyelomaDiagnosisFreshForm():
 				print('no meta')
 				pass
 
-				# if len(expectedDiagnoses) != len(self.diagnoses):
-				# 	failures.append('MyelDiagSavedForm: Expected ' + str(len(expectedDiagnoses)) + ' diagnoses. Form has ' + str(len(self.diagnoses)))
 				if len(expectedValues['physicians']) != len(self.physicians):
 					failures.append('MyelDiagForm: Expected ' + str(len(expectedPhysicians)) + ' physicians. Form has ' + str(len(self.physicians)))
-
-
-				# if expectedValues['newly_diagnosed'] == 'no' and not self.newly_diagnosedNo_radio.get_attribute('checked'):
-				# 	failure.append('MyelDiagForm: Expecting "no" to being newly diagnosed')
-				# elif expectedValues['newly_diagnosed'] == 'yes' and not self.newly_diagnosedYes_radio.get_attribute('checked'):
-				# 	failure.append('MyelDiagForm: Expecting "yes" to being newly diagnosed')
 
 				if self.dateDiagnosis_form-control.get_attribute('value') != expectedValues['date']:
 					failures.append('MyelDiagForm: Expecting date of diagnosis "' + expectedValues['date'] + '", got "' + self.dateDiagnosis_form-control.get_attribute('value') + '"')

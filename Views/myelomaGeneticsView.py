@@ -14,11 +14,13 @@ from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import time
+from utilityFuncs import UtilityFunctions
 
 class MyelomaGeneticsView(view.View):
 	post_url = 'myeloma-genetics'
 
 	def load(self, riskInfo=None):
+		self.util = UtilityFunctions(self.driver)
 		try:
 			WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
@@ -179,14 +181,12 @@ class MyelomaGeneticsView(view.View):
 						value = td.text
 				self.highRisk_tests[name] = value
 
-	# def validate_fish_test(self, fishInfo):
-	# 	loadedInfo = self.fish_tests[-1]
-
-	# 	if 
-
 	def validate_gep_test(self, gepInfo):
 		failures = []
-		loadedInfo = self.gep_tests[-1]
+		if len(self.gep_tests) > 0:
+			loadedInfo = self.gep_tests[-1]
+		else:
+			loadedInfo = self.gep_tests
 		if loadedInfo:
 			if self.convert_date(loadedInfo['date'].lower()) != gepInfo['test_gep_date']:
 				failures.append('GEP Table: Expecting ' + '"' + str(gepInfo['test_gep_date']) + '"' + ', got ' + '"' + str(self.convert_date(loadedInfo['date'].lower())) + '"')
@@ -238,17 +238,15 @@ class MyelomaGeneticsView(view.View):
 		self.fishTestForm = fishTestForm.FishTestForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.fishTestForm.load())
 		self.fishTestForm.submit(fishInfo, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
-		self.load()
-		# self.validate_fish_test(fishInfo)
 
 	def add_gep_test(self, gepInfo, action='cancel'):
 		self.add_gep_button.click()
 		self.gepTestForm = gepTestForm.GepTestForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.gepTestForm.load())
 		self.gepTestForm.submit(gepInfo, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.load()
 		self.validate_gep_test(gepInfo)
@@ -258,7 +256,7 @@ class MyelomaGeneticsView(view.View):
 		self.ngsTestForm = ngsTestForm.NgsTestForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.ngsTestForm.load())
 		self.ngsTestForm.submit(ngsInfo, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def edit_test(self, testType, testIndex, testValues, action='delete', popUpAction='confirm'):
@@ -298,14 +296,14 @@ class MyelomaGeneticsView(view.View):
 				print('Error: Edit High Risk Test action not possible')
 
 
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def edit_high_risk(self, riskInfo, action='save'):
 		self.editHighRiskForm = editHighRiskForm.EditHighRiskForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.editHighRiskForm.load())
 		self.editHighRiskForm.submit(riskInfo, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 		self.validate_risk_table(riskInfo)
 
@@ -314,7 +312,7 @@ class MyelomaGeneticsView(view.View):
 		self.uploadFileForm = uploadFileForm.UploadFileForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.uploadFileForm.load())
 		self.uploadFileForm.confirm(action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 
@@ -334,16 +332,16 @@ class MyelomaGeneticsView(view.View):
 		if p[0].text[:index] != 'FISH':
 			return False
 
-		if p[1].text != 'Gene Expression Profiling (GEP) is the measurement of the activity, or expression, of thousands of genes at once. This test can help identify standard risk and high risk genomic features of the myeloma cells in more depth.':
-			print('tooltip not clicked correctly: ' + str(p[1].text))
+		if self.util.get_text(p[1]) != 'Gene Expression Profiling (GEP) is the measurement of the activity, or expression, of thousands of genes at once. This test can help identify standard risk and high risk genomic features of the myeloma cells in more depth.':
+			print('tooltip not clicked correctly: ' + str(self.util.get_text(p[1])))
 			return False
 
-		if p[2].text != 'Next Generation Sequencing looks at the myeloma DNA and RNA and identifies how the mutations are functioning, how the myeloma cells are evolving and how your myeloma may respond to treatment. Currently, NGS testing is typically performed at myeloma academic centers only.':
-			print('tooltip not clicked correctly: ' + str(p[2].text))
+		if self.util.get_text(p[2]) != 'Next Generation Sequencing looks at the myeloma DNA and RNA and identifies how the mutations are functioning, how the myeloma cells are evolving and how your myeloma may respond to treatment. Currently, NGS testing is typically performed at myeloma academic centers only.':
+			print('tooltip not clicked correctly: ' + str(self.util.get_text(p[2])))
 			return False
 
-		if p[3].text != 'Risk in myeloma is tied to disease stage, chromosomal abnormalities, disease biology, and gene expression.  In the Myeloma Genetics page we will gather more details about risk.':
-			print('tooltip not clicked correctly: ' + str(p[3].text))
+		if self.util.get_text(p[3]) != 'Risk in myeloma is tied to disease stage, chromosomal abnormalities, disease biology, and gene expression.  In the Myeloma Genetics page we will gather more details about risk.':
+			print('tooltip not clicked correctly: ' + str(self.util.get_text(p[3])))
 			return False
 		return True
 
