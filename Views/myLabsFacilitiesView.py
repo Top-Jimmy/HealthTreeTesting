@@ -96,10 +96,17 @@ class MyLabsFacilitiesView(view.View):
 				# Wait for confirm popup and loading overlay to disappear
 				WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'react-confirm-alert')))
 				WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+			elif action == 'edit':
+				# Should be on edit version of Consent Form
+				pass
 			return True
 
 	def delete_all(self):
 		for i, facility in enumerate(self.facilities):
+			print('deleting facility: ' + str(i))
 			self.manage_facility(i, 'delete')
+			# Can get staleElementException if you're deleting multiple facilities
+			if i+1 < len(self.facilities):
+				WDW(self.driver, 10).until(lambda x: self.load())
 
 

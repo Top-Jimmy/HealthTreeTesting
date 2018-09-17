@@ -3,14 +3,26 @@ from selenium.common.exceptions import (NoSuchElementException,
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 import time
 
+from utilityFuncs import UtilityFunctions
+
+# flatpickr component: Datepicker for selecting Day/Month/Year.
+# Used on Consent Form
 class SingleDatePicker():
-  """Date picker for DayMonthYear input"""
 
   def __init__(self, driver):
     self.driver = driver
+    self.util = UtilityFunctions(self.driver)
 
   def load(self, expectedState=None):
-    self.container = self.driver.find_element_by_class_name('react-datepicker')
+    # Should be 2 elements w/ this class. Grab 2nd
+    time.sleep(3)
+    raw_input('about to look for showTimeInput')
+    containers = self.driver.find_elements_by_class_name('showTimeInput') 
+    self.container = containers[-1]
+    # self.container = self.driver.find_element_by_class_name('react-datepicker')
+
+    el = self.driver.find_element_by_class_name('numInputWrapper')
+    raw_input(self.util.get_text(el))
 
     self.year_button = self.container.find_element_by_class_name('react-datepicker__year-read-view--selected-year')
     self.current_year = self.year_button.text

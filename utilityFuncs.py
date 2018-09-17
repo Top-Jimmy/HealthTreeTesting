@@ -37,7 +37,7 @@ class UtilityFunctions():
 		inputEl = None
 		tag_name = element.tag_name
 		if tag_name == 'input' or tag_name == 'textarea':
-			inputEl = element
+			return element
 		else:
 			# See if element contains input/textarea
 			try:

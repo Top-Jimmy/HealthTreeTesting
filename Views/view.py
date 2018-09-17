@@ -22,12 +22,19 @@ class View:
 	def on(self, arg1=None, arg2=None):
 		wait_time = 10
 		try:
-			if arg1 is None:
-				WDW(self.driver, wait_time).until(lambda x: self.load())
-			elif arg2 is None:
+			if arg2 is not None:
+				WDW(self.driver, wait_time).until(lambda x: self.load(arg1, arg2))
+			elif arg1 is not None:
 				WDW(self.driver, wait_time).until(lambda x: self.load(arg1))
 			else:
-				WDW(self.driver, wait_time).until(lambda x: self.load(arg1, arg2))
+				WDW(self.driver, wait_time).until(lambda x: self.load())
+
+			# if arg1 is None:
+			# 	WDW(self.driver, wait_time).until(lambda x: self.load())
+			# elif arg2 is None:
+			# 	WDW(self.driver, wait_time).until(lambda x: self.load(arg1))
+			# else:
+			# 	WDW(self.driver, wait_time).until(lambda x: self.load(arg1, arg2))
 			return True
 		except TimeoutException:
 			print 'Failed to load: ' + str(self.__class__)

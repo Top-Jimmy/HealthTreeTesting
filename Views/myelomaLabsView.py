@@ -1,11 +1,13 @@
-from selenium.common.exceptions import (NoSuchElementException,
-		StaleElementReferenceException)
 from viewExceptions import MsgError, WarningError
 from Components import addLabsForm
 from Components import popUpForm
 from Components import menu
 from Components import header
 from Views import view
+from utilityFuncs import UtilityFunctions
+
+from selenium.common.exceptions import (NoSuchElementException,
+		StaleElementReferenceException)
 from selenium.webdriver.support.wait import WebDriverWait as WDW
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -19,6 +21,7 @@ class MyelomaLabsView(view.View):
 			# Crap on left
 			WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
+			self.util = UtilityFunctions(self.driver)
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 			self.form = self.driver.find_element_by_id('page-content-wrapper')
@@ -42,9 +45,8 @@ class MyelomaLabsView(view.View):
 
 			self.to_date_input = inputs[1]
 
-			self.load_table()
-
-			self.validate(labInfo)
+			# self.load_table()
+			# self.validate(labInfo)
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
@@ -115,7 +117,7 @@ class MyelomaLabsView(view.View):
 		self.add_new_button.click()
 		self.addLabsForm = addLabsForm.AddLabsForm(self.driver)
 		WDW(self.driver, 10).until(lambda x: self.addLabsForm.load())
-		self.addLabsForm.get_my_labs_button.click() # Should now be on /my-labs-facilities
+		self.util.click_el(self.addLabsForm.get_my_labs_button) # Should now be on /my-labs-facilities
 
 	def add_new_lab(self, labInfo, action='save'):
 		self.add_new_button.click()

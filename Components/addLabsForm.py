@@ -18,34 +18,33 @@ class AddLabsForm():
 		cont = self.driver.find_element_by_class_name('myeloma-labs-row')
 		self.get_my_labs_button = cont.find_element_by_tag_name('button')
 
-		self.form = self.driver.find_elements_by_tag_name('form')[-1]
-		inputs = self.form.find_elements_by_tag_name('input')
-		self.footer = self.driver.find_element_by_class_name('modal-footer')
-		buttons = self.footer.find_elements_by_tag_name('button')
-		# self.close_button = buttons[5]
-		cont = self.driver.find_element_by_class_name('date-picker-icon-div')
-		self.dobd_input = cont.find_element_by_tag_name('input')
+		# self.form = self.driver.find_elements_by_tag_name('form')[-1]
+		# inputs = self.form.find_elements_by_tag_name('input')
+		# self.footer = self.driver.find_element_by_class_name('modal-footer')
+		# buttons = self.footer.find_elements_by_tag_name('button')
+		# # self.close_button = buttons[5]
+		# cont = self.driver.find_element_by_class_name('date-picker-icon-div')
+		# self.dobd_input = cont.find_element_by_tag_name('input')
 
 
-		self.monoclonal_input = inputs[0]
-		self.kappa_free_input = inputs[1]
-		self.lambda_free_input = inputs[2]
-		self.ratio_input = inputs[3]
-		self.marrow_input = inputs[4]
-		self.blood_input = inputs[5]
+		# self.monoclonal_input = inputs[0]
+		# self.kappa_free_input = inputs[1]
+		# self.lambda_free_input = inputs[2]
+		# self.ratio_input = inputs[3]
+		# self.marrow_input = inputs[4]
+		# self.blood_input = inputs[5]
 
-		self.calcium_input = inputs[6]
-		self.platelets_input = inputs[7]
-		self.blood_cell_input = inputs[8]
-		self.hemoglobin_input = inputs[9]
-		self.lactate_input = inputs[10]
-		self.immuno_g_input = inputs[11]
-		self.immuno_a_input = inputs[12]
-		self.immuno_m_input = inputs[13]
-		self.albumin_input = inputs[14]
-
-		self.save_button = buttons[0]
-		self.cancel_button = buttons[1]
+		# self.calcium_input = inputs[6]
+		# self.platelets_input = inputs[7]
+		# self.blood_cell_input = inputs[8]
+		# self.hemoglobin_input = inputs[9]
+		# self.lactate_input = inputs[10]
+		# self.immuno_g_input = inputs[11]
+		# self.immuno_a_input = inputs[12]
+		# self.immuno_m_input = inputs[13]
+		# self.albumin_input = inputs[14]
+		# self.save_button = buttons[0]
+		# self.cancel_button = buttons[1]
 
 		return True
 
