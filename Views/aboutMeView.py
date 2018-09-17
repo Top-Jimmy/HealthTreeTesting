@@ -26,31 +26,6 @@ class AboutMeView(view.View):
 			IndexError) as e:
 			return False
 
-	def validate(self):
-		failures = []
-		# if self.createAccount_link.text != 'Create Account':
-		# 	failures.append('1. Create Account link. Expecting text "Create Account", got "' + self.createAccount_link.text + '"')
-		# if len(failures) > 0:
-		# 	print(failures)
-		# 	raise NoSuchElementException('Failed to load HomeView')
-
-	# def createErrorObj(self, errorText):
-	# 	errorType = 'undefined';
-	# 	errorMsg = '';
-
-	# 	if 'confirm your email address' in errorText:
-	# 		errorType = 'confirmation'
-	# 		errorMsg = 'homeView.login: Confirmation error'
-	# 	elif 'invalid username or password' in errorText:
-	# 		errorType = 'invalid credentials'
-	# 		errorMsg = 'homeView.login: Invalid Credentials error'
-
-	# 	return {
-	# 		'errorText': errorText,
-	# 		'errorType': errorType,
-	# 		'errorMsg': errorMsg,
-	# 	}
-
 	def submit(self, formInfo, expectedError=None, expectedWarnings=None):
 		try:
 			if self.aboutMeForm.enter_info(formInfo):
@@ -95,12 +70,6 @@ class AboutMeView(view.View):
 				else:
 					return True
 		return False
-
-	# def click_link(self, link):
-	# 	if link == 'create account':
-	# 		self.createAccount_link.click()
-	# 	elif link == 'forgot password':
-	# 		self.signInForm.forgotPassword_link.click()
 
 	def feedback(self, feedbackText, action='cancel'):
 		self.header.feedback_button.click()

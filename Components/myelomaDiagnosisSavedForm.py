@@ -20,7 +20,7 @@ class MyelomaDiagnosisSavedForm():
 		self.load(expectedValues)
 
 	def load(self, expectedValues=None):
-		self.form = self.driver.find_element_by_id('diagnosis_form')
+		self.form = self.driver.find_element_by_id('page-content-wrapper')
 		add_buttons = self.form.find_elements_by_class_name('custom_addDiagnoisisButton')
 
 		self.diagnosisCont = self.form.find_element_by_class_name('diagnosis-frst-table-outer')
@@ -129,7 +129,6 @@ class MyelomaDiagnosisSavedForm():
 						diagnosis['delete'] = row.find_element_by_class_name('delete-treatment-icon')
 
 				diagnoses.append(diagnosis)	
-
 		return diagnoses
 
 	def load_physicians(self):

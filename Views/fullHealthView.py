@@ -32,23 +32,16 @@ class FullHealthView(view.View):
 			else:
 				if expectedTab == 'my myeloma':
 					self.form = fullHealthMyelomaForm.FullHealthMyelomaForm(self.driver)
-					# self.loadedData = self.form.sections
 				elif expectedTab == 'demographics':
 					self.form = healthDemoForm.HealthDemoForm(self.driver)
-					# self.loadedData = self.form.sections
-
 				elif expectedTab == 'full health history':
 					self.form = healthHistForm.HealthHistForm(self.driver)
-					# self.loadedData = self.form.sections
 				elif expectedTab == 'family history':
 					self.form = famHistForm.FamHistForm(self.driver)
-					# self.loadedData = self.form.sections
 				elif expectedTab == 'lifestyle':
 					self.form = healthLifestyleForm.HealthLifestyleForm(self.driver)
-					# self.loadedData = self.form.sections
 				elif expectedTab == 'quality of life':
 					self.form = healthQualityForm.HealthQualityForm(self.driver)
-					# self.loadedData = self.form.sections
 				else:
 					self.form = healthSummaryForm.HealthSummaryForm(self.driver)
 				self.loadedData = self.form.sections
@@ -62,7 +55,6 @@ class FullHealthView(view.View):
 			self.summary_tab = self.menu_tabs.find_element_by_id('tab-6')
 
 
-			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
@@ -96,43 +88,31 @@ class FullHealthView(view.View):
 			print('fullHealthView: No tab named: ' + str(tabName))
 
 	def submit(self, formInfo, tabName):
+		# Loop through each section set in the info passed in
 		for sectionIndex, section in enumerate(formInfo):
 			print('answering section: ' + str(sectionIndex))
+			# set loadedSection to equal a specific section[i] from the form loaded
 			loadedSection = self.loadedData[sectionIndex]
-
-			# section: [{'option': 'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}, {'yes'}]
-			# [
-			# 	{u'1': [
-			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
-			# 	]},
-			# 	{u'2': [
-			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
-			# 	]},
-			# 	{u'3': [
-			# 		{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
-			# 	]}
-			# ]
+			# Loop through each question in the section
 			for questionIndex, question in enumerate(section):
 				print('answering question: ' + str(questionIndex))
-				# question: {'option': 'yes'}
+				# set loadedQuestion to equal a specific question[i] in a section[i] from the form loaded
 				loadedQuestion = loadedSection[questionIndex]
-				# {u'1': [
-				# 	{'options': {u'Yes': 'webElement', u'No': 'webElement'}}
-				# ]}
+
+				# question refers to each question passed in the formInfo
 				secondaryInfo = question.get('secondary', None)
+				# loadedQuestion refers to each question loaded from the form
 				questionOptions = loadedQuestion.get('options', None)
+				# the following 3 values are set to the actual element
 				textarea = loadedQuestion.get('textInput', None)
 				dropdowns = loadedQuestion.get('dropdowns', None)
 				multipleDropdown = question.get('multiple_dropdown')
 
-				# {u'Yes': 'webElement', u'No': 'webElement'}
 				if questionOptions:
 					inputEl = questionOptions[question['option']]
 					inputEl.click()
-					# self.load('my myeloma')
 
 				if textarea:
-					# textareaEl = textarea[question['textInput']]
 					textarea.send_keys(question.get('textInput', None))
 
 				if dropdowns:
@@ -150,7 +130,6 @@ class FullHealthView(view.View):
 					secondaryText = secondaryInfo.get('text', None)
 					secondaryOptions = secondaryInfo.get('options', None)
 					if secondaryText:
-						print(loadedSecondaryInfo)
 						textInput = loadedSecondaryInfo[0]['textInput']
 						if textInput:
 							textInput.clear()

@@ -3,7 +3,9 @@ from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException, ElementNotVisibleException)
 import datePicker
 import time
-
+from selenium.webdriver.support.wait import WebDriverWait as WDW
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 class GepTestForm():
 
@@ -11,11 +13,13 @@ class GepTestForm():
 		self.driver = driver
 
 	def load(self):
-		self.form = self.driver.find_elements_by_tag_name('form')[1]
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+
+		self.form = self.driver.find_element_by_class_name('modal-content')
 		buttons = self.form.find_elements_by_tag_name('button')
 		self.rows = self.form.find_elements_by_class_name('form-group')
 
-		# self.close_button = buttons[5]
+		self.close_button = buttons[0]
 
 		if not self.rows:
 			return False
@@ -23,11 +27,10 @@ class GepTestForm():
 
 		self.comment_textarea = self.form.find_element_by_tag_name('textarea')
 
-		self.save_button = buttons[1]
-		self.cancel_button = buttons[0]
+		self.save_button = buttons[2]
+		self.cancel_button = buttons[1]
 
 		return True
-		# return self.validate(expectedValues)
 
 	def submit(self, gepInfo, action='cancel'):
 		if gepInfo:
@@ -58,18 +61,4 @@ class GepTestForm():
 				self.close_button.click()
 			return True
 		return False
-
-
- 	
-
-				
-
-
-
-	# def confirm(self, action='submit'):
-	# 	if action == 'submit':
-	# 		self.confirm_button.click()
-	# 	else:
-	# 		self.cancel_button.click()
-	# 	return True
 

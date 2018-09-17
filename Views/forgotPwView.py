@@ -22,7 +22,7 @@ class ForgotPwView(view.View):
 
 	def validate(self):
 		failures = []
-		if self.util.get_text(self.signIn_link) != 'sign in':
+		if self.util.get_text(self.signIn_link) != 'Sign In':
 			failures.append('1. Sign In link. Expecting text "Sign In", got "' + self.util.get_text(self.signIn_link) + '"')
 		if len(failures) > 0:
 			print(failures)

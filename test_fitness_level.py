@@ -10,6 +10,9 @@ class TestFitnessLevel(unittest.TestCase):
 		self.driver = initDriver.start(main.browser)
 		self.andrew = profiles.Profile(self.driver, 'andrew')
 
+	def tearDown(self):
+		self.driver.quit()
+
 	def test_navigate(self):
 		'''FitnessLevel : FitnessLevel . test_navigate'''
 		homeView = self.andrew.homeView
@@ -29,7 +32,15 @@ class TestFitnessLevel(unittest.TestCase):
 		fitLvlView = self.andrew.fitLvlView
 
 		fitnessInfo = [
+			False,
+			False,
+			False,
+			False,
 			True,
+		]
+
+		fitnessStuff = [
+			True
 		]
 
 		self.assertTrue(homeView.go())
@@ -40,6 +51,10 @@ class TestFitnessLevel(unittest.TestCase):
 		self.assertTrue(fitLvlView.on())
 
 		fitLvlView.fitLvlForm.submit(fitnessInfo)
+
+		self.assertTrue(fitLvlView.on())
+
+		fitLvlView.fitLvlForm.submit(fitnessStuff)
 
 
 

@@ -44,11 +44,11 @@ class TestMyelomaDiagnosis(unittest.TestCase):
 			'city': 'Jacksonville',
 			'state': 'Florida',
 		}
-		formInfo['physicians'].append(new_physician)
-		myelDiagView.add_physician(new_physician, formInfo)
+		# formInfo['physicians'].append(new_physician)
+		myelDiagView.add_physician(new_physician)
 
 		# Delete all physicians
-		formInfo['physicians'] = []
+		# formInfo['physicians'] = []
 		self.assertTrue(myelDiagView.delete('physician', 'all'))
 
 		# Reset: Delete diagnosis, reload fresh form

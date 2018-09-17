@@ -15,6 +15,7 @@ class AboutMeForm():
 		anchors = self.form.find_elements_by_tag_name('a')
 
 		self.firstname_input = self.form.find_element_by_id('about_first')
+		self.middlename_input = self.form.find_element_by_id('about_middle')
 		self.lastname_input = self.form.find_element_by_id('Last')
 
 		container = self.driver.find_element_by_id('gender_radio_group')
@@ -64,6 +65,8 @@ class AboutMeForm():
 		if expectedValues:
 			if self.firstname_input.get_attribute('value') != expectedValues['first_name']:
 				failures.append('AboutMeForm: Expecting first name "' + expectedValues['first_name'] + '", got "' + self.firstname_input.get_attribute('value') + '"')
+			if self.middlename_input.get_attribute('value') != expectedValues['middle_name']:
+				failures.append('AboutMeForm: Expecting last name "' + expectedValues['middle_name'] + '", got "' + self.middlename_input.get_attribute('value') + '"')
 			if self.lastname_input.get_attribute('value') != expectedValues['last_name']:
 				failures.append('AboutMeForm: Expecting last name "' + expectedValues['last_name'] + '", got "' + self.lastname_input.get_attribute('value') + '"')
 			if self.dob_input.get_attribute('value') != expectedValues['dob']:
@@ -169,6 +172,8 @@ class AboutMeForm():
 		if form_info:
 			self.firstname_input.clear()
 			self.firstname_input.send_keys(form_info['first_name'])
+			self.middlename_input.clear()
+			self.middlename_input.send_keys(form_info['middle_name'])
 			self.lastname_input.clear()
 			self.lastname_input.send_keys(form_info['last_name'])
 			if form_info['gender'] == 'male':
@@ -182,24 +187,24 @@ class AboutMeForm():
 			self.treatment_textarea.clear()
 			self.treatment_textarea.send_keys(form_info['treatment_goals'])
 
-			# if form_info['assisted']['value'] == True:
-			# 	self.cancerCareYes_radio.click()
-			# 	self.load_cancer_care()
-			# 	# Does credentials have caregiver info?
-			# 	if form_info['assisted']['name']:
-			# 		self.caregiver_name_input.clear()
-			# 		self.caregiver_name_input.send_keys(form_info['assisted']['name'])
-			# 	if form_info['assitsted']['phone']:
-			# 		self.caregiver_phone_input.clear()
-			# 		self.caregiver_phone_input.send_keys(form_info['assisted']['phone'])
-			# 	if form_info['assisted']['email']:
-			# 		self.caregiver_email_input.clear()
-			# 		self.caregiver_email_input.send_keys(form_info['assisted']['email'])
+			if form_info['assisted']['value'] == True:
+				self.cancerCareYes_radio.click()
+				self.load_cancer_care()
+				# Does credentials have caregiver info?
+				if form_info['assisted']['name']:
+					self.caregiver_name_input.clear()
+					self.caregiver_name_input.send_keys(form_info['assisted']['name'])
+				if form_info['assitsted']['phone']:
+					self.caregiver_phone_input.clear()
+					self.caregiver_phone_input.send_keys(form_info['assisted']['phone'])
+				if form_info['assisted']['email']:
+					self.caregiver_email_input.clear()
+					self.caregiver_email_input.send_keys(form_info['assisted']['email'])
 
 				# if yes, enter it into inputs loaded in load_cancer_care()
 
-			# else:
-			# 	self.cancerCareNo_radio.click()
+			else:
+				self.cancerCareNo_radio.click()
 			if form_info['terms'] != self.termsprivacy_checkbox.is_selected():
 				self.termsprivacy_checkbox.click()
 

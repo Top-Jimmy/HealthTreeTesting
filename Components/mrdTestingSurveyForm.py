@@ -15,6 +15,7 @@ class MrdTestingSurveyForm():
 
 	def load(self):
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		time.sleep(1)
 		self.form = self.driver.find_elements_by_tag_name('form')[1]
 		buttons = self.form.find_elements_by_tag_name('button')
 
@@ -66,7 +67,7 @@ class MrdTestingSurveyForm():
 					for radioCont in radioContainers:
 						inputs = radioCont.find_elements_by_tag_name('input')
 						spans = radioCont.find_elements_by_tag_name('span')
-						optionName = self.util.get_text(spans[0])
+						optionName = self.util.get_text(spans[0]).lower()
 						options[optionName] = inputs[0]
 					if len(radioContainers) == 0:
 						textInput = questionCont.find_element_by_tag_name('input')
@@ -102,6 +103,7 @@ class MrdTestingSurveyForm():
 			multipleDropdown = question.get('multiple_dropdown')
 
 			if questionOptions:
+				WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 				inputEl = questionOptions[question['option']]
 				inputEl.click()
 				if not inputEl.is_selected():

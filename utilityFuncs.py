@@ -110,6 +110,8 @@ class UtilityFunctions():
 		try:
 			element.click()
 			return True
+		except ElementNotVisibleException:
+			print('ElementNotVisibleException: failed to click element')
 		except WebDriverException:
 			print('WebDriverException: failed to click element')
 		except StaleElementReferenceException:

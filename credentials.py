@@ -4,6 +4,7 @@ andrew = {
 	'email': 'tiddandrew@gmail.com',
 	'about_me_data': {
 		'first_name': 'Andrew',
+		'middle_name': 'Lauvergne',
 		'last_name': 'Tidd',
 		'gender': 'male',
 		'dob': '05/01/2018',
@@ -193,7 +194,7 @@ andrew = {
 }
 
 elliot = {
-	'username': 'elliot1',
+	'username': 'elliot',
 	'password': 'celtics',
 	'about_me_data': {
 		'first_name': 'Elliot',

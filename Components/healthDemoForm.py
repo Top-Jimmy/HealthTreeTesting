@@ -16,6 +16,7 @@ class HealthDemoForm():
 
 	def load(self):
 		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		time.sleep(1)
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 
 		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')

@@ -16,6 +16,7 @@ class HealthQualityForm():
 
 	def load(self):
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		time.sleep(1)
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
 
@@ -69,7 +70,7 @@ class HealthQualityForm():
 					for radioCont in radioContainers:
 						inputs = radioCont.find_elements_by_tag_name('input')
 						spans = radioCont.find_elements_by_tag_name('span')
-						optionName = self.util.get_text(spans[0])
+						optionName = self.util.get_text(spans[0]).lower()
 						options[optionName] = inputs[0]
 					if len(radioContainers) == 0:
 						textInput = questionCont.find_element_by_tag_name('input')

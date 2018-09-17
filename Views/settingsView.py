@@ -42,7 +42,7 @@ class SettingsView(view.View):
 		self.changeUsernameForm = changeUsernameForm.ChangeUsernameForm(self.driver)
 		WDW(self.driver, 20).until(lambda x: self.changeUsernameForm.load())
 		self.changeUsernameForm.submit(usernameInfo, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 	def change_password(self, passwordInfo, action='continue'):
@@ -50,8 +50,9 @@ class SettingsView(view.View):
 		self.changePasswordForm = changePasswordForm.ChangePasswordForm(self.driver)
 		WDW(self.driver, 20).until(lambda x: self.changePasswordForm.load())
 		self.changePasswordForm.submit(passwordInfo, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
+		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 's-alert-box')))
 		self.header = header.AuthHeader(self.driver)
 		self.header.logout_button.click()
 
@@ -64,7 +65,7 @@ class SettingsView(view.View):
 		self.changeEmailForm = changeEmailForm.ChangeEmailForm(self.driver)
 		WDW(self.driver, 20).until(lambda x: self.changeEmailForm.load())
 		self.changeEmailForm.submit(formData, action)
-		WDW(self.driver, 3).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+		WDW(self.driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
 		WDW(self.driver, 20).until_not(EC.presence_of_element_located((By.CLASS_NAME, 'overlay')))
 
 

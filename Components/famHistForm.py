@@ -12,6 +12,7 @@ class FamHistForm():
 		self.load(expectedValues)
 
 	def load(self, expectedValues):
+		time.sleep(1)
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		self.sectionConts = self.form.find_elements_by_class_name('after-head-row')
 		self.load_sections()
@@ -74,7 +75,7 @@ class FamHistForm():
 					for radioCont in radioContainers:
 						inputs = radioCont.find_elements_by_tag_name('input')
 						spans = radioCont.find_elements_by_tag_name('span')
-						optionName = self.util.get_text(spans[0])
+						optionName = self.util.get_text(spans[0]).lower()
 						options[optionName] = inputs[0]
 					if dropdownContainers:
 						question['dropdowns'] = dropdownContainers

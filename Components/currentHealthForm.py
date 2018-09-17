@@ -157,9 +157,10 @@ class CurrentHealthForm():
 				for i, question in enumerate(secondary_questions):
 					question_name = self.util.get_text(question)
 					input_el = question.find_element_by_tag_name('input')
+					print(input_el)
 
 					if input_el.is_selected() != expectedSecondaryInfo[i][question_name]:
-						input_el.click()
+						self.util.click_radio(input_el)
 					# else:
 					# 	print(str(index) + ' already has correct value')
 
@@ -171,19 +172,18 @@ class CurrentHealthForm():
 	def tooltip(self):
 		p = self.form.find_elements_by_class_name('tooltip-p')
 		self.blood_pressure_tooltip.click()
-		if self.util.get_text(p[0]) != 'blood pressure is the pressure exerted on walls of the blood vessels by circulating blood. along with body temperature, respiratory rate, and pulse rate, blood pressure is one of the four main vital signs monitored by medical professionals.':
-			print('tooltip not clicked correctly:' + str(self.util.get_text(p[0])))
-			raw_input('first tooltip worked?')
+		if self.util.get_text(p[0]).lower() != 'blood pressure is the pressure exerted on walls of the blood vessels by circulating blood. along with body temperature, respiratory rate, and pulse rate, blood pressure is one of the four main vital signs monitored by medical professionals.':
+			print('tooltip not clicked correctly:' + str(self.util.get_text(p[0]).lower()))
 			return False
 
 		self.blood_clot_tooltip.click()
-		if self.util.get_text(p[1]) != 'deep vein thrombosis (dvt) occurs when a blood clot (thrombus) forms in one or more of the deep veins in your body, usually in your legs. deep vein thrombosis can cause leg pain or swelling, but also can occur with no symptoms.':
-			print('tooltip not clicked correctly:' + str(self.util.get_text(p[1])))
+		if self.util.get_text(p[1]).lower() != 'deep vein thrombosis (dvt) occurs when a blood clot (thrombus) forms in one or more of the deep veins in your body, usually in your legs. deep vein thrombosis can cause leg pain or swelling, but also can occur with no symptoms.':
+			print('tooltip not clicked correctly:' + str(self.util.get_text(p[1]).lower()))
 			return False
 			
 		self.neuropathy_tooltip.click()
-		if self.util.get_text(p[2]) != 'neuropathy is gradual onset of numbness, prickling or tingling in your feet or hands, which can spread upward into your legs and arms.':
-			print('tooltip not clicked correctly:' + str(self.util.get_text(p[2])))
+		if self.util.get_text(p[2]).lower() != 'neuropathy is gradual onset of numbness, prickling or tingling in your feet or hands, which can spread upward into your legs and arms.':
+			print('tooltip not clicked correctly:' + str(self.util.get_text(p[2]).lower()))
 			return False
 		return True
 
