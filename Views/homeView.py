@@ -10,11 +10,11 @@ class HomeView(view.View):
 	def load(self):
 		try:
 			# Crap on left
-			self.signInForm = signInForm.SignInForm(self.driver)
-			self.terms_of_service_link = self.driver.find_elements_by_tag_name('a')[0]
-			self.privacy_policy_link = self.driver.find_elements_by_tag_name('a')[1]
-			self.createAccount_link = self.driver.find_elements_by_tag_name('a')[2]
-			self.validate()
+			self.header = self.driver.find_element_by_tag_name('header')
+			header_buttons = self.header.find_elements_by_tag_name('a')
+			self.signInButton = header_buttons[0]
+			self.createAccountButton = header_buttons[1]
+			# self.validate()
 			return True
 		except (NoSuchElementException, StaleElementReferenceException,
 			IndexError) as e:
@@ -47,6 +47,8 @@ class HomeView(view.View):
 
 	def login(self, credentials, expectedError=None, expectedWarning=None):
 		try:
+			self.signInButton.click()
+			self.signInForm = signInForm.SignInForm(self.driver)
 			if self.signInForm.enter_credentials(credentials):
 				# Should be on home page
 				url = self.driver.current_url
@@ -83,6 +85,7 @@ class HomeView(view.View):
 			self.createAccount_link.click()
 		elif link == 'forgot password':
 			self.signInForm.forgotPassword_link.click()
+
 
 
 

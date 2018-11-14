@@ -7,7 +7,7 @@ andrew = {
 		'middle_name': 'Lauvergne',
 		'last_name': 'Tidd',
 		'gender': 'male',
-		'dob': '05/01/2018',
+		'dob': '9/17/2000',
 		'zip_code': '84003',
 		'treatment_goals': 'Asdf',
 		'assisted': {

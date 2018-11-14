@@ -11,9 +11,6 @@ class SignInForm():
 
 	def load(self):
 		self.form = self.driver.find_element_by_tag_name('form')
-		inputs = self.form.find_elements_by_tag_name('input')
-		anchors = self.form.find_elements_by_tag_name('a')
-		small = self.form.find_elements_by_tag_name('small')
 
 		# list1 = ["1", 2, 3, 4, 5, 6]
 
@@ -25,15 +22,13 @@ class SignInForm():
 		# email = dictionary1["email"]
 
 
-		self.login_input = inputs[0]
-		self.login_warning = small[0]
+		self.username_input = self.form.find_element_by_id('username')
 
-		self.password_input = inputs[1]
-		self.password_warning = small[1]
+		self.password_input = self.form.find_element_by_id('password')
 
-		self.signIn_button = self.driver.find_element_by_tag_name('button')
-		self.forgotPassword_link = anchors[0]
-		self.validate()
+		self.signIn_button = self.form.find_element_by_tag_name('button')
+		self.forgotPassword_link = self.form.find_element_by_tag_name('a')
+		# self.validate()
 		return True
 
 	def validate(self):
@@ -77,7 +72,7 @@ class SignInForm():
 
 	def enter_credentials(self, credentials):
 		if credentials['username'] and credentials['password']:
-			self.login_input.send_keys(credentials['username'])
+			self.username_input.send_keys(credentials['username'])
 			time.sleep(.4)
 			self.password_input.send_keys(credentials['password'])
 			time.sleep(.4)
