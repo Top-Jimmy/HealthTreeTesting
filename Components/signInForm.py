@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
 		StaleElementReferenceException)
 
+
 class SignInForm():
 
 	def __init__(self, driver):
@@ -76,7 +77,8 @@ class SignInForm():
 			time.sleep(.4)
 			self.password_input.send_keys(credentials['password'])
 			time.sleep(.4)
-			self.signIn_button.click()
+			# Click doesn't work???
+			self.signIn_button.submit()
 			time.sleep(.4)
 			return True
 		return False
