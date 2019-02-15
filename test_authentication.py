@@ -6,7 +6,7 @@ import profiles
 # Create Account
 # Forgot Password
 # Login
-
+@unittest.skip('Need to work on a Create Account Form')
 class TestCreateAccount(unittest.TestCase):
 
 	def setUp(self):

@@ -16,7 +16,7 @@ class Menu():
 		# Loading full menu or basic menu for new user?
 		self.menu_type = self.calculate_menu_type()
 
-		if len(self.list_items) < 14 or len(self.list_items) > 15:
+		if len(self.list_items) < 15 or len(self.list_items) > 16:
 			print('Unexpected # of menu items, menu has ' + str(len(self.list_items)))
 			return False
 

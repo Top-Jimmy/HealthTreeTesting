@@ -46,19 +46,19 @@ class TestAboutMe(unittest.TestCase):
 
 		self.assertTrue(aboutMeView.on())
 
-	def test_tooltip(self):
-		'''test_aboutMe.py:TestAboutMe.test_tooltip '''
-		homeView = self.andrew.homeView
-		aboutMeView = self.andrew.aboutMeView
+	# def test_tooltip(self):
+	# 	'''test_aboutMe.py:TestAboutMe.test_tooltip '''
+	# 	homeView = self.andrew.homeView
+	# 	aboutMeView = self.andrew.aboutMeView
 
-		self.assertTrue(homeView.go())
-		self.assertTrue(homeView.login(self.andrew.credentials))
+	# 	self.assertTrue(homeView.go())
+	# 	self.assertTrue(homeView.login(self.andrew.credentials))
 
-		self.assertTrue(aboutMeView.on())
-		aboutMeView.aboutMeForm.tooltip()
+	# 	self.assertTrue(aboutMeView.on())
+	# 	aboutMeView.aboutMeForm.tooltip()
 
-		feedbackText = 'Pancakes'
+	# 	feedbackText = 'Pancakes'
 
-		aboutMeView.feedback(feedbackText, 'cancel')
-		self.assertTrue(aboutMeView.on())
+	# 	aboutMeView.feedback(feedbackText, 'cancel')
+	# 	self.assertTrue(aboutMeView.on())
 

@@ -10,54 +10,73 @@ class AboutMeForm():
 		self.load(expectedValues)
 
 	def load(self, expectedValues):
-		self.form = self.driver.find_elements_by_tag_name('form')[-1]
-		inputs = self.form.find_elements_by_tag_name('input')
-		anchors = self.form.find_elements_by_tag_name('a')
+		self.form = self.driver.find_element_by_id('page-content-wrapper')
+		# inputs = self.form.find_elements_by_tag_name('input')
+		# anchors = self.form.find_elements_by_tag_name('a')
 
-		self.firstname_input = self.form.find_element_by_id('about_first')
-		self.middlename_input = self.form.find_element_by_id('about_middle')
-		self.lastname_input = self.form.find_element_by_id('Last')
+		self.personalinfo_table = self.form.find_element_by_class_name('profile_1')
+		self.edit_personal_button = self.personalinfo_table.find_element_by_tag_name('button')
 
-		container = self.driver.find_element_by_id('gender_radio_group')
-		labels = container.find_elements_by_tag_name('label')
-		self.female_radio = labels[0]
-		self.male_radio = labels[1]
+		self.load_personal_info()
+
+		treatment_goals = self.personalinfo_table.find_element_by_id('right_div')
+		self.treatment_goals_input = treatment_goals.find_element_by_tag_name('span')
+
+		self.myeloma_centers_table = self.form.find_element_by_class_name('profile_2')
+		self.view_myeloma_button = self.myeloma_centers_table.find_element_by_tag_name('button')
+
+		self.family_table = self.form.find_element_by_class_name('profile_3')
+		self.edit_family_button = self.family_table.find_element_by_tag_name('button')
+
+		self.load_family_info()
+
+		self.terms_conditions_header = self.form.find_element_by_class_name('profile_4')
+		self.edit_terms_button = self.terms_conditions_header.find_element_by_tag_name('button')
+
+		# self.firstname_input = self.form.find_element_by_id('about_first')
+		# self.middlename_input = self.form.find_element_by_id('about_middle')
+		# self.lastname_input = self.form.find_element_by_id('Last')
+
+		# container = self.driver.find_element_by_id('gender_radio_group')
+		# labels = container.find_elements_by_tag_name('label')
+		# self.female_radio = labels[0]
+		# self.male_radio = labels[1]
 		
-		self.gender_values = []
-		value = None
-		for i, label in enumerate(labels):
-			classes = label.get_attribute('class')
-			if 'active' in classes:
-				if i == 0:
-					value = 'female'
-				if i == 1:
-					value = 'male'
-		self.gender_values.append(value)
+		# self.gender_values = []
+		# value = None
+		# for i, label in enumerate(labels):
+		# 	classes = label.get_attribute('class')
+		# 	if 'active' in classes:
+		# 		if i == 0:
+		# 			value = 'female'
+		# 		if i == 1:
+		# 			value = 'male'
+		# self.gender_values.append(value)
 
-		dob_cont = self.driver.find_element_by_class_name('mui-select')
-		self.dob_input = dob_cont.find_element_by_tag_name('input')
+		# dob_cont = self.driver.find_element_by_class_name('mui-select')
+		# self.dob_input = dob_cont.find_element_by_tag_name('input')
 
-		self.zipcode_input = self.form.find_element_by_id('zip-code')
+		# self.zipcode_input = self.form.find_element_by_id('zip-code')
 
-		self.treatment_textarea = self.form.find_element_by_tag_name('textarea')
+		# self.treatment_textarea = self.form.find_element_by_tag_name('textarea')
 
-		self.academic_tooltip = self.form.find_element_by_class_name('tool-tip-history')
+		# self.academic_tooltip = self.form.find_element_by_class_name('tool-tip-history')
 
-		self.load_cancer_care()
+		# self.load_cancer_care()
 
-		# Terms of Use and Privacy Policy checkboxes and links
-		label_conts = self.form.find_elements_by_class_name('checkbox-custom-label')
-		self.termsprivacy_checkbox = self.form.find_element_by_id('agreed')
-		terms_links = label_conts[0].find_elements_by_tag_name('a')
-		self.ht_terms_link = terms_links[0]
-		self.ht_privacy_link = terms_links[1]
+		# # Terms of Use and Privacy Policy checkboxes and links
+		# label_conts = self.form.find_elements_by_class_name('checkbox-custom-label')
+		# self.termsprivacy_checkbox = self.form.find_element_by_id('agreed')
+		# terms_links = label_conts[0].find_elements_by_tag_name('a')
+		# self.ht_terms_link = terms_links[0]
+		# self.ht_privacy_link = terms_links[1]
 
-		self.SparkCuresterms_checkbox = self.form.find_element_by_id('accepted_understand_clause')
-		spark_links = label_conts[1].find_elements_by_tag_name('a')
-		self.spark_terms_link = spark_links[0]
-		self.spark_privacy_link = spark_links[1]
+		# self.SparkCuresterms_checkbox = self.form.find_element_by_id('accepted_understand_clause')
+		# spark_links = label_conts[1].find_elements_by_tag_name('a')
+		# self.spark_terms_link = spark_links[0]
+		# self.spark_privacy_link = spark_links[1]
 
-		self.validate(expectedValues)
+		# self.validate(expectedValues)
 		return True
 
 	def validate(self, expectedValues):
@@ -213,3 +232,26 @@ class AboutMeForm():
 
 			return True
 		return False
+
+	def load_personal_info(self):
+		self.personal_info = []
+		table = self.personalinfo_table.find_element_by_class_name('researcher_1')
+		rows = table.find_elements_by_class_name('row')
+		for row in rows:
+			personal_information = row.find_elements_by_tag_name('div')[1]
+			self.personal_info.append(personal_information.text.lower()) 
+		return self.personal_info
+			
+	def load_family_info(self):
+		self.family_info = []
+		tables = self.family_table.find_elements_by_class_name('researcher_1')
+		for table in tables:
+			rows = table.find_elements_by_class_name('row')
+			for row in rows:
+				family_information = row.find_elements_by_tag_name('div')[1]
+				self.family_info.append(family_information.text.lower()) 
+		return self.family_info
+
+		
+
+

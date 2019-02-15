@@ -26,17 +26,15 @@ class TreatmentsOutcomesView(view.View):
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 			self.state = self.load_state()
-			self.tutorial_button = self.driver.find_element_by_class_name('videobtn')
 			if expectedState and expectedState != self.state:
 				print('Wrong state! Expected ' + str(expectedState) + ', got ' + str(self.state))
 				return False
 			if self.state == 'fresh':
-				self.newAccountPopUpForm = newAccountPopUpForm.NewAccoutPopUpForm(self.driver)
+				self.newAccountPopUpForm = newAccountPopUpForm.NewAccountPopUpForm(self.driver)
 				# load new popup
 				# todo: need new account to get this state
 				pass
 			else:
-				self.tutorial_button = self.driver.find_element_by_class_name('videobtn')
 				try:
 					# Only shows up when certain diagnoses are selected on 'Myeloma Diagnosis'
 					self.view_options_button = self.driver.find_element_by_class_name('treatment_op_btn')
