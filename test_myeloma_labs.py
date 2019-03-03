@@ -32,7 +32,7 @@ class TestMyelomaLabs(unittest.TestCase):
 		myelomaLabsView = self.andrew.myelomaLabsView
 
 		labInfo = {
-			'dobd': '12/12/2013',
+			'lab_date': '12/12/2013',
 
 			'monoclonal': '14',
 			'kappa': '234',
