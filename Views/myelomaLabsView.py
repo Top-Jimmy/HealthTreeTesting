@@ -126,10 +126,13 @@ class MyelomaLabsView(view.View):
 		# Table with saved Lab results at bottom of page
 		# Read info from each row and return dictionary
 		self.clinical_tables = []
-		time.sleep(3)
 
 		# Table Header
-		table_header = self.form.find_element_by_class_name('sticky-table-header-wrapper')
+		try:
+			table_header = self.form.find_element_by_class_name('sticky-table-header-wrapper')
+		except NoSuchElementException:
+			# No lab results saved (or table not displayed yet)
+			return None
 		header_cells = table_header.find_elements_by_class_name('sticky-table-cell')
 		header_keys = ['actions', 'dobd', 'monoclonal', 'kappa', 'lambda', 'ratio', 'bone_marrow', 'creatine', 'platelets', 'neutrophils', 'blood_cell', 'hemoglobin',  'lactate', 'albumin', 'immuno_g', 'immuno_a', 'immuno_m', 'calcium']
 

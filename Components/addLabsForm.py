@@ -17,7 +17,7 @@ class AddLabsForm():
 
 		cont = self.driver.find_element_by_class_name('myeloma-labs-row')
 		self.get_my_labs_button = cont.find_element_by_tag_name('button')
-		self.dobd_input = self.driver.find_element_by_id('dateField')
+		self.lab_date = self.driver.find_element_by_id('dateField')
 
 		self.form = self.driver.find_elements_by_tag_name('form')[-1]
 		inputs = self.form.find_elements_by_tag_name('input')
@@ -51,8 +51,8 @@ class AddLabsForm():
 	def submit(self, labInfo, action='save'):
 		time.sleep(3)
 		if labInfo:
-			self.dobd_input.clear()
-			self.dobd_input.send_keys(labInfo['dobd'])
+			self.lab_date.clear()
+			self.lab_date.send_keys(labInfo['lab_date'])
 
 			# 1: Clinical Trials
 			self.monoclonal_input.clear()

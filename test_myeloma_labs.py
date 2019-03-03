@@ -64,7 +64,7 @@ class TestMyelomaLabs(unittest.TestCase):
 
 		myelomaLabsView.add_new_lab(labInfo, 'save')
 
-		raw_input('added. look at table.')
+		# raw_input('added. look at table.')
 		self.assertTrue(myelomaLabsView.on(labInfo))
 
 		myelomaLabsView.edit_delete_lab(-1, None, 'delete', 'confirm')
