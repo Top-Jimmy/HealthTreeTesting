@@ -24,22 +24,27 @@ class TestMyelomaLabs(unittest.TestCase):
 		aboutMeView.menu.go_to('Myeloma Labs')
 		self.assertTrue(myelomaLabsView.on())
 
+	# @unittest.skip("Add Lab form needs HTML fix. Cannot uniquely identify form ")
 	def test_add_lab(self):
-		'''MyelomaLabs : MyelomaLabs . test_add_lab'''
+		'''test_myeloma_labs.py:TestMyelomaLabs.test_add_lab'''
 		homeView = self.andrew.homeView
 		aboutMeView = self.andrew.aboutMeView
 		myelomaLabsView = self.andrew.myelomaLabsView
 
 		labInfo = {
 			'dobd': '12/12/2013',
+
 			'monoclonal': '14',
 			'kappa': '234',
 			'lambda': '457',
 			'ratio': '2',
 			'bone_marrow': '15',
-			'blood': '8435',
-			'calcium': '78345',
+			'creatinine': '1.5',
 			'platelets': '3',
+			'neutrophils': '5.5',
+			# 'blood': '8435',
+
+			'calcium': '78345',
 			'blood_cell': '90',
 			'hemoglobin': '798',
 			'lactate': '532',
@@ -55,9 +60,11 @@ class TestMyelomaLabs(unittest.TestCase):
 
 		aboutMeView.menu.go_to('Myeloma Labs')
 		self.assertTrue(myelomaLabsView.on(labInfo))
+		# myelomaLabsView.delete_all_labs()
 
 		myelomaLabsView.add_new_lab(labInfo, 'save')
 
+		raw_input('added. look at table.')
 		self.assertTrue(myelomaLabsView.on(labInfo))
 
 		myelomaLabsView.edit_delete_lab(-1, None, 'delete', 'confirm')

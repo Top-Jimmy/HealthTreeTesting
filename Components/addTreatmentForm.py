@@ -333,7 +333,7 @@ class AddTreatmentForm():
 		return True
 
 	def load_and_answer_popup(self, options):
-		# Load then answer poup
+		# Load then answer popup
 		loadedPopup = False
 		count = 0
 		while not loadedPopup and count < 5:

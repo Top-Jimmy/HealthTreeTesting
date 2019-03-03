@@ -3,7 +3,6 @@ import main
 import initDriver
 import profiles
 import form_info
-# import copy # copy.deepcopy(object)
 
 # TestChemotherapy
 #   test_changed_chemotherapy
