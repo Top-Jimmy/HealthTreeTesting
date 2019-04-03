@@ -27,29 +27,31 @@ class MyelomaGeneticsView(view.View):
 			self.menu = menu.Menu(self.driver)
 			self.header = header.AuthHeader(self.driver)
 
+			self.load_test_table()
+
 			# When user has already filled out info
-			addDiagnosisButtons = self.driver.find_elements_by_class_name('addDiagnoisisButton')
-			self.add_fish_button = addDiagnosisButtons[0]
-			self.add_gep_button = addDiagnosisButtons[1]
-			self.add_ngs_button = addDiagnosisButtons[2]
+			# addDiagnosisButtons = self.driver.find_elements_by_class_name('addDiagnoisisButton')
+			# self.add_fish_button = addDiagnosisButtons[0]
+			# self.add_gep_button = addDiagnosisButtons[1]
+			# self.add_ngs_button = addDiagnosisButtons[2]
 
-			buttons = self.driver.find_elements_by_tag_name('button')
-			self.upload_file_button = buttons[2]
+			# buttons = self.driver.find_elements_by_tag_name('button')
+			# self.upload_file_button = buttons[2]
 
-			cont = self.driver.find_element_by_class_name('genetics-btn')
-			self.continue_button = cont.find_element_by_tag_name('button')
+			# cont = self.driver.find_element_by_class_name('genetics-btn')
+			# self.continue_button = cont.find_element_by_tag_name('button')
 
-			self.load_fish_table()
-			self.load_gep_table()
-			self.load_ngs_table()
-			self.load_highRisk_table()
+			# # self.load_fish_table()
+			# # self.load_gep_table()
+			# # self.load_ngs_table()
+			# # self.load_highRisk_table()
 
-			self.container = self.driver.find_element_by_id('page-content-wrapper')
-			tooltips = self.container.find_elements_by_tag_name('img')
-			self.fish_tooltip = tooltips[0]
-			self.gep_tooltip = tooltips[1]
-			self.ngs_tooltip = tooltips[2]
-			self.high_risk_tooltip = tooltips[3]
+			# self.container = self.driver.find_element_by_id('page-content-wrapper')
+			# tooltips = self.container.find_elements_by_tag_name('img')
+			# self.fish_tooltip = tooltips[0]
+			# self.gep_tooltip = tooltips[1]
+			# self.ngs_tooltip = tooltips[2]
+			# self.high_risk_tooltip = tooltips[3]
 
 				
 
@@ -359,6 +361,20 @@ class MyelomaGeneticsView(view.View):
 			if dateStr != 'current treatment':
 				print('Unexpected date format: ' + str(dateStr))
 			return dateStr
+
+	def load_test_table(self):
+		self.genetic_tests = []
+		tables = self.driver.find_elements_by_class_name('divTable')
+		for tableIndex, table in enumerate(tables):
+			rows = table.find_elements_by_class_name('divTableRow')
+			if tableIndex == 0:
+				for rowIndex, row in enumerate(rows):
+					cells = row.find_elements_by_class_name('divTableCell')
+					if rowIndex == 0:
+						self.headerInfo = []
+						for cell in cells:
+							self.headerInfo.append(cell.text)
+
 
 
 

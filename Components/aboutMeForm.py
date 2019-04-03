@@ -33,49 +33,6 @@ class AboutMeForm():
 		self.terms_conditions_header = self.form.find_element_by_class_name('profile_4')
 		self.edit_terms_button = self.terms_conditions_header.find_element_by_tag_name('button')
 
-		# self.firstname_input = self.form.find_element_by_id('about_first')
-		# self.middlename_input = self.form.find_element_by_id('about_middle')
-		# self.lastname_input = self.form.find_element_by_id('Last')
-
-		# container = self.driver.find_element_by_id('gender_radio_group')
-		# labels = container.find_elements_by_tag_name('label')
-		# self.female_radio = labels[0]
-		# self.male_radio = labels[1]
-		
-		# self.gender_values = []
-		# value = None
-		# for i, label in enumerate(labels):
-		# 	classes = label.get_attribute('class')
-		# 	if 'active' in classes:
-		# 		if i == 0:
-		# 			value = 'female'
-		# 		if i == 1:
-		# 			value = 'male'
-		# self.gender_values.append(value)
-
-		# dob_cont = self.driver.find_element_by_class_name('mui-select')
-		# self.dob_input = dob_cont.find_element_by_tag_name('input')
-
-		# self.zipcode_input = self.form.find_element_by_id('zip-code')
-
-		# self.treatment_textarea = self.form.find_element_by_tag_name('textarea')
-
-		# self.academic_tooltip = self.form.find_element_by_class_name('tool-tip-history')
-
-		# self.load_cancer_care()
-
-		# # Terms of Use and Privacy Policy checkboxes and links
-		# label_conts = self.form.find_elements_by_class_name('checkbox-custom-label')
-		# self.termsprivacy_checkbox = self.form.find_element_by_id('agreed')
-		# terms_links = label_conts[0].find_elements_by_tag_name('a')
-		# self.ht_terms_link = terms_links[0]
-		# self.ht_privacy_link = terms_links[1]
-
-		# self.SparkCuresterms_checkbox = self.form.find_element_by_id('accepted_understand_clause')
-		# spark_links = label_conts[1].find_elements_by_tag_name('a')
-		# self.spark_terms_link = spark_links[0]
-		# self.spark_privacy_link = spark_links[1]
-
 		# self.validate(expectedValues)
 		return True
 
