@@ -182,7 +182,8 @@ class TestCurrentHealth(unittest.TestCase):
 
 		# Reset to default answers (I don't know for everything)
 		self.assertTrue(currentHealthView.submit(defaultFormInfo))
-
+		
+	@unittest.skip('tooltip has been removed')
 	def test_tooltip(self):
 		'''test_currentHealth.py:TestCurrentHealth.test_tooltip '''
 		homeView = self.andrew.homeView

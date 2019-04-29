@@ -11,17 +11,17 @@ class AuthHeader():
 	def load(self):
 		cont = self.driver.find_element_by_class_name('header-custom-col')
 		buttons = cont.find_elements_by_tag_name('button')
-		self.logout_button = buttons[0]
-		# self.feedback_button = buttons[1]
+		self.help_button = buttons[0]
+		self.logout_button = buttons[1]
 		self.validate()
 		return True
 
 	def validate(self):
 		failures = []
+		if self.help_button.text.lower() != 'help':
+			failures.append('AuthHeader: Unexpected help button text: "' + self.help_button.text + '"')
 		if self.logout_button.text.lower() != 'logout':
 			failures.append('AuthHeader: Unexpected logout button text: "' + self.logout_button.text + '"')
-		# if self.feedback_button.text.lower() != 'feedback':
-		# 	failures.append('AuthHeader: Unexpected feedback button text: "' + self.feedback_button.text + '"')
 
 		if len(failures) > 0:
 			print(failures)
