@@ -38,6 +38,7 @@ class SettingsView(view.View):
 	# def validate(self):
 	# 	failures = []
 	def change_username(self, usernameInfo, action='continue'):
+		self.header = header.AuthHeader(self.driver)
 		self.edit_username_button.click()
 		self.changeUsernameForm = changeUsernameForm.ChangeUsernameForm(self.driver)
 		WDW(self.driver, 20).until(lambda x: self.changeUsernameForm.load())

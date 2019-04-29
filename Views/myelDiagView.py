@@ -21,6 +21,7 @@ class MyelDiagView(view.View):
 					self.myelomaDiagnosisFreshForm = myelomaDiagnosisFreshForm.MyelomaDiagnosisFreshForm(self.driver, expectedValues)
 					self.myelomaDiagnosisSavedForm = None
 				else:
+					raw_input('correctly got back state = "saved"')
 					self.myelomaDiagnosisSavedForm = myelomaDiagnosisSavedForm.MyelomaDiagnosisSavedForm(self.driver, expectedValues)
 					self.myelomaDiagnosisFreshForm = None
 
